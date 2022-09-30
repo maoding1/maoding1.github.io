@@ -22,8 +22,11 @@
 <p>• &#x2F;分区：Linux系统的根目录，所有的目录都挂在 这个目录下面，建议大小最少为1GB；</p>
 <p> • &#x2F;home分区：存放普通用户的数据，是普通用户 的宿主目录，建议大小为剩下的空间。</p>
 ]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
       <tags>
-        <tag>Linux系统基础</tag>
+        <tag>Linux</tag>
       </tags>
   </entry>
 </search>
