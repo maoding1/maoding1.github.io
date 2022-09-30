@@ -22,4 +22,13 @@
 <p> • &#x2F;home分区：存放普通用户的数据，是普通用户 的宿主目录，建议大小为剩下的空间。</p>
 ]]></content>
   </entry>
+  <entry>
+    <title>photo</title>
+    <url>/2022/09/30/photo/</url>
+    <content><![CDATA[<p><img src="/2022/09/30/photo/preview.jpg" alt="芝士辉夜"></p>
+]]></content>
+      <tags>
+        <tag>test</tag>
+      </tags>
+  </entry>
 </search>
