@@ -29,4 +29,60 @@
         <tag>Linux</tag>
       </tags>
   </entry>
+  <entry>
+    <title>git操作</title>
+    <url>/2022/10/01/git%E6%93%8D%E4%BD%9C/</url>
+    <content><![CDATA[<pre><code>                             # 									git的基本操作
+</code></pre>
+<h2 id="创建版本库"><a href="#创建版本库" class="headerlink" title="创建版本库"></a>创建版本库</h2><p>版本库(repository)是一个目录，这个目录里的所有文件都可以被Git管理起来，每个文件的修改、删除、Git都能跟踪，以便任何时刻都可以追踪历史，或者在将来某个时刻可以还原。</p>
+<p>创建版本库步骤：</p>
+<ol>
+<li>选择一个合适地方，创建一个空目录</li>
+<li>通过 <code>git init</code> 命令把这个目录变成Git 可以管理的仓库</li>
+</ol>
+<h2 id="把文件添加到版本库"><a href="#把文件添加到版本库" class="headerlink" title="把文件添加到版本库"></a>把文件添加到版本库</h2><p>把一个文件放到仓库只需要两步（如添加一个readme.txt文件）：</p>
+<ol>
+<li><p><code>git add readme.txt</code>  用命令git add告诉Git， 把文件添加到暂存区。可反复多次使用，添加多个文件。</p>
+</li>
+<li><p><code>git commit -m &quot;wrote a readme file&quot;</code> </p>
+<p>git commit告诉Git, 把文件提交到仓库。-m 后面输入的是本次提交的说明，注意说明一定要有意义，如告诉仓库本次提交做了什么事，方便后续的版本控制。</p>
+</li>
+</ol>
+<h2 id="查看工作区状态"><a href="#查看工作区状态" class="headerlink" title="查看工作区状态"></a>查看工作区状态</h2><p>要查看当前工作区的状态，使用 <code>git status</code> 命令</p>
+<p>如果有文件被修改过，你又想知道修改了什么 用<code>git diff filename</code> 查看修改的内容。git diff 命令可以告诉你当前工作区的文件和仓库的有什么不同。</p>
+<h2 id="版本回退"><a href="#版本回退" class="headerlink" title="版本回退"></a>版本回退</h2><ul>
+<li><code>HEAD</code>指向的版本就是当前版本，因此，Git允许我们在版本的历史之间穿梭，使用命令<code>git reset --hard commit_id</code>。版号只要前几位就行了，只要能识别，也可以用HEAD和^表示回退到哪一版。</li>
+<li>穿梭前，用<code>git log</code>可以查看提交历史，以便确定要回退到哪个版本。</li>
+<li>重返过去时未来的记录用git log 就看不到了。要重返未来，用<code>git reflog</code>查看命令历史，以便确定要回到未来的哪个版本。</li>
+</ul>
+<h2 id="撤销修改"><a href="#撤销修改" class="headerlink" title="撤销修改"></a>撤销修改</h2><ul>
+<li>场景1：当你改乱了工作区某个文件的内容，想直接丢弃工作区的修改时，用命令<code>git checkout -- filename</code>。</li>
+<li>场景2：当你不但改乱了工作区某个文件的内容，还添加到了暂存区时，想丢弃修改，分两步，第一步用命令<code>git reset HEAD &lt;filename&gt;</code>，就回到了场景1，第二步按场景1操作。</li>
+<li>场景3：已经提交了不合适的修改到版本库时，想要撤销本次提交，参考版本回退一节，不过前提是没有推送到远程库。</li>
+</ul>
+<h2 id="删除文件"><a href="#删除文件" class="headerlink" title="删除文件"></a>删除文件</h2><p>如果你在文件管理器中把某个文件删了，或者用<code>rm</code>命令删了</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$ rm test.txt</span><br></pre></td></tr></table></figure>
+
+<p>这个时候，Git知道你删了文件，因此，工作区和版本库就不一致了。</p>
+<p>现在有两种情况。</p>
+<ol>
+<li><p>确实要从版本库中删除该文件，那就用命令 <code>git rm</code> 删掉 并且git commit</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$ git rm test.txt</span><br><span class="line">$ git commit -m &quot;remove test.txt&quot;</span><br></pre></td></tr></table></figure>
+
+<p>tips：先手动删除文件，然后使用git rm <file>和git add<file>效果是一样的。</file></file></p>
+</li>
+<li><p>删除错了，要从版本库中把误删的文件恢复到最新版本。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$ git checkout -- test.txt</span><br></pre></td></tr></table></figure>
+
+<p>git checkout 其实是用版本库里的版本替换工作区的版本，无论工作区是修改还是删除，都可以意见还原。</p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
 </search>
