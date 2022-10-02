@@ -32,7 +32,8 @@
   <entry>
     <title>git操作</title>
     <url>/2022/10/01/git%E6%93%8D%E4%BD%9C/</url>
-    <content><![CDATA[<h1 id="Git学习01-基本操作"><a href="#Git学习01-基本操作" class="headerlink" title="Git学习01- 基本操作"></a>Git学习01- 基本操作</h1><h2 id="创建版本库"><a href="#创建版本库" class="headerlink" title="创建版本库"></a>创建版本库</h2><p>版本库(repository)是一个目录，这个目录里的所有文件都可以被Git管理起来，每个文件的修改、删除、Git都能跟踪，以便任何时刻都可以追踪历史，或者在将来某个时刻可以还原。</p>
+    <content><![CDATA[<h1 id="Git学习01-基本操作"><a href="#Git学习01-基本操作" class="headerlink" title="Git学习01- 基本操作"></a>Git学习01- 基本操作</h1><p><img src="/2022/10/01/git%E6%93%8D%E4%BD%9C/%E4%B8%89%E5%8F%B6.jpg" alt="三叶"></p>
+<h2 id="创建版本库"><a href="#创建版本库" class="headerlink" title="创建版本库"></a>创建版本库</h2><p>版本库(repository)是一个目录，这个目录里的所有文件都可以被Git管理起来，每个文件的修改、删除、Git都能跟踪，以便任何时刻都可以追踪历史，或者在将来某个时刻可以还原。</p>
 <p>创建版本库步骤：</p>
 <ol>
 <li>选择一个合适地方，创建一个空目录</li>
