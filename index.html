@@ -154,18 +154,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-count">5</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -194,6 +194,122 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/23/Maven-%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="MikeMao">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MikeMao's blog">
+      <meta itemprop="description" content="a student of NJU who use this website to record learning experience">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | MikeMao's blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/10/23/Maven-%E5%AD%A6%E4%B9%A0/" class="post-title-link" itemprop="url">Maven 学习</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2022-10-23 21:44:54 / 修改时间：21:50:09" itemprop="dateCreated datePublished" datetime="2022-10-23T21:44:54+08:00">2022-10-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Maven/" itemprop="url" rel="index"><span itemprop="name">Maven</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id><a href="#" class="headerlink" title></a></h1><h1 id="Maven-学习"><a href="#Maven-学习" class="headerlink" title="Maven  学习"></a>Maven  学习</h1><p>​																<img src="/2022/10/23/Maven-%E5%AD%A6%E4%B9%A0/rebecca.jpg" alt="芝士rebecca"></p>
+<h2 id="Maven简介"><a href="#Maven简介" class="headerlink" title="Maven简介"></a>Maven简介</h2><p>Maven是Apache组织下一个比较著名的开源项目，主要服务于基于java平台的项目构建，依赖管理和项目信息管理。</p>
+<p>类比做糖醋排骨，传统需要自己配置酱料，比如加入多少克糖，多少克水，多少克… 而现在只用去超市购买酱料包就好。Maven项目省去了开发者去各大网站下载jar包并解决相互间复杂依赖关系的时间。除此之外，除了编写源代码，我们有相当一部分时间花在了编译，运行单元测试，生成文档，打包和部署等工作上，这就是构建。手工做这些工作的成本太高了，于是可以用软件的方法让这一系列工作完全自动化，使得繁琐的步骤能够自动完成，很快得到最终结果。</p>
+<h3 id="项目构建工具"><a href="#项目构建工具" class="headerlink" title="项目构建工具"></a>项目构建工具</h3><p>Ant构建： 2000年左右出现的构建工具，当时是最流行的java构建工具，不过它的XML脚本编写格式让XML文件特别大。对工程构建过程中的过程控制特别好。</p>
+<p>Maven构建：项目对象模型，通过其描述信息来管理项目的构建，报告和文档的软件项目管理工具，填补了Ant的缺点。Maven第一次支持了从网络上下载的功能。Maven专注的是依赖管理，使用java编写。</p>
+<p>Gradle：谷歌的御用Android管理工具</p>
+<p>Ant比较老，目前Maven使用较多</p>
+<h2 id="Maven的四大特性"><a href="#Maven的四大特性" class="headerlink" title="Maven的四大特性"></a>Maven的四大特性</h2><h3 id="依赖管理系统"><a href="#依赖管理系统" class="headerlink" title="依赖管理系统"></a>依赖管理系统</h3><p>Maven为java世界引入了一个新的依赖管理系统——jar包管理。jar升级时修改配置文件即可。在java世界中，可以用 <strong><em>groupId</em> ** 、</strong><em>artifactId</em>** 、<em><strong>version</strong></em> 组成的Coordination（坐标）唯一标识一个依赖</p>
+<p>eg：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span> javax.servlet <span class="tag">&lt;/<span class="name">groupId</span>&gt;</span> //当前Maven项目隶属的实际项目或公司名称（jar包所在仓库路径）</span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span> javax.servlet-api <span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span> //定义实际项目中的一个Maven模块/项目名</span><br><span class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span> 3.1.0 <span class="tag">&lt;/<span class="name">version</span>&gt;</span> //Maven项目当前所处的版本</span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="多模块构建"><a href="#多模块构建" class="headerlink" title="多模块构建"></a>多模块构建</h3><p>可以将一个项目分解为多个模块。</p>
+<p>在Maven中定义一个parent POM作为一组module的聚合POM，在该POM中可以使用<modules>标签来定义一组子模块。parent POM中的build配置和依赖配置都会继承给子module。</modules></p>
+<h3 id="一致的项目结构"><a href="#一致的项目结构" class="headerlink" title="一致的项目结构"></a>一致的项目结构</h3><p>Maven理念： Convension over configuration (约定大于配置)。其制定了一套项目目录结构作为标准的java项目结构，解决不同IDE带来的文件目录不一致问题。</p>
+<h3 id="一致的构建模型和插件机制"><a href="#一致的构建模型和插件机制" class="headerlink" title="一致的构建模型和插件机制"></a>一致的构建模型和插件机制</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">	......</span><br><span class="line"><span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>引入插件</p>
+<h2 id="Maven项目结构"><a href="#Maven项目结构" class="headerlink" title="Maven项目结构"></a>Maven项目结构</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">- src</span><br><span class="line">	- main                   ：程序功能代码</span><br><span class="line">		- Java               ：java代码</span><br><span class="line">		- resource           ：资源代码、配置代码</span><br><span class="line">	- test                   ：测试代码</span><br><span class="line">		- Java               ：单元测试java代码</span><br><span class="line">		- resource           ：资源代码、配置代码</span><br><span class="line">	- pom.xml                ：项目对象模型</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>不用IDE的话上述结构都需要手动创建</p>
+<p>pom中的标签具体作用可以参考 <a target="_blank" rel="noopener" href="https://www.runoob.com/maven/maven-pom.html">https://www.runoob.com/maven/maven-pom.html</a></p>
+<h2 id="在IDEA中使用Maven"><a href="#在IDEA中使用Maven" class="headerlink" title="在IDEA中使用Maven"></a>在IDEA中使用Maven</h2><p>IDEA中默认捆绑了Maven 可以在设置里更改Maven有关的配置</p>
+<p>创建Maven项目：文件 -&gt; 新建 -&gt; 项目 构建系统选Maven（上述是常规Maven项目）</p>
+<p>​										可以选择生成器中的Maven中的Archetype选择模板（如quickstart）</p>
+<h2 id="Maven仓库"><a href="#Maven仓库" class="headerlink" title="Maven仓库"></a>Maven仓库</h2><p>对于Maven来说，仓库只有两类： 本地仓库和远程仓库</p>
+<p>Maven根据坐标寻找构件的时候，它首先会查看本地仓库，如果本地仓库存在，则直接使用；如果本地没有，Maven就回去远程仓库查找，再下载到本地仓库再使用。如果本地和远程都没有就会报错。</p>
+<p>远程仓库分为3种：</p>
+<ol>
+<li><p>中央仓库：默认下载jar包的地方，在国外，包含了2000多个开源项目，每天接收1亿次以上的访问。</p>
+</li>
+<li><p>私服：一种特殊的远程仓库，它是架设在局域网内的仓库服务。私服代理广域网上的远程仓库，供局域网内的Maven用户使用。当Maven需要下载构件时，它去私服当中找，如果私服没有，则从外部远程仓库下载，并缓存在私服上，再为maven提供。此外，一些无法从外部仓库下载的构件也能从本地上传到私服提供局域网中其他人使用。（在公司或学校内网中自己写的构件就可以上传到私服让别人使用了） 私服优点： 节省自己的外网带宽、 加速Maven构建、部署第三方控件、提高稳定性、降低中央仓库的负荷</p>
+</li>
+<li><p>其他公共库</p>
+<p>如阿里云仓库，国内地址下载比中央仓库快。</p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
