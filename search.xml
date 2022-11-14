@@ -191,7 +191,7 @@
 <p>Maven构建：项目对象模型，通过其描述信息来管理项目的构建，报告和文档的软件项目管理工具，填补了Ant的缺点。Maven第一次支持了从网络上下载的功能。Maven专注的是依赖管理，使用java编写。</p>
 <p>Gradle：谷歌的御用Android管理工具</p>
 <p>Ant比较老，目前Maven使用较多</p>
-<h2 id="Maven的四大特性"><a href="#Maven的四大特性" class="headerlink" title="Maven的四大特性"></a>Maven的四大特性</h2><h3 id="依赖管理系统"><a href="#依赖管理系统" class="headerlink" title="依赖管理系统"></a>依赖管理系统</h3><p>Maven为java世界引入了一个新的依赖管理系统——jar包管理。jar升级时修改配置文件即可。在java世界中，可以用 <strong><em>groupId</em> ** 、</strong><em>artifactId</em>** 、<em><strong>version</strong></em> 组成的Coordination（坐标）唯一标识一个依赖</p>
+<h2 id="Maven的四大特性"><a href="#Maven的四大特性" class="headerlink" title="Maven的四大特性"></a>Maven的四大特性</h2><h3 id="依赖管理系统"><a href="#依赖管理系统" class="headerlink" title="依赖管理系统"></a>依赖管理系统</h3><p>Maven为java世界引入了一个新的依赖管理系统——jar包管理。jar升级时修改配置文件即可。在java世界中，可以用 <strong><em>groupId</em> **   、</strong><em>artifactId</em>**   、<em><strong>version</strong></em> 组成的Coordination（坐标）唯一标识一个依赖</p>
 <p>eg：</p>
 <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span> javax.servlet <span class="tag">&lt;/<span class="name">groupId</span>&gt;</span> //当前Maven项目隶属的实际项目或公司名称（jar包所在仓库路径）</span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span> javax.servlet-api <span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span> //定义实际项目中的一个Maven模块/项目名</span><br><span class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span> 3.1.0 <span class="tag">&lt;/<span class="name">version</span>&gt;</span> //Maven项目当前所处的版本</span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
@@ -228,6 +228,36 @@
       </categories>
       <tags>
         <tag>Maven</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>C++：移动语义与右值引用</title>
+    <url>/2022/11/14/C-%EF%BC%9A%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89%E4%B8%8E%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8/</url>
+    <content><![CDATA[<h1 id="C-的移动语义与右值引用"><a href="#C-的移动语义与右值引用" class="headerlink" title="C++的移动语义与右值引用"></a>C++的移动语义与右值引用</h1><p><img src="/2022/11/14/C-%EF%BC%9A%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89%E4%B8%8E%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8/preview.jpg" alt="Gaze"></p>
+<h2 id="移动语义"><a href="#移动语义" class="headerlink" title="移动语义"></a>移动语义</h2><h3 id="为何需要移动语义"><a href="#为何需要移动语义" class="headerlink" title="为何需要移动语义"></a>为何需要移动语义</h3><p>假设有如下代码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">vector&lt;string&gt; vstr;<span class="comment">// build up a vector of 20000 strings,each of 1000 characters</span></span><br><span class="line"><span class="function">vector&lt;string&gt; <span class="title">vstr_copy1</span><span class="params">(vstr)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>为了初始化 vstr_copy1 先调用vector的复制构造函数，使用new给20000个string对象分配内存，而每个string对象又调用string的复制构造函数，为1000个字符分配内存。这很浪费时间，但如果vstr与vstr_copy1都需要使用，这很难避免。</p>
+<p>可有时候这样不太妥当，例如vstr不再被使用时。例如如下定义的函数：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">vector&lt;string&gt; <span class="title">allcaps</span><span class="params">(<span class="type">const</span> vector&lt;string&gt; &amp; vs)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;string&gt; temp;</span><br><span class="line">    <span class="comment">//让temp存储vs中string的大写版本的代码</span></span><br><span class="line">    <span class="keyword">return</span> temp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>并这样使用它：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">vector&lt;string&gt; vstr;</span><br><span class="line"><span class="function">vector&lt;string&gt; <span class="title">vstr_copy1</span><span class="params">(vstr)</span></span>; <span class="comment">//#1</span></span><br><span class="line"><span class="function">vector&lt;string&gt; <span class="title">vstr_copy2</span><span class="params">(allcaps(vstr))</span></span>; <span class="comment">//#2</span></span><br></pre></td></tr></table></figure>
+
+<p>allcaps()创建了对象temp，该对象管理着20000000个字符；语句二使用vector和string的复制构造函数创建了一个temp的副本，然后删除了temp，做了大量无用功。如果编译器直接把temp对数据的所有权转让给vstr_copy2，将会更好。</p>
+<p>实际上，我们可以把实际内容保留在原来地方，而之修改记录，这就是移动语义的本质，它避免了移动原始数据，而转为修改记录。</p>
+<p>要实现移动语义，需要采取某种方式，让编译器知道什么时候需要复制。这就是右值引用发挥作用的地方。可定义两个构造函数，其中一个是常规复制构造函数，它使用const左值引用作为参数，如语句#1。另一个是移动构造函数，它使用右值引用作为参数，该引用关联到右值实参，如语句#2中allcaps(vstr)的返回值。移动构造函数可能修改其实参，这意味着右值引用参数不应是const。</p>
+<h3 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h3><p>直接将变量的值赋值为参数的变量值，如果变量为指针，为了防止double free，还需将参数的指针改为nullptr。</p>
+<p>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Useless(Useless &amp;&amp; f) : n(f.n)</span><br><span class="line">&#123;</span><br><span class="line">	++ct;</span><br><span class="line">	pc = f.pc;</span><br><span class="line">	f.pc = nullptr;</span><br><span class="line">	f.n = 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="强制移动"><a href="#强制移动" class="headerlink" title="强制移动"></a>强制移动</h3><p>移动构造函数和移动赋值运算符使用右值，如果要让它们使用左值，该怎么办？例如，将一个左值变量赋值给一个对象，并立刻丢弃这个变量。此时可以使用头文件 utility 中声明的函数std::move。</p>
+]]></content>
+      <categories>
+        <category>C++</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
       </tags>
   </entry>
 </search>
