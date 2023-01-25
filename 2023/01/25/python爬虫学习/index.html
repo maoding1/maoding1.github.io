@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="python爬虫学习总结学习python爬虫的一些笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python爬虫学习">
+<meta property="og:url" content="http://example.com/2023/01/25/python%E7%88%AC%E8%99%AB%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="MikeMao&#39;s blog">
+<meta property="og:description" content="python爬虫学习总结学习python爬虫的一些笔记">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-01-25T03:21:52.000Z">
+<meta property="article:modified_time" content="2023-01-25T04:02:25.867Z">
+<meta property="article:author" content="MikeMao">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="爬虫">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2023/01/25/python%E7%88%AC%E8%99%AB%E5%AD%A6%E4%B9%A0/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2023/01/25/python%E7%88%AC%E8%99%AB%E5%AD%A6%E4%B9%A0/","path":"2023/01/25/python爬虫学习/","title":"python爬虫学习"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>python爬虫学习 | MikeMao's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">MikeMao's blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+
+  <aside class="sidebar">
+
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+    
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#python%E7%88%AC%E8%99%AB%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93"><span class="nav-number">1.</span> <span class="nav-text">python爬虫学习总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#requests%E6%A8%A1%E5%9D%97"><span class="nav-number">1.1.</span> <span class="nav-text">requests模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bs4-%E6%95%B0%E6%8D%AE%E8%A7%A3%E6%9E%90"><span class="nav-number">1.2.</span> <span class="nav-text">bs4 数据解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xpath%E8%A7%A3%E6%9E%90"><span class="nav-number">1.3.</span> <span class="nav-text">xpath解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%AD%E6%96%87%E5%87%BA%E7%8E%B0%E4%B9%B1%E7%A0%81%E5%B8%B8%E8%A7%81%E7%9A%84%E5%A4%84%E7%90%86%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">中文出现乱码常见的处理方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#selenium%E6%A8%A1%E5%9D%97"><span class="nav-number">1.5.</span> <span class="nav-text">selenium模块</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#selenium%E6%A8%A1%E5%9D%97%E4%B8%8E%E7%88%AC%E8%99%AB%E4%B9%8B%E9%97%B4%E5%85%B7%E6%9C%89%E6%80%8E%E6%A0%B7%E7%9A%84%E5%85%B3%E8%81%94%EF%BC%9F"><span class="nav-number">1.5.1.</span> <span class="nav-text">selenium模块与爬虫之间具有怎样的关联？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFselenium%E6%A8%A1%E5%9D%97"><span class="nav-number">1.5.2.</span> <span class="nav-text">什么是selenium模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#selenium%E4%BD%BF%E7%94%A8%E6%B5%81%E7%A8%8B%EF%BC%9A"><span class="nav-number">1.5.3.</span> <span class="nav-text">selenium使用流程：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#selenium%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0"><span class="nav-number">1.5.4.</span> <span class="nav-text">selenium常用函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#selenium%E5%A4%84%E7%90%86iframe"><span class="nav-number">1.5.5.</span> <span class="nav-text">selenium处理iframe</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A8%E4%BD%9C%E9%93%BE-%E9%A1%B9%E7%9B%AE%E6%9A%82%E6%97%B6%E7%94%A8%E4%B8%8D%E5%88%B0"><span class="nav-number">1.5.6.</span> <span class="nav-text">动作链(项目暂时用不到)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#selenium%E5%AE%9E%E7%8E%B0%E6%A8%A1%E6%8B%9F%E7%99%BB%E5%BD%95"><span class="nav-number">1.5.7.</span> <span class="nav-text">selenium实现模拟登录</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E6%8B%9F%E7%99%BB%E9%99%86cookie%E6%93%8D%E4%BD%9C"><span class="nav-number">1.6.</span> <span class="nav-text">模拟登陆cookie操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#cookie%E6%9C%89%E4%BB%80%E4%B9%88%E4%BD%9C%E7%94%A8"><span class="nav-number">1.6.1.</span> <span class="nav-text">cookie有什么作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%8B%E5%8A%A8cookie%EF%BC%88%E4%B8%8D%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">1.6.2.</span> <span class="nav-text">手动cookie（不推荐）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E5%A4%84%E7%90%86"><span class="nav-number">1.6.3.</span> <span class="nav-text">自动处理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%B6%E8%A1%8C%E7%88%AC%E5%8F%96%EF%BC%88%E5%BC%82%E6%AD%A5%E7%88%AC%E8%99%AB%EF%BC%89"><span class="nav-number">1.7.</span> <span class="nav-text">并行爬取（异步爬虫）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%89%E5%85%B3%E7%88%AC%E8%99%AB%E7%9A%84%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98%EF%BC%9A"><span class="nav-number">1.8.</span> <span class="nav-text">有关爬虫的一些问题：</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+    
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">MikeMao</p>
+  <div class="site-description" itemprop="description">a student of NJU who use this website to record learning experience</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+  <div class="sidebar-dimmer"></div>
+
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/01/25/python%E7%88%AC%E8%99%AB%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="MikeMao">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MikeMao's blog">
+      <meta itemprop="description" content="a student of NJU who use this website to record learning experience">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="python爬虫学习 | MikeMao's blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          python爬虫学习
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2023-01-25 11:21:52 / 修改时间：12:02:25" itemprop="dateCreated datePublished" datetime="2023-01-25T11:21:52+08:00">2023-01-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="python爬虫学习总结"><a href="#python爬虫学习总结" class="headerlink" title="python爬虫学习总结"></a>python爬虫学习总结</h1><p>学习python爬虫的一些笔记</p>
+<span id="more"></span>
+
+<h2 id="requests模块"><a href="#requests模块" class="headerlink" title="requests模块"></a>requests模块</h2><p>requests模块流程：</p>
+<pre><code>1. 指定url
+2. 发起请求 response = requests.get(url)
+3. 获取数据 page_source = response.text()
+4. 存储数据 文件操作/数据库操作
+</code></pre>
+<p>参数tips：params是用来发送查询字符串，而data是用来发送正文的。post与get方法的特性是：这两种参数post（）方法都可以用，get方法只能发查询字符串，不能发送正文</p>
+<p>text返回字符串 content返回二进制（爬取图片可用）  json返回对象</p>
+<p>分页爬取：</p>
+<p>​	如果是ajax，在检查、网络、xhr中查看</p>
+<p>​	如果是新链接，可以使用正则表达式匹配url</p>
+<p>如果是用ajax的包：要注意的：</p>
+<ul>
+<li>看请求方法 是GET 还是 POST。。。</li>
+<li>看响应头的content-type 选择reponse.text() 或 reponse.json()</li>
+<li>看负载中带的参数</li>
+</ul>
+<p>中文乱码问题（文件编码格式为utf8 json.dump时ensure acill选项关闭）</p>
+<p>什么是ajax? （根据用户行为重新渲染界面。 不修改url 在检查-网络-XHR中查看具体信息）</p>
+<h2 id="bs4-数据解析"><a href="#bs4-数据解析" class="headerlink" title="bs4 数据解析"></a>bs4 数据解析</h2><p>bs4数据解析的原理：</p>
+<p>1.实例化一个BeautifulSoup对象 并且将页面原码数据加载到该对象中</p>
+<p>2.通过调用bs 对象中相关的属性或方法进行标签定位和数据提取</p>
+<p>如何实例化beautifulsoup对象：</p>
+<ol>
+<li><p>将本地的html文档中的数据加载到该对象中</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fp = <span class="built_in">open</span>()</span><br><span class="line">soup = BeautifulSoup(fp,<span class="string">&#x27;lxml&#x27;</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将互联网上获取的页面源码加载到该对象中</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">page_text = response.text</span><br><span class="line">soup = BeautifulSoup(page_text,&#x27;lxml&#x27;)</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>提供的用于数据解析的方法和属性：</p>
+<p>soup.tagname 返回html中第一次出现的tagname标签</p>
+<p>soup.find(‘tagname’) 等同于soup.tagname</p>
+<p>soup.find(‘tagname’, class &#x3D; ‘classname’) 定义属性位置， class可以替换为id attr</p>
+<p>soup.find_all(‘tagname’) 找到符合要求所有标签 返回列表</p>
+<p>soup.select(‘.tang’)  参数为某种选择器（id class 标签），返回一个列表</p>
+<p>soup.select(‘.tang &gt; ul &gt; li &gt; a’)层级选择器，返回一个列表</p>
+<p>soup.selest(‘.tang &gt; ul a’) &gt;号表示一个层级，空格表示多个层级</p>
+<p>怎么获取标签之间的文本数据：</p>
+<p>使用	soup.a.text&#x2F;string&#x2F;get_text() 方法</p>
+<pre><code>-   text/get_text(): 可以获取某一个标签中所有的文本内容（多套几层也能得到）
+-   string：获取标签下直系的文本内容
+</code></pre>
+<p>怎么获取标签的属性值：</p>
+<p><code>soup.select(&#39;tang &gt; ul &gt; li &gt; a&#39;)[0][&#39;href&#39;]</code>直接获得a标签中的herf属性值</p>
+<h2 id="xpath解析"><a href="#xpath解析" class="headerlink" title="xpath解析"></a>xpath解析</h2><p>xpath解析： 最常用且最便捷高效的一种解析方式。</p>
+<p>xpath解析原理：</p>
+<pre><code>1. 实例化一个etree的对象，且需要将被解析的页面源码数据加载到该对象中。
+2. 调用etree对象中的xpath方法结合xpath表达式实现标签的定位和内容的捕获。
+</code></pre>
+<p>环境安装：</p>
+<pre><code>- pip install lxml
+</code></pre>
+<p>如何实例化etree对象 </p>
+<p>​	from lxml import etree</p>
+<ol>
+<li><p>将本地的html文档中的源码数据加载到etree对象中：</p>
+<p><code> etree.parse(filePath)</code></p>
+</li>
+<li><p>可以将从互联网上获取的源码数据加载到该对象中</p>
+<p><code>etree.HTML(&#39;page_text&#39;)        -xpath(&#39;xpath表达式&#39;)</code></p>
+</li>
+</ol>
+<p>&#x2F;表示一个层级  &#x2F;&#x2F;表示多个层级 </p>
+<p>路径后加[ @ 属性名]精确定位 如<code>xx_list = tree.xpath(&#39;//div[@class=&#39;song&#39;]&#39;)</code></p>
+<p>中括号内加数字代表取第几个（索引下标从1开始）<code>xx_list[0]</code></p>
+<p>获取文本: 定位后加&#x2F;text()</p>
+<h2 id="中文出现乱码常见的处理方法"><a href="#中文出现乱码常见的处理方法" class="headerlink" title="中文出现乱码常见的处理方法"></a>中文出现乱码常见的处理方法</h2><p>两种常见方法，一般能解决所有中文乱码问题</p>
+<ol>
+<li><p>对爬下来的整个数据改变编码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">response.encoding = <span class="string">&#x27;utf-8&#x27;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>对出现问题的对象单独进行编码与解码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">img_name = img_name.encode(<span class="string">&#x27;iso-8859-1&#x27;</span>).decode(<span class="string">&#x27;gbk&#x27;</span>)</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="selenium模块"><a href="#selenium模块" class="headerlink" title="selenium模块"></a>selenium模块</h2><h3 id="selenium模块与爬虫之间具有怎样的关联？"><a href="#selenium模块与爬虫之间具有怎样的关联？" class="headerlink" title="selenium模块与爬虫之间具有怎样的关联？"></a>selenium模块与爬虫之间具有怎样的关联？</h3><ul>
+<li>便捷的获取网站中动态加载的数据</li>
+<li>便捷实现模拟登录</li>
+</ul>
+<h3 id="什么是selenium模块"><a href="#什么是selenium模块" class="headerlink" title="什么是selenium模块"></a>什么是selenium模块</h3><p>基于浏览器自动化的一个模块。 （编写代码让浏览器完成自动化操作）</p>
+<h3 id="selenium使用流程："><a href="#selenium使用流程：" class="headerlink" title="selenium使用流程："></a>selenium使用流程：</h3><ul>
+<li>环境安装：pip install selenium</li>
+<li>下载一个浏览器的驱动程序</li>
+<li>实例化一个浏览器对象</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> selenium <span class="keyword">import</span> webdriver</span><br><span class="line"><span class="keyword">from</span> selenium.webdriver.edge.service <span class="keyword">import</span> Service</span><br><span class="line"><span class="comment"># 实例化一个浏览器对象 参数中的路径为浏览器驱动程序的路径（建议与程序在同一路径下）</span></span><br><span class="line">service = Service(executable_path = <span class="string">&#x27;./edgedriver.exe&#x27;</span>)</span><br><span class="line">bro = webdriver.Edge(service = service)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>编写基于浏览器的代码</li>
+</ul>
+<h3 id="selenium常用函数"><a href="#selenium常用函数" class="headerlink" title="selenium常用函数"></a>selenium常用函数</h3><ul>
+<li><p>bro.get(url)  											让浏览器发起一个指定url对应请求</p>
+</li>
+<li><p>page_text &#x3D; bro.page_source		  获取浏览器当前页面的页面源码数据</p>
+</li>
+<li><p>标签定位：使用find_element方法</p>
+</li>
+</ul>
+<p>​	search_input &#x3D; bro.find_element(By.[attrname], “[attr]’s value”)</p>
+<ul>
+<li><p>标签交互：</p>
+<p>​	search_input.send_keys(‘xxx’)</p>
+</li>
+<li><p>执行一组js代码</p>
+<p>​	bro.execute_script(‘code…’)</p>
+</li>
+<li><p>点击按钮：</p>
+<p>​	btn.click()</p>
+</li>
+<li><p>后退&#x2F;前进</p>
+<p>​	bro.back()&#x2F;forward()</p>
+</li>
+</ul>
+<h3 id="selenium处理iframe"><a href="#selenium处理iframe" class="headerlink" title="selenium处理iframe"></a>selenium处理iframe</h3><p>bro.switch_to.frame(‘frame_name’)</p>
+<h3 id="动作链-项目暂时用不到"><a href="#动作链-项目暂时用不到" class="headerlink" title="动作链(项目暂时用不到)"></a>动作链(项目暂时用不到)</h3><p>南大相关网站的登录还不需要滑块验证</p>
+<p>碰到滑块验证的时候可能就需要用到了</p>
+<h3 id="selenium实现模拟登录"><a href="#selenium实现模拟登录" class="headerlink" title="selenium实现模拟登录"></a>selenium实现模拟登录</h3><p>结合前面的基础知识 先点击账号密码登录按钮，找到账号输入框与密码输入框，</p>
+<p>输入账号密码，点击登录按钮</p>
+<h2 id="模拟登陆cookie操作"><a href="#模拟登陆cookie操作" class="headerlink" title="模拟登陆cookie操作"></a>模拟登陆cookie操作</h2><h3 id="cookie有什么作用"><a href="#cookie有什么作用" class="headerlink" title="cookie有什么作用"></a>cookie有什么作用</h3><p>TCP&#x2F;IP协议是无状态的，因此通常的get请求 服务器端不知道你有没有处于登录状态</p>
+<p>携带cookie值的get请求 能使服务器端知道你已经处于登录状态</p>
+<h3 id="手动cookie（不推荐）"><a href="#手动cookie（不推荐）" class="headerlink" title="手动cookie（不推荐）"></a>手动cookie（不推荐）</h3><p>登录网站后通过抓包工具手动复制cookie值 将cookie值封装到headers 中，写死在程序里</p>
+<p>缺点：cookie值一段时间后会过期</p>
+<h3 id="自动处理"><a href="#自动处理" class="headerlink" title="自动处理"></a>自动处理</h3><p>cookie值是如何产生的？既然cookie值能让服务器知道你已经处于登录状态，那么理所当然cookie值是登录时发送post请求后服务器端生成后发送给客户端的</p>
+<p>session会话对象：</p>
+<p>作用： </p>
+<ol>
+<li>可以进行请求的发送</li>
+<li>如果请求过程中产生了cookie，则该cookie会被自动存储&#x2F;携带在该session对象中</li>
+</ol>
+<p>使用：</p>
+<ol>
+<li><p>创建一个session对象 ： <code>session = requests.Session()</code></p>
+</li>
+<li><p>使用session对象进行模拟登录post请求的发送(cookie就会被存储在session中)</p>
+</li>
+<li><p>session对象对个人主页对应的get请求进行发送（携带了cookie）</p>
+</li>
+</ol>
+<p>如果登录找不到post请求或遇到问题导致获得不到cookie：</p>
+<p>​	适用selenium登录后 用下列方法直接取得cookie:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">c = bro.get_cookies()</span><br><span class="line">bro.close()</span><br><span class="line">cookies = &#123;&#125;</span><br><span class="line"><span class="comment"># 获取cookie中的name和value,转化成requests可以使⽤的形式</span></span><br><span class="line"><span class="keyword">for</span> cookie <span class="keyword">in</span> c:</span><br><span class="line">    cookies[cookie[<span class="string">&#x27;name&#x27;</span>]] = cookie[<span class="string">&#x27;value&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>然后就能用cookies了：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">response = requests.get(url=detail_url, headers=headers, cookies=cookies)</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="并行爬取（异步爬虫）"><a href="#并行爬取（异步爬虫）" class="headerlink" title="并行爬取（异步爬虫）"></a>并行爬取（异步爬虫）</h2><p>原理：利用进程池实现并行爬取</p>
+<p>使用方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Pool</span><br><span class="line"><span class="comment"># 创建进程池</span></span><br><span class="line">pool = Pool(processes=<span class="number">4</span>)</span><br><span class="line">pool.<span class="built_in">map</span>(function_name, iterable[,chunksize])</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>processes参数设置注意</strong>：当进程数量大于CPU的内核数量时，等待运行的进程会等到其他进程运行完毕让出内核为止。因此，如果CPU是单核，就无法进行多进程并行。在使用多进程爬虫之前，我们需要先了解计算机CPU的核心数量。这里用到了multiprocessing:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> cpu_count</span><br><span class="line"><span class="built_in">print</span>(cpu_count())</span><br></pre></td></tr></table></figure>
+
+<p>运行结果为16。</p>
+<p>使用eg：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">urls = [<span class="string">&#x27;https://xjh.haitou.cc/xa/after/page-&#123;&#125;&#x27;</span>.<span class="built_in">format</span>(i) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>,<span class="number">21</span>)]</span><br><span class="line">pool = Pool(processes=<span class="number">4</span>)</span><br><span class="line"><span class="comment">#get_xuanjing 为参数是一个url的爬虫函数</span></span><br><span class="line">pool.<span class="built_in">map</span>(get_xuanjiang,urls)</span><br><span class="line">pool.close()  <span class="comment"># 关闭进程池，不再接受新的进程</span></span><br><span class="line">pool.join()  <span class="comment"># 主进程阻塞等待子进程的退出</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="有关爬虫的一些问题："><a href="#有关爬虫的一些问题：" class="headerlink" title="有关爬虫的一些问题："></a>有关爬虫的一些问题：</h2><ul>
+<li><p>爬下来的文本中带有&amp;nbsp 在html中表示no breaking space（不自动换行的空格）</p>
+<p>此时可以采用 str.replace(u’\xa0’, ‘’)来解决 str为待处理字符串</p>
+</li>
+<li><p>requests里.text 与 .content方法的区别：</p>
+<p>两者区别在于，content中间存的是字节码，而text中存的是Beautifulsoup根据猜测的编码方式将content内容编码成字符串。</p>
+<p>直接输出content，会发现前面存在b’这样的标志，这是字节字符串的标志，而text是，没有前面的b,对于纯ascii码，这两个可以说一模一样，对于其他的文字，需要正确编码才能正常显示。大部分情况建议使用.text，因为显示的是汉字，但有时会显示乱码，这时需要用.content.decode(‘utf-8’)，中文常用utf-8和GBK，GB2312等。这样可以手工选择文字编码方式。</p>
+<p>所以简而言之，.text是现成的字符串，.content还要编码，但是.text不是所有时候显示都正常，这是就需要用.content进行手动编码</p>
+</li>
+<li><p>两种常见方法，一般能解决所有中文乱码问题</p>
+<ol>
+<li><p>对爬下来的整个数据改变编码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">response.encoding = <span class="string">&#x27;utf-8&#x27;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>对出现问题的对象单独进行编码与解码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">img_name = img_name.encode(<span class="string">&#x27;iso-8859-1&#x27;</span>).decode(<span class="string">&#x27;gbk&#x27;</span>)</span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/python/" rel="tag"># python</a>
+              <a href="/tags/%E7%88%AC%E8%99%AB/" rel="tag"># 爬虫</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/11/14/C-%EF%BC%9A%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89%E4%B8%8E%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8/" rel="prev" title="C++：移动语义与右值引用">
+                  <i class="fa fa-chevron-left"></i> C++：移动语义与右值引用
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MikeMao</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+-->
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

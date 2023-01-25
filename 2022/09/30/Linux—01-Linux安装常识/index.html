@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Linux系统的安装">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux—01-Linux安装常识">
+<meta property="og:url" content="http://example.com/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/index.html">
+<meta property="og:site_name" content="MikeMao&#39;s blog">
+<meta property="og:description" content="Linux系统的安装">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/preview.jpg">
+<meta property="article:published_time" content="2022-09-30T07:21:29.000Z">
+<meta property="article:modified_time" content="2023-01-25T04:03:09.108Z">
+<meta property="article:author" content="MikeMao">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/preview.jpg">
+
+
+<link rel="canonical" href="http://example.com/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/","path":"2022/09/30/Linux—01-Linux安装常识/","title":"Linux—01-Linux安装常识"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Linux—01-Linux安装常识 | MikeMao's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">MikeMao's blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+
+  <aside class="sidebar">
+
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+    
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%AE%89%E8%A3%85"><span class="nav-number">1.</span> <span class="nav-text">Linux系统的安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%A4%E6%8D%A2%E5%88%86%E5%8C%BA"><span class="nav-number">1.1.</span> <span class="nav-text">交换分区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E5%8C%BA%E5%91%BD%E5%90%8D"><span class="nav-number">1.2.</span> <span class="nav-text">分区命名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%82%E8%BD%BD%E7%9B%AE%E5%BD%95"><span class="nav-number">1.3.</span> <span class="nav-text">挂载目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E5%8C%BA%E8%A7%84%E5%88%92"><span class="nav-number">1.4.</span> <span class="nav-text">分区规划</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+    
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">MikeMao</p>
+  <div class="site-description" itemprop="description">a student of NJU who use this website to record learning experience</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+  <div class="sidebar-dimmer"></div>
+
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="MikeMao">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MikeMao's blog">
+      <meta itemprop="description" content="a student of NJU who use this website to record learning experience">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Linux—01-Linux安装常识 | MikeMao's blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Linux—01-Linux安装常识
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-09-30 15:21:29" itemprop="dateCreated datePublished" datetime="2022-09-30T15:21:29+08:00">2022-09-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-01-25 12:03:09" itemprop="dateModified" datetime="2023-01-25T12:03:09+08:00">2023-01-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="Linux系统的安装"><a href="#Linux系统的安装" class="headerlink" title="Linux系统的安装"></a>Linux系统的安装</h1><span id="more"></span>
+
+<p><img src="/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/preview.jpg" alt="芝士辉夜"></p>
+<h2 id="交换分区"><a href="#交换分区" class="headerlink" title="交换分区"></a>交换分区</h2><p>直接从物理内存读写数据比从硬盘读写快的多，然而物理硬盘是有限的，这样就使用到了虚拟内存。虚拟内存是为了满足物理内存的不足而提出的一种策略，他是利用磁盘空间虚拟出的一块逻辑内存，用作虚拟内存的磁盘空间被称为<strong>交换分区（swap分区）</strong>。  </p>
+<p>内核会将暂时不用的内存信息写到交换分区，使物理内存得到释放并用于其它用途，当需要原始内容时，这些信息会被重新从交换分区读入物理内存。</p>
+<p>Linux的内存管理采用分页存取机制，为了保证物理内存能得到充分利用，内核会在适当时候将物理内存中不经常使用的数据块自动交换到虚拟内存中，而将经常使用的信息保留到物理内存。</p>
+<h2 id="分区命名"><a href="#分区命名" class="headerlink" title="分区命名"></a>分区命名</h2><p>Linux系统使用字母和数字的组合来指代硬盘分区，该命名方案是基于文件的，文件名的格式为*&#x2F;dev&#x2F;xxyN* (比如&#x2F;dev&#x2F;sda1分区)</p>
+<p>&#x2F;dev:这是Linux 系统中所有设备文件所在的目录名。因为分区位于硬盘上，而硬盘是设备，所以这些文件代表了在&#x2F;dev上所有可能的分区</p>
+<p>xx：分区名的前两个字母表示分区所在设备的类型，通常是hd（IDE）硬盘或sd（SCSI硬盘）</p>
+<p>y:这个字母表示分区所在的设备。例如，&#x2F;dev&#x2F;hda（第一个IDE硬盘）或&#x2F;dev&#x2F;sdb(第二个SCSI硬盘)</p>
+<p>N：最后的数字N代表硬盘上的第几个分区。</p>
+<h2 id="挂载目录"><a href="#挂载目录" class="headerlink" title="挂载目录"></a>挂载目录</h2><p>Linux系统中的每一个分区都是构成支持一组文件和目录 所必需的存储区的一部分。它是通过挂载来实现的，挂载 是将分区关联到某一目录的过程，挂载分区使起始于这个 指定目录（称为挂载目录）的存储区能够被使用。 </p>
+<p> 例如，如果分区&#x2F;dev&#x2F;sda5被挂载在目录&#x2F;usr上，这意味着 所有在&#x2F;usr下的文件和目录在物理上位于&#x2F;dev&#x2F;sda5。因此 文件&#x2F;usr&#x2F;bin&#x2F;cal被保存在分区&#x2F;dev&#x2F;sda5上，而文件 &#x2F;etc&#x2F;passwd却不是。 </p>
+<p>&#x2F;usr目录下的目录还有可能是其它分区的挂载目录。例如， 某个分区（如&#x2F;dev&#x2F;sda7）可以被挂载到&#x2F;usr&#x2F;local目录下， 这意味着文件&#x2F;usr&#x2F;local&#x2F;man&#x2F;whatis将位于分区&#x2F;dev&#x2F;sda7 上，而不是分区&#x2F;dev&#x2F;sda5上。</p>
+<h2 id="分区规划"><a href="#分区规划" class="headerlink" title="分区规划"></a>分区规划</h2><p>合理的分区规划 ：</p>
+<p>• swap分区：实现虚拟内存，建议大小是物理内存 的1～2倍；</p>
+<p> • &#x2F;boot分区：建议大小最少为200MB； • &#x2F;usr分区：用来存放Linux系统中的应用程序， 其相关数据较多，建议大小最少为8GB； </p>
+<p>• &#x2F;var分区：用来存放Linux系统中经常变化的数 据以及日志文件，建议大小最少为1GB； </p>
+<p>• &#x2F;分区：Linux系统的根目录，所有的目录都挂在 这个目录下面，建议大小最少为1GB；</p>
+<p> • &#x2F;home分区：存放普通用户的数据，是普通用户 的宿主目录，建议大小为剩下的空间。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Linux/" rel="tag"># Linux</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/10/01/Git%E5%AD%A6%E4%B9%A001-%20%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/" rel="next" title="git操作">
+                  git操作 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MikeMao</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+-->
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
