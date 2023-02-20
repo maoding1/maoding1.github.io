@@ -1,338 +1,461 @@
+
+
+
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width">
-<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#FFF">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+<link rel="icon" type="image/ico" sizes="32x32" href="/images/favicon.ico">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
 
 
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
-  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+<link rel="alternate" type="application/rss+xml" title="MikeMao's blog" href="https://maoding1.github.io/rss.xml" />
+<link rel="alternate" type="application/atom+xml" title="MikeMao's blog" href="https://maoding1.github.io/atom.xml" />
+<link rel="alternate" type="application/json" title="MikeMao's blog" href="https://maoding1.github.io/feed.json" />
 
-<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Mulish:300,300italic,400,400italic,700,700italic%7CFredericka%20the%20Great:300,300italic,400,400italic,700,700italic%7CNoto%20Serif%20JP:300,300italic,400,400italic,700,700italic%7CNoto%20Serif%20SC:300,300italic,400,400italic,700,700italic%7CInconsolata:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 
+<link rel="stylesheet" href="/css/app.css?v=0.2.5">
 
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
-
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.13.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
-
-    <meta name="description" content="python实现自动选课主要利用selenium 与 ddddocr库实现了对南大选课系统已收藏课程的自动化选择， 频率约为每两秒一次。实际测试中在一天时间内抢到了三门通识与两次近代史。">
-<meta property="og:type" content="article">
-<meta property="og:title" content="python实现自动选课">
-<meta property="og:url" content="http://example.com/2023/02/15/python%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%80%89%E8%AF%BE/index.html">
-<meta property="og:site_name" content="MikeMao&#39;s blog">
-<meta property="og:description" content="python实现自动选课主要利用selenium 与 ddddocr库实现了对南大选课系统已收藏课程的自动化选择， 频率约为每两秒一次。实际测试中在一天时间内抢到了三门通识与两次近代史。">
-<meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-02-15T06:56:10.000Z">
-<meta property="article:modified_time" content="2023-02-15T07:04:35.534Z">
-<meta property="article:author" content="MikeMao">
-<meta property="article:tag" content="python 爬虫">
-<meta name="twitter:card" content="summary">
-
-
-<link rel="canonical" href="http://example.com/2023/02/15/python%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%80%89%E8%AF%BE/">
-
-
-
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2023/02/15/python%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%80%89%E8%AF%BE/","path":"2023/02/15/python实现自动选课/","title":"python实现自动选课"}</script>
-
-<script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>python实现自动选课 | MikeMao's blog</title>
   
+  <meta name="keywords" content="python 爬虫" />
+
+
+<link rel="canonical" href="https://maoding1.github.io/2023/02/15/python%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%80%89%E8%AF%BE/">
 
 
 
-
-
-
-  <noscript>
-    <link rel="stylesheet" href="/css/noscript.css">
-  </noscript>
-</head>
-
-<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
-  <div class="headband"></div>
-
-  <main class="main">
-    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-container">
-  <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏" role="button">
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
+  <title>
+python实现自动选课 |
+Yume Shoka = MikeMao's blog = 风烟俱净，天山共色 从流飘荡，任意东西</title>
+<meta name="generator" content="Hexo 6.3.0"></head>
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div id="loading">
+    <div class="cat">
+      <div class="body"></div>
+      <div class="head">
+        <div class="face"></div>
+      </div>
+      <div class="foot">
+        <div class="tummy-end"></div>
+        <div class="bottom"></div>
+        <div class="legs left"></div>
+        <div class="legs right"></div>
+      </div>
+      <div class="paw">
+        <div class="hands left"></div>
+        <div class="hands right"></div>
+      </div>
     </div>
   </div>
-
-  <div class="site-meta">
-
-    <a href="/" class="brand" rel="start">
-      <i class="logo-line"></i>
-      <p class="site-title">MikeMao's blog</p>
-      <i class="logo-line"></i>
-    </a>
-  </div>
-
-  <div class="site-nav-right">
-    <div class="toggle popup-trigger">
-        <i class="fa fa-search fa-fw fa-lg"></i>
-    </div>
-  </div>
+  <div id="container">
+    <header id="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="inner">
+        <div id="brand">
+          <div class="pjax">
+          
+  <h1 itemprop="name headline">python实现自动选课
+  </h1>
+  
+<div class="meta">
+  <span class="item" title="创建时间：2023-02-15 14:56:10">
+    <span class="icon">
+      <i class="ic i-calendar"></i>
+    </span>
+    <span class="text">发表于</span>
+    <time itemprop="dateCreated datePublished" datetime="2023-02-15T14:56:10+08:00">2023-02-15</time>
+  </span>
 </div>
 
 
-
-<nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
-      <li class="menu-item menu-item-search">
-        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
-        </a>
+          </div>
+        </div>
+        <nav id="nav">
+  <div class="inner">
+    <div class="toggle">
+      <div class="lines" aria-label="切换导航栏">
+        <span class="line"></span>
+        <span class="line"></span>
+        <span class="line"></span>
+      </div>
+    </div>
+    <ul class="menu">
+      <li class="item title"><a href="/" rel="start">Yume Shoka</a></li>
+    </ul>
+    <ul class="right">
+      <li class="item theme">
+        <i class="ic i-sun"></i>
       </li>
-  </ul>
+      <li class="item search">
+        <i class="ic i-search"></i>
+      </li>
+    </ul>
+  </div>
 </nav>
 
-
-
-  <div class="search-pop-overlay">
-    <div class="popup search-popup"><div class="search-header">
-  <span class="search-icon">
-    <i class="fa fa-search"></i>
-  </span>
-  <div class="search-input-container">
-    <input autocomplete="off" autocapitalize="off" maxlength="80"
-           placeholder="搜索..." spellcheck="false"
-           type="search" class="search-input">
-  </div>
-  <span class="popup-btn-close" role="button">
-    <i class="fa fa-times-circle"></i>
-  </span>
-</div>
-<div class="search-result-container no-result">
-  <div class="search-result-icon">
-    <i class="fa fa-spinner fa-pulse fa-5x"></i>
-  </div>
-</div>
-
-    </div>
-  </div>
-
-</div>
-        
-  
-
-  <div class="toggle sidebar-toggle" role="button">
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-  </div>
-
-
-  <aside class="sidebar">
-
-
-    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
-      <ul class="sidebar-nav">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-    
-      <div class="sidebar-panel-container">
-        <!--noindex-->
-        <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#python%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%80%89%E8%AF%BE"><span class="nav-number">1.</span> <span class="nav-text">python实现自动选课</span></a></li></ol></div>
-        </div>
-        <!--/noindex-->
-    
-        <div class="site-overview-wrap sidebar-panel">
-          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <p class="site-author-name" itemprop="name">MikeMao</p>
-  <div class="site-description" itemprop="description">a student of NJU who use this website to record learning experience</div>
-</div>
-<div class="site-state-wrap site-overview-item animated">
-  <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-        <a href="/archives/">
-          <span class="site-state-item-count">8</span>
-          <span class="site-state-item-name">日志</span>
-        </a>
       </div>
-      <div class="site-state-item site-state-categories">
-          <a href="/categories/">
-        <span class="site-state-item-count">5</span>
-        <span class="site-state-item-name">分类</span></a>
+      <div id="imgs" class="pjax">
+        <ul>
+          <li class="item" data-background-image="https://tva1.sinaimg.cn/large/6833939bly1giclflwv2aj20zk0m84qp.jpg"></li>
+          <li class="item" data-background-image="https://tva1.sinaimg.cn/large/6833939bly1gipevarprfj20zk0m8npd.jpg"></li>
+          <li class="item" data-background-image="https://tva1.sinaimg.cn/large/6833939bly1giclh5u05ej20zk0m87df.jpg"></li>
+          <li class="item" data-background-image="https://tva1.sinaimg.cn/large/6833939bly1gicliierfjj20zk0m8npd.jpg"></li>
+          <li class="item" data-background-image="https://tva1.sinaimg.cn/large/6833939bly1gipew8gmvyj20zk0m87wh.jpg"></li>
+          <li class="item" data-background-image="https://tva1.sinaimg.cn/large/6833939bly1gipew28b65j20zk0m8hdt.jpg"></li>
+        </ul>
       </div>
-      <div class="site-state-item site-state-tags">
-          <a href="/tags/">
-        <span class="site-state-item-count">8</span>
-        <span class="site-state-item-name">标签</span></a>
-      </div>
-  </nav>
-</div>
-
-
-
-        </div>
-      </div>
-    </div>
-
-  </aside>
-
-  <div class="sidebar-dimmer"></div>
-
-
-
     </header>
-
+    <div id="waves">
+      <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+        <defs>
+          <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+        </defs>
+        <g class="parallax">
+          <use xlink:href="#gentle-wave" x="48" y="0" />
+          <use xlink:href="#gentle-wave" x="48" y="3" />
+          <use xlink:href="#gentle-wave" x="48" y="5" />
+          <use xlink:href="#gentle-wave" x="48" y="7" />
+        </g>
+      </svg>
+    </div>
+    <main>
+      <div class="inner">
+        <div id="main" class="pjax">
+          
+  <div class="article wrap">
     
-  <div class="back-to-top" role="button" aria-label="返回顶部">
-    <i class="fa fa-arrow-up"></i>
-    <span>0%</span>
+<div class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+<i class="ic i-home"></i>
+<span><a href="/">首页</a></span>
+</div>
+
+    <article itemscope itemtype="http://schema.org/Article" class="post block" lang="zh-CN">
+  <link itemprop="mainEntityOfPage" href="https://maoding1.github.io/2023/02/15/python%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%80%89%E8%AF%BE/">
+
+  <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="image" content="/images/avatar.jpg">
+    <meta itemprop="name" content="MikeMao">
+    <meta itemprop="description" content="风烟俱净，天山共色 从流飘荡，任意东西, a student of NJU who use this website to record learning experience">
+  </span>
+
+  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="MikeMao's blog">
+  </span>
+
+  <div class="body md" itemprop="articleBody">
+    
+
+    <h1 id="python实现自动选课"><a class="anchor" href="#python实现自动选课">#</a> python 实现自动选课</h1>
+<p>主要利用 selenium 与 ddddocr 库实现了对南大选课系统已收藏课程的自动化选择， 频率约为每两秒一次。实际测试中在一天时间内抢到了三门通识与两次近代史。</p>
+<p><span id="more"></span></p>
+<p>源码</p>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">from</span> selenium <span class="token keyword">import</span> webdriver</pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token keyword">from</span> selenium<span class="token punctuation">.</span>webdriver<span class="token punctuation">.</span>common<span class="token punctuation">.</span>by <span class="token keyword">import</span> By</pre></td></tr><tr><td data-num="3"></td><td><pre><span class="token keyword">from</span> selenium<span class="token punctuation">.</span>webdriver<span class="token punctuation">.</span>support<span class="token punctuation">.</span>ui <span class="token keyword">import</span> WebDriverWait</pre></td></tr><tr><td data-num="4"></td><td><pre><span class="token keyword">from</span> selenium<span class="token punctuation">.</span>webdriver<span class="token punctuation">.</span>edge<span class="token punctuation">.</span>options <span class="token keyword">import</span> Options</pre></td></tr><tr><td data-num="5"></td><td><pre><span class="token keyword">import</span> time</pre></td></tr><tr><td data-num="6"></td><td><pre><span class="token keyword">import</span> ddddocr</pre></td></tr><tr><td data-num="7"></td><td><pre><span class="token keyword">import</span> traceback</pre></td></tr><tr><td data-num="8"></td><td><pre></pre></td></tr><tr><td data-num="9"></td><td><pre><span class="token comment"># 使用须知 需要安装：selenium 与 ddddorc 库 edge 浏览器及对应版本的驱动程序 并且参照注释对下面源码进行改动 将想选的课收藏</span></pre></td></tr><tr><td data-num="10"></td><td><pre><span class="token comment"># 可能不明原因退出或报错 可能是收藏被吞了（重新收藏一下） 或者网络波动（重启程序即可）</span></pre></td></tr><tr><td data-num="11"></td><td><pre>username <span class="token operator">=</span> <span class="token string">""</span>  <span class="token comment"># 添加用户名</span></pre></td></tr><tr><td data-num="12"></td><td><pre>password <span class="token operator">=</span> <span class="token string">""</span>  <span class="token comment"># 添加密码</span></pre></td></tr><tr><td data-num="13"></td><td><pre>url <span class="token operator">=</span> <span class="token string">"https://xk.nju.edu.cn/xsxkapp/sys/xsxkapp/*default/index.do"</span></pre></td></tr><tr><td data-num="14"></td><td><pre></pre></td></tr><tr><td data-num="15"></td><td><pre>login_button <span class="token operator">=</span> <span class="token string">"/html/body/div[1]/article/section/div[4]/div[1]/button"</span></pre></td></tr><tr><td data-num="16"></td><td><pre>start <span class="token operator">=</span> <span class="token string">"/html/body/div[1]/article/section/div[4]/div[2]/button"</span></pre></td></tr><tr><td data-num="17"></td><td><pre>favorite <span class="token operator">=</span> <span class="token string">"/html/body/div[1]/header/div[2]/ul/li[8]/a"</span></pre></td></tr><tr><td data-num="18"></td><td><pre>special <span class="token operator">=</span> <span class="token string">"/html/body/div[1]/header/div[2]/ul/li[1]/a"</span>  <span class="token comment"># for refresh</span></pre></td></tr><tr><td data-num="19"></td><td><pre></pre></td></tr><tr><td data-num="20"></td><td><pre>select <span class="token operator">=</span> <span class="token string">"/html/body/div[1]/article/div[2]/div[2]/table/tbody/tr[&#123;&#125;]/td[8]/a[2]"</span></pre></td></tr><tr><td data-num="21"></td><td><pre>confirm <span class="token operator">=</span> <span class="token string">"/html/body/div[3]/div[2]/div[2]/div[1]"</span></pre></td></tr><tr><td data-num="22"></td><td><pre>confirm_ <span class="token operator">=</span> <span class="token string">"/html/body/div[3]/div[2]/div[2]/div"</span></pre></td></tr><tr><td data-num="23"></td><td><pre></pre></td></tr><tr><td data-num="24"></td><td><pre>course_list <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span></pre></td></tr><tr><td data-num="25"></td><td><pre></pre></td></tr><tr><td data-num="26"></td><td><pre></pre></td></tr><tr><td data-num="27"></td><td><pre><span class="token comment"># 识别验证码</span></pre></td></tr><tr><td data-num="28"></td><td><pre><span class="token keyword">def</span> <span class="token function">Identify_verifi_code</span><span class="token punctuation">(</span>driver<span class="token punctuation">)</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="29"></td><td><pre>    img <span class="token operator">=</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> <span class="token string">'//*[@id="vcodeImg"]'</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="30"></td><td><pre>    img<span class="token punctuation">.</span>screenshot<span class="token punctuation">(</span><span class="token string">'vcode.png'</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="31"></td><td><pre>    ocr <span class="token operator">=</span> ddddocr<span class="token punctuation">.</span>DdddOcr<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="32"></td><td><pre>    <span class="token keyword">with</span> <span class="token builtin">open</span><span class="token punctuation">(</span><span class="token string">'vcode.png'</span><span class="token punctuation">,</span> <span class="token string">'rb'</span><span class="token punctuation">)</span> <span class="token keyword">as</span> f<span class="token punctuation">:</span></pre></td></tr><tr><td data-num="33"></td><td><pre>        img_bytes <span class="token operator">=</span> f<span class="token punctuation">.</span>read<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="34"></td><td><pre>    res <span class="token operator">=</span> ocr<span class="token punctuation">.</span>classification<span class="token punctuation">(</span>img_bytes<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="35"></td><td><pre>    <span class="token keyword">return</span> res</pre></td></tr><tr><td data-num="36"></td><td><pre></pre></td></tr><tr><td data-num="37"></td><td><pre></pre></td></tr><tr><td data-num="38"></td><td><pre><span class="token keyword">def</span> <span class="token function">login</span><span class="token punctuation">(</span>driver<span class="token punctuation">)</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="39"></td><td><pre>    <span class="token comment"># driver.maximize_window ()  # 将窗口最大化</span></pre></td></tr><tr><td data-num="40"></td><td><pre>    verifi_code <span class="token operator">=</span> Identify_verifi_code<span class="token punctuation">(</span>driver<span class="token punctuation">)</span>  <span class="token comment"># 识别验证码</span></pre></td></tr><tr><td data-num="41"></td><td><pre>    <span class="token comment"># 找到登录框 输入账号密码</span></pre></td></tr><tr><td data-num="42"></td><td><pre>    driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>ID<span class="token punctuation">,</span> <span class="token string">'loginName'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>send_keys<span class="token punctuation">(</span>username<span class="token punctuation">)</span>  <span class="token comment"># 输入用户名</span></pre></td></tr><tr><td data-num="43"></td><td><pre>    driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>ID<span class="token punctuation">,</span> <span class="token string">'loginPwd'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>send_keys<span class="token punctuation">(</span>password<span class="token punctuation">)</span>  <span class="token comment"># 输入密码</span></pre></td></tr><tr><td data-num="44"></td><td><pre>    driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>ID<span class="token punctuation">,</span> <span class="token string">'verifyCode'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>send_keys<span class="token punctuation">(</span>verifi_code<span class="token punctuation">)</span>  <span class="token comment"># 输入验证码</span></pre></td></tr><tr><td data-num="45"></td><td><pre></pre></td></tr><tr><td data-num="46"></td><td><pre>    wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>driver<span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span>  <span class="token comment"># 10 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。</span></pre></td></tr><tr><td data-num="47"></td><td><pre>    wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> driver<span class="token punctuation">:</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> login_button<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="48"></td><td><pre>    driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> login_button<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token comment"># 点击登录</span></pre></td></tr><tr><td data-num="49"></td><td><pre></pre></td></tr><tr><td data-num="50"></td><td><pre>    <span class="token keyword">try</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="51"></td><td><pre>        <span class="token keyword">while</span> <span class="token boolean">True</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="52"></td><td><pre>            verifi_code <span class="token operator">=</span> Identify_verifi_code<span class="token punctuation">(</span>driver<span class="token punctuation">)</span>  <span class="token comment"># 识别验证码</span></pre></td></tr><tr><td data-num="53"></td><td><pre>            driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>ID<span class="token punctuation">,</span> <span class="token string">'verifyCode'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>clear<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="54"></td><td><pre>            driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>ID<span class="token punctuation">,</span> <span class="token string">'verifyCode'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>send_keys<span class="token punctuation">(</span>verifi_code<span class="token punctuation">)</span>  <span class="token comment"># 输入验证码</span></pre></td></tr><tr><td data-num="55"></td><td><pre>            time<span class="token punctuation">.</span>sleep<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="56"></td><td><pre>            wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>driver<span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span>  <span class="token comment"># 10 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。</span></pre></td></tr><tr><td data-num="57"></td><td><pre>            wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> driver<span class="token punctuation">:</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> login_button<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="58"></td><td><pre>            driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> login_button<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token comment"># 点击登录</span></pre></td></tr><tr><td data-num="59"></td><td><pre>    <span class="token keyword">except</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="60"></td><td><pre>        <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="61"></td><td><pre></pre></td></tr><tr><td data-num="62"></td><td><pre>    wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>driver<span class="token punctuation">,</span> <span class="token number">20</span><span class="token punctuation">)</span>  <span class="token comment"># 20 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。</span></pre></td></tr><tr><td data-num="63"></td><td><pre>    wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> driver<span class="token punctuation">:</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> start<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="64"></td><td><pre>    driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> start<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="65"></td><td><pre></pre></td></tr><tr><td data-num="66"></td><td><pre></pre></td></tr><tr><td data-num="67"></td><td><pre><span class="token keyword">def</span> <span class="token function">is_Login</span><span class="token punctuation">(</span>driver<span class="token punctuation">)</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="68"></td><td><pre>    <span class="token keyword">try</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="69"></td><td><pre>        driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>ID<span class="token punctuation">,</span> <span class="token string">'loginName'</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="70"></td><td><pre>        <span class="token keyword">return</span> <span class="token boolean">False</span></pre></td></tr><tr><td data-num="71"></td><td><pre>    <span class="token keyword">except</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="72"></td><td><pre>        <span class="token keyword">return</span> <span class="token boolean">True</span></pre></td></tr><tr><td data-num="73"></td><td><pre></pre></td></tr><tr><td data-num="74"></td><td><pre></pre></td></tr><tr><td data-num="75"></td><td><pre><span class="token keyword">def</span> <span class="token function">start_select</span><span class="token punctuation">(</span>driver<span class="token punctuation">)</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="76"></td><td><pre>    <span class="token keyword">if</span> is_Login<span class="token punctuation">(</span>driver<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token boolean">False</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="77"></td><td><pre>        <span class="token keyword">return</span> <span class="token boolean">False</span></pre></td></tr><tr><td data-num="78"></td><td><pre>    time<span class="token punctuation">.</span>sleep<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="79"></td><td><pre>    wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>driver<span class="token punctuation">,</span> <span class="token number">20</span><span class="token punctuation">)</span>  <span class="token comment"># 20 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。</span></pre></td></tr><tr><td data-num="80"></td><td><pre>    wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> driver<span class="token punctuation">:</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> favorite<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="81"></td><td><pre>    driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> favorite<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="82"></td><td><pre></pre></td></tr><tr><td data-num="83"></td><td><pre>    time<span class="token punctuation">.</span>sleep<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="84"></td><td><pre>    course_board <span class="token operator">=</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>CLASS_NAME<span class="token punctuation">,</span> <span class="token string">'course-body'</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="85"></td><td><pre>    tr_list <span class="token operator">=</span> course_board<span class="token punctuation">.</span>find_elements<span class="token punctuation">(</span>By<span class="token punctuation">.</span>CLASS_NAME<span class="token punctuation">,</span> <span class="token string">'course-tr '</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="86"></td><td><pre>    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'已收藏课程：'</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="87"></td><td><pre>    <span class="token keyword">for</span> tr <span class="token keyword">in</span> tr_list<span class="token punctuation">:</span></pre></td></tr><tr><td data-num="88"></td><td><pre>        wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>tr<span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="89"></td><td><pre>        wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> tr<span class="token punctuation">:</span> tr<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> <span class="token string">'./td[2]'</span><span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="90"></td><td><pre>        course_name <span class="token operator">=</span> tr<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> <span class="token string">'./td[2]'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>text</pre></td></tr><tr><td data-num="91"></td><td><pre>        <span class="token keyword">print</span><span class="token punctuation">(</span>course_name<span class="token punctuation">,</span> end<span class="token operator">=</span><span class="token string">"\n"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="92"></td><td><pre>    count <span class="token operator">=</span> <span class="token number">0</span></pre></td></tr><tr><td data-num="93"></td><td><pre>    <span class="token keyword">while</span> <span class="token boolean">True</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="94"></td><td><pre>        count <span class="token operator">=</span> count <span class="token operator">+</span> <span class="token number">1</span></pre></td></tr><tr><td data-num="95"></td><td><pre>        <span class="token keyword">if</span> count <span class="token operator">%</span> <span class="token number">100</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="96"></td><td><pre>            <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'已尝试次数：'</span> <span class="token operator">+</span> count<span class="token punctuation">,</span> end<span class="token operator">=</span><span class="token string">" "</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="97"></td><td><pre>            <span class="token keyword">print</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>strftime<span class="token punctuation">(</span><span class="token string">'%Y-%m-%d %H:%M:%S'</span><span class="token punctuation">,</span> time<span class="token punctuation">.</span>localtime<span class="token punctuation">(</span>time<span class="token punctuation">.</span>time<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="98"></td><td><pre></pre></td></tr><tr><td data-num="99"></td><td><pre>        time<span class="token punctuation">.</span>sleep<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="100"></td><td><pre>        course_board <span class="token operator">=</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>CLASS_NAME<span class="token punctuation">,</span> <span class="token string">'course-body'</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="101"></td><td><pre>        tr_list <span class="token operator">=</span> course_board<span class="token punctuation">.</span>find_elements<span class="token punctuation">(</span>By<span class="token punctuation">.</span>CLASS_NAME<span class="token punctuation">,</span> <span class="token string">'course-tr '</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="102"></td><td><pre>        <span class="token keyword">for</span> tr <span class="token keyword">in</span> tr_list<span class="token punctuation">:</span></pre></td></tr><tr><td data-num="103"></td><td><pre>            wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>tr<span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="104"></td><td><pre>            wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> tr<span class="token punctuation">:</span> tr<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> <span class="token string">'./td[8]/a[2]'</span><span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="105"></td><td><pre></pre></td></tr><tr><td data-num="106"></td><td><pre>            course_name <span class="token operator">=</span> tr<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> <span class="token string">'./td[2]'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>text</pre></td></tr><tr><td data-num="107"></td><td><pre>            select_button <span class="token operator">=</span> tr<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> <span class="token string">'./td[8]/a[2]'</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="108"></td><td><pre>            select_button<span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="109"></td><td><pre>            <span class="token keyword">try</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="110"></td><td><pre>                driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> confirm<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="111"></td><td><pre>                <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"选课成功！"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="112"></td><td><pre>                <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"已成功选中&#123;&#125;"</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>course_name<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="113"></td><td><pre>                course_list<span class="token punctuation">.</span>append<span class="token punctuation">(</span>course_name<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="114"></td><td><pre>                <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"确认中"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="115"></td><td><pre>                wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>driver<span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span>  <span class="token comment"># 20 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。</span></pre></td></tr><tr><td data-num="116"></td><td><pre>                wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> driver<span class="token punctuation">:</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> confirm_<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="117"></td><td><pre>                driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> confirm_<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="118"></td><td><pre>                <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"确认成功!"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="119"></td><td><pre>            <span class="token keyword">except</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="120"></td><td><pre>                <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="121"></td><td><pre></pre></td></tr><tr><td data-num="122"></td><td><pre>        wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>driver<span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span>  <span class="token comment"># 10 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。</span></pre></td></tr><tr><td data-num="123"></td><td><pre>        wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> driver<span class="token punctuation">:</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> special<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="124"></td><td><pre>        driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> special<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="125"></td><td><pre></pre></td></tr><tr><td data-num="126"></td><td><pre>        time<span class="token punctuation">.</span>sleep<span class="token punctuation">(</span><span class="token number">0.5</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="127"></td><td><pre>        wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>driver<span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span>  <span class="token comment"># 10 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。</span></pre></td></tr><tr><td data-num="128"></td><td><pre>        wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> driver<span class="token punctuation">:</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> favorite<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="129"></td><td><pre>        driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> favorite<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="130"></td><td><pre></pre></td></tr><tr><td data-num="131"></td><td><pre></pre></td></tr><tr><td data-num="132"></td><td><pre><span class="token keyword">def</span> <span class="token function">working</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="133"></td><td><pre>    options <span class="token operator">=</span> Options<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="134"></td><td><pre>    <span class="token comment"># 关闭沙盒启动 把下面两行注释掉 会出现浏览器界面 建议注释掉看看能不能运行 可以再取消注释</span></pre></td></tr><tr><td data-num="135"></td><td><pre>    <span class="token comment">#options.add_argument('--no-sandbox')</span></pre></td></tr><tr><td data-num="136"></td><td><pre>    <span class="token comment">#options.add_argument("--headless")</span></pre></td></tr><tr><td data-num="137"></td><td><pre></pre></td></tr><tr><td data-num="138"></td><td><pre>    driver <span class="token operator">=</span> webdriver<span class="token punctuation">.</span>Edge<span class="token punctuation">(</span>executable_path<span class="token operator">=</span><span class="token string">"msedgedriver.exe"</span><span class="token punctuation">,</span> options<span class="token operator">=</span>options<span class="token punctuation">)</span>  <span class="token comment"># executable_path 改成下载的 edge 驱动程序路径</span></pre></td></tr><tr><td data-num="139"></td><td><pre>    driver<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="140"></td><td><pre></pre></td></tr><tr><td data-num="141"></td><td><pre>    <span class="token comment"># 登录并查询</span></pre></td></tr><tr><td data-num="142"></td><td><pre>    <span class="token keyword">try</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="143"></td><td><pre>        login<span class="token punctuation">(</span>driver<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="144"></td><td><pre>        start_select<span class="token punctuation">(</span>driver<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="145"></td><td><pre>    <span class="token keyword">except</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="146"></td><td><pre>        traceback<span class="token punctuation">.</span>print_exc<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="147"></td><td><pre>    <span class="token keyword">finally</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="148"></td><td><pre>        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"已选到如下课程:"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="149"></td><td><pre>        <span class="token keyword">print</span><span class="token punctuation">(</span>course_list<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="150"></td><td><pre>        driver<span class="token punctuation">.</span>quit<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="151"></td><td><pre></pre></td></tr><tr><td data-num="152"></td><td><pre></pre></td></tr><tr><td data-num="153"></td><td><pre><span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">'__main__'</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="154"></td><td><pre>    working<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr></table></figure>
+      <div class="tags">
+          <a href="/tags/python-%E7%88%AC%E8%99%AB/" rel="tag"><i class="ic i-tag"></i> python 爬虫</a>
+      </div>
   </div>
 
-<noscript>
-  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
-</noscript>
+   <footer>
 
-
-    <div class="main-inner post posts-expand">
-
-
-  
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/02/15/python%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%80%89%E8%AF%BE/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="MikeMao">
+    <div class="meta">
+  <span class="item">
+    <span class="icon">
+      <i class="ic i-calendar-check"></i>
     </span>
+    <span class="text">更新于</span>
+    <time title="修改时间：2023-02-15 15:04:35" itemprop="dateModified" datetime="2023-02-15T15:04:35+08:00">2023-02-15</time>
+  </span>
+</div>
 
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MikeMao's blog">
-      <meta itemprop="description" content="a student of NJU who use this website to record learning experience">
-    </span>
+      
+<div class="reward">
+  <button><i class="ic i-heartbeat"></i> 赞赏</button>
+  <p>请我喝[茶]~(￣▽￣)~*</p>
+  <div id="qr">
+      
+      <div>
+        <img data-src="/images/wechatpay.png" alt="MikeMao 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div>
+        <img data-src="/images/alipay.png" alt="MikeMao 支付宝">
+        <p>支付宝</p>
+      </div>
+      
+      <div>
+        <img data-src="/images/paypal.png" alt="MikeMao 贝宝">
+        <p>贝宝</p>
+      </div>
+  </div>
+</div>
 
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="python实现自动选课 | MikeMao's blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          python实现自动选课
-        </h1>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2023-02-15 14:56:10 / 修改时间：15:04:35" itemprop="dateCreated datePublished" datetime="2023-02-15T14:56:10+08:00">2023-02-15</time>
-    </span>
+<div id="copyright">
+<ul>
+  <li class="author">
+    <strong>本文作者： </strong>MikeMao <i class="ic i-at"><em>@</em></i>MikeMao's blog
+  </li>
+  <li class="link">
+    <strong>本文链接：</strong>
+    <a href="https://maoding1.github.io/2023/02/15/python%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%80%89%E8%AF%BE/" title="python实现自动选课">https://maoding1.github.io/2023/02/15/python实现自动选课/</a>
+  </li>
+  <li class="license">
+    <strong>版权声明： </strong>本站所有文章除特别声明外，均采用 <span class="exturl" data-url="aHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LW5jLXNhLzQuMC9kZWVkLnpo"><i class="ic i-creative-commons"><em>(CC)</em></i>BY-NC-SA</span> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+  </footer>
+
+</article>
+
+  </div>
+  
+
+<div class="post-nav">
+    <div class="item left">
+      
+
+  <a href="/2023/01/25/python%E7%88%AC%E8%99%AB%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="prev" data-background-image="https:&#x2F;&#x2F;tva1.sinaimg.cn&#x2F;mw690&#x2F;6833939bly1giciub8ja1j20zk0m81ky.jpg" title="python爬虫学习">
+  <span class="type">上一篇</span>
+  <span class="category"><i class="ic i-flag"></i> python</span>
+  <h3>python爬虫学习</h3>
+  </a>
+
+    </div>
+    <div class="item right">
+    </div>
+</div>
 
   
+  <div class="wrap" id="comments"></div>
+
+
+        </div>
+        <div id="sidebar">
+          
+
+<div class="inner">
+
+  <div class="panels">
+    <div class="inner">
+      <div class="contents panel pjax" data-title="文章目录">
+          <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#python%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%80%89%E8%AF%BE"><span class="toc-number">1.</span> <span class="toc-text"> python 实现自动选课</span></a></li></ol>
+      </div>
+      <div class="related panel pjax" data-title="系列文章">
+      </div>
+      <div class="overview panel" data-title="站点概览">
+        <div class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <img class="image" itemprop="image" alt="MikeMao"
+      data-src="/images/avatar.jpg">
+  <p class="name" itemprop="name">MikeMao</p>
+  <div class="description" itemprop="description">a student of NJU who use this website to record learning experience</div>
+</div>
+
+<nav class="state">
+    <div class="item posts">
+      <a href="/archives/">
+        <span class="count">8</span>
+        <span class="name">文章</span>
+      </a>
+    </div>
+    <div class="item categories">
+      <a href="/categories/">
+        <span class="count">5</span>
+        <span class="name">分类</span>
+      </a>
+    </div>
+    <div class="item tags">
+      <a href="/tags/">
+        <span class="count">8</span>
+        <span class="name">标签</span>
+      </a>
+    </div>
+</nav>
+
+<div class="social">
+</div>
+
+<ul class="menu">
+  
+    
+  <li class="item">
+    <a href="/" rel="section"><i class="ic i-home"></i>首页</a>
+  </li>
+
+
+</ul>
+
+      </div>
+    </div>
+  </div>
+
+  <ul id="quick">
+    <li class="prev pjax">
+    </li>
+    <li class="up"><i class="ic i-arrow-up"></i></li>
+    <li class="down"><i class="ic i-arrow-down"></i></li>
+    <li class="next pjax">
+    </li>
+    <li class="percent"></li>
+  </ul>
+</div>
+
+
+        </div>
+        <div class="dimmer"></div>
+      </div>
+    </main>
+    <footer id="footer">
+      <div class="inner">
+        <div class="widgets">
+          
+<div class="rpost pjax">
+  <h2>随机文章</h2>
+  <ul>
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/C/" title="分类于 C++">C++</a>
+</div>
+
+    <span><a href="/2022/10/05/STL%E5%AD%A6%E4%B9%A0-01-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E4%B8%8Evector/" title="STL学习-01-智能指针与vector">STL学习-01-智能指针与vector</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/python/" title="分类于 python">python</a>
+</div>
+
+    <span><a href="/2023/01/25/python%E7%88%AC%E8%99%AB%E5%AD%A6%E4%B9%A0/" title="python爬虫学习">python爬虫学习</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/git/" title="分类于 git">git</a>
+</div>
+
+    <span><a href="/2022/10/02/Git%E5%AD%A6%E4%B9%A002-%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86/" title="Git学习02-分支管理">Git学习02-分支管理</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/git/" title="分类于 git">git</a>
+</div>
+
+    <span><a href="/2022/10/01/Git%E5%AD%A6%E4%B9%A001-%20%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/" title="git操作">git操作</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/C/" title="分类于 C++">C++</a>
+</div>
+
+    <span><a href="/2022/11/14/C-%EF%BC%9A%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89%E4%B8%8E%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8/" title="C++：移动语义与右值引用">C++：移动语义与右值引用</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/Maven/" title="分类于 Maven">Maven</a>
+</div>
+
+    <span><a href="/2022/10/23/Maven-%E5%AD%A6%E4%B9%A0/" title="Maven 学习">Maven 学习</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+</div>
+
+    <span><a href="/2023/02/15/python%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%80%89%E8%AF%BE/" title="python实现自动选课">python实现自动选课</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/Linux/" title="分类于 Linux">Linux</a>
+</div>
+
+    <span><a href="/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/" title="Linux—01-Linux安装常识">Linux—01-Linux安装常识</a></span>
+  </li>
+
+  </ul>
+</div>
+<div>
+  <h2>最新评论</h2>
+  <ul class="leancloud-recent-comment"></ul>
 </div>
 
         </div>
-      </header>
-
+        <div class="status">
+  <div class="copyright">
     
-    
-    
-    <div class="post-body" itemprop="articleBody">
-        <h1 id="python实现自动选课"><a href="#python实现自动选课" class="headerlink" title="python实现自动选课"></a>python实现自动选课</h1><p>主要利用selenium 与 ddddocr库实现了对南大选课系统已收藏课程的自动化选择， 频率约为每两秒一次。实际测试中在一天时间内抢到了三门通识与两次近代史。</p>
-<span id="more"></span>
-
-<p>源码</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> selenium <span class="keyword">import</span> webdriver</span><br><span class="line"><span class="keyword">from</span> selenium.webdriver.common.by <span class="keyword">import</span> By</span><br><span class="line"><span class="keyword">from</span> selenium.webdriver.support.ui <span class="keyword">import</span> WebDriverWait</span><br><span class="line"><span class="keyword">from</span> selenium.webdriver.edge.options <span class="keyword">import</span> Options</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> ddddocr</span><br><span class="line"><span class="keyword">import</span> traceback</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用须知 需要安装：selenium 与 ddddorc库 edge浏览器及对应版本的驱动程序 并且参照注释对下面源码进行改动 将想选的课收藏</span></span><br><span class="line"><span class="comment"># 可能不明原因退出或报错 可能是收藏被吞了（重新收藏一下） 或者网络波动（重启程序即可）</span></span><br><span class="line">username = <span class="string">&quot;&quot;</span>  <span class="comment"># 添加用户名</span></span><br><span class="line">password = <span class="string">&quot;&quot;</span>  <span class="comment"># 添加密码</span></span><br><span class="line">url = <span class="string">&quot;https://xk.nju.edu.cn/xsxkapp/sys/xsxkapp/*default/index.do&quot;</span></span><br><span class="line"></span><br><span class="line">login_button = <span class="string">&quot;/html/body/div[1]/article/section/div[4]/div[1]/button&quot;</span></span><br><span class="line">start = <span class="string">&quot;/html/body/div[1]/article/section/div[4]/div[2]/button&quot;</span></span><br><span class="line">favorite = <span class="string">&quot;/html/body/div[1]/header/div[2]/ul/li[8]/a&quot;</span></span><br><span class="line">special = <span class="string">&quot;/html/body/div[1]/header/div[2]/ul/li[1]/a&quot;</span>  <span class="comment"># for refresh</span></span><br><span class="line"></span><br><span class="line">select = <span class="string">&quot;/html/body/div[1]/article/div[2]/div[2]/table/tbody/tr[&#123;&#125;]/td[8]/a[2]&quot;</span></span><br><span class="line">confirm = <span class="string">&quot;/html/body/div[3]/div[2]/div[2]/div[1]&quot;</span></span><br><span class="line">confirm_ = <span class="string">&quot;/html/body/div[3]/div[2]/div[2]/div&quot;</span></span><br><span class="line"></span><br><span class="line">course_list = []</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 识别验证码</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">Identify_verifi_code</span>(<span class="params">driver</span>):</span><br><span class="line">    img = driver.find_element(By.XPATH, <span class="string">&#x27;//*[@id=&quot;vcodeImg&quot;]&#x27;</span>)</span><br><span class="line">    img.screenshot(<span class="string">&#x27;vcode.png&#x27;</span>)</span><br><span class="line">    ocr = ddddocr.DdddOcr()</span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;vcode.png&#x27;</span>, <span class="string">&#x27;rb&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">        img_bytes = f.read()</span><br><span class="line">    res = ocr.classification(img_bytes)</span><br><span class="line">    <span class="keyword">return</span> res</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">login</span>(<span class="params">driver</span>):</span><br><span class="line">    <span class="comment"># driver.maximize_window()  # 将窗口最大化</span></span><br><span class="line">    verifi_code = Identify_verifi_code(driver)  <span class="comment"># 识别验证码</span></span><br><span class="line">    <span class="comment"># 找到登录框 输入账号密码</span></span><br><span class="line">    driver.find_element(By.ID, <span class="string">&#x27;loginName&#x27;</span>).send_keys(username)  <span class="comment"># 输入用户名</span></span><br><span class="line">    driver.find_element(By.ID, <span class="string">&#x27;loginPwd&#x27;</span>).send_keys(password)  <span class="comment"># 输入密码</span></span><br><span class="line">    driver.find_element(By.ID, <span class="string">&#x27;verifyCode&#x27;</span>).send_keys(verifi_code)  <span class="comment"># 输入验证码</span></span><br><span class="line"></span><br><span class="line">    wait = WebDriverWait(driver, <span class="number">10</span>)  <span class="comment"># 10秒内每隔500毫秒扫描1次页面变化，当出现指定的元素后结束。</span></span><br><span class="line">    wait.until(<span class="keyword">lambda</span> driver: driver.find_element(By.XPATH, login_button))</span><br><span class="line">    driver.find_element(By.XPATH, login_button).click()  <span class="comment"># 点击登录</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">            verifi_code = Identify_verifi_code(driver)  <span class="comment"># 识别验证码</span></span><br><span class="line">            driver.find_element(By.ID, <span class="string">&#x27;verifyCode&#x27;</span>).clear()</span><br><span class="line">            driver.find_element(By.ID, <span class="string">&#x27;verifyCode&#x27;</span>).send_keys(verifi_code)  <span class="comment"># 输入验证码</span></span><br><span class="line">            time.sleep(<span class="number">1</span>)</span><br><span class="line">            wait = WebDriverWait(driver, <span class="number">10</span>)  <span class="comment"># 10秒内每隔500毫秒扫描1次页面变化，当出现指定的元素后结束。</span></span><br><span class="line">            wait.until(<span class="keyword">lambda</span> driver: driver.find_element(By.XPATH, login_button))</span><br><span class="line">            driver.find_element(By.XPATH, login_button).click()  <span class="comment"># 点击登录</span></span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        &#123;&#125;</span><br><span class="line"></span><br><span class="line">    wait = WebDriverWait(driver, <span class="number">20</span>)  <span class="comment"># 20秒内每隔500毫秒扫描1次页面变化，当出现指定的元素后结束。</span></span><br><span class="line">    wait.until(<span class="keyword">lambda</span> driver: driver.find_element(By.XPATH, start))</span><br><span class="line">    driver.find_element(By.XPATH, start).click()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">is_Login</span>(<span class="params">driver</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        driver.find_element(By.ID, <span class="string">&#x27;loginName&#x27;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">start_select</span>(<span class="params">driver</span>):</span><br><span class="line">    <span class="keyword">if</span> is_Login(driver) == <span class="literal">False</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">    time.sleep(<span class="number">1</span>)</span><br><span class="line">    wait = WebDriverWait(driver, <span class="number">20</span>)  <span class="comment"># 20秒内每隔500毫秒扫描1次页面变化，当出现指定的元素后结束。</span></span><br><span class="line">    wait.until(<span class="keyword">lambda</span> driver: driver.find_element(By.XPATH, favorite))</span><br><span class="line">    driver.find_element(By.XPATH, favorite).click()</span><br><span class="line"></span><br><span class="line">    time.sleep(<span class="number">1</span>)</span><br><span class="line">    course_board = driver.find_element(By.CLASS_NAME, <span class="string">&#x27;course-body&#x27;</span>)</span><br><span class="line">    tr_list = course_board.find_elements(By.CLASS_NAME, <span class="string">&#x27;course-tr &#x27;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;已收藏课程：&#x27;</span>)</span><br><span class="line">    <span class="keyword">for</span> tr <span class="keyword">in</span> tr_list:</span><br><span class="line">        wait = WebDriverWait(tr, <span class="number">5</span>)</span><br><span class="line">        wait.until(<span class="keyword">lambda</span> tr: tr.find_element(By.XPATH, <span class="string">&#x27;./td[2]&#x27;</span>))</span><br><span class="line">        course_name = tr.find_element(By.XPATH, <span class="string">&#x27;./td[2]&#x27;</span>).text</span><br><span class="line">        <span class="built_in">print</span>(course_name, end=<span class="string">&quot;\n&quot;</span>)</span><br><span class="line">    count = <span class="number">0</span></span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        count = count + <span class="number">1</span></span><br><span class="line">        <span class="keyword">if</span> count % <span class="number">100</span> == <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;已尝试次数：&#x27;</span> + count, end=<span class="string">&quot; &quot;</span>)</span><br><span class="line">            <span class="built_in">print</span>(time.strftime(<span class="string">&#x27;%Y-%m-%d %H:%M:%S&#x27;</span>, time.localtime(time.time())))</span><br><span class="line"></span><br><span class="line">        time.sleep(<span class="number">1</span>)</span><br><span class="line">        course_board = driver.find_element(By.CLASS_NAME, <span class="string">&#x27;course-body&#x27;</span>)</span><br><span class="line">        tr_list = course_board.find_elements(By.CLASS_NAME, <span class="string">&#x27;course-tr &#x27;</span>)</span><br><span class="line">        <span class="keyword">for</span> tr <span class="keyword">in</span> tr_list:</span><br><span class="line">            wait = WebDriverWait(tr, <span class="number">5</span>)</span><br><span class="line">            wait.until(<span class="keyword">lambda</span> tr: tr.find_element(By.XPATH, <span class="string">&#x27;./td[8]/a[2]&#x27;</span>))</span><br><span class="line"></span><br><span class="line">            course_name = tr.find_element(By.XPATH, <span class="string">&#x27;./td[2]&#x27;</span>).text</span><br><span class="line">            select_button = tr.find_element(By.XPATH, <span class="string">&#x27;./td[8]/a[2]&#x27;</span>)</span><br><span class="line">            select_button.click()</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                driver.find_element(By.XPATH, confirm).click()</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;选课成功！&quot;</span>)</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;已成功选中&#123;&#125;&quot;</span>.<span class="built_in">format</span>(course_name))</span><br><span class="line">                course_list.append(course_name)</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;确认中&quot;</span>)</span><br><span class="line">                wait = WebDriverWait(driver, <span class="number">10</span>)  <span class="comment"># 20秒内每隔500毫秒扫描1次页面变化，当出现指定的元素后结束。</span></span><br><span class="line">                wait.until(<span class="keyword">lambda</span> driver: driver.find_element(By.XPATH, confirm_))</span><br><span class="line">                driver.find_element(By.XPATH, confirm_).click()</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;确认成功!&quot;</span>)</span><br><span class="line">            <span class="keyword">except</span>:</span><br><span class="line">                &#123;&#125;</span><br><span class="line"></span><br><span class="line">        wait = WebDriverWait(driver, <span class="number">3</span>)  <span class="comment"># 10秒内每隔500毫秒扫描1次页面变化，当出现指定的元素后结束。</span></span><br><span class="line">        wait.until(<span class="keyword">lambda</span> driver: driver.find_element(By.XPATH, special))</span><br><span class="line">        driver.find_element(By.XPATH, special).click()</span><br><span class="line"></span><br><span class="line">        time.sleep(<span class="number">0.5</span>)</span><br><span class="line">        wait = WebDriverWait(driver, <span class="number">3</span>)  <span class="comment"># 10秒内每隔500毫秒扫描1次页面变化，当出现指定的元素后结束。</span></span><br><span class="line">        wait.until(<span class="keyword">lambda</span> driver: driver.find_element(By.XPATH, favorite))</span><br><span class="line">        driver.find_element(By.XPATH, favorite).click()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">working</span>():</span><br><span class="line">    options = Options()</span><br><span class="line">    <span class="comment"># 关闭沙盒启动 把下面两行注释掉 会出现浏览器界面 建议注释掉看看能不能运行 可以再取消注释</span></span><br><span class="line">    <span class="comment">#options.add_argument(&#x27;--no-sandbox&#x27;)</span></span><br><span class="line">    <span class="comment">#options.add_argument(&quot;--headless&quot;)</span></span><br><span class="line"></span><br><span class="line">    driver = webdriver.Edge(executable_path=<span class="string">&quot;msedgedriver.exe&quot;</span>, options=options)  <span class="comment"># executable_path 改成下载的edge驱动程序路径</span></span><br><span class="line">    driver.get(url)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 登录并查询</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        login(driver)</span><br><span class="line">        start_select(driver)</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        traceback.print_exc()</span><br><span class="line">    <span class="keyword">finally</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;已选到如下课程:&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(course_list)</span><br><span class="line">        driver.quit()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    working()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/python-%E7%88%AC%E8%99%AB/" rel="tag"># python 爬虫</a>
-          </div>
-
-        
-
-          <div class="post-nav">
-            <div class="post-nav-item">
-                <a href="/2023/01/25/python%E7%88%AC%E8%99%AB%E5%AD%A6%E4%B9%A0/" rel="prev" title="python爬虫学习">
-                  <i class="fa fa-chevron-left"></i> python爬虫学习
-                </a>
-            </div>
-            <div class="post-nav-item">
-            </div>
-          </div>
-    </footer>
-  </article>
-</div>
-
-
-
-
-
-
-</div>
-  </main>
-
-  <footer class="footer">
-    <div class="footer-inner">
-
-
-<div class="copyright">
-  &copy; 
-  <span itemprop="copyrightYear">2023</span>
-  <span class="with-love">
-    <i class="fa fa-heart"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">MikeMao</span>
-</div>
-
-<!--
-  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+    &copy; 2010 – 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="ic i-sakura rotate"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">MikeMao @ Yume Shoka</span>
   </div>
--->
+  <div class="powered-by">
+    基于 <span class="exturl" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & Theme.<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2FtZWhpbWUvaGV4by10aGVtZS1zaG9rYQ==">Shoka</span>
+  </div>
+</div>
 
-    </div>
-  </footer>
+      </div>
+    </footer>
+  </div>
+<script data-config type="text/javascript">
+  var LOCAL = {
+    path: '2023/02/15/python实现自动选课/',
+    favicon: {
+      show: "（●´3｀●）やれやれだぜ",
+      hide: "(´Д｀)大変だ！"
+    },
+    search : {
+      placeholder: "文章搜索",
+      empty: "关于 「 ${query} 」，什么也没搜到",
+      stats: "${time} ms 内找到 ${hits} 条结果"
+    },
+    valine: true,fancybox: true,
+    copyright: '复制成功，转载请遵守 <i class="ic i-creative-commons"></i>BY-NC-SA 协议。',
+    ignores : [
+      function(uri) {
+        return uri.includes('#');
+      },
+      function(uri) {
+        return new RegExp(LOCAL.path+"$").test(uri);
+      }
+    ]
+  };
+</script>
 
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
-<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+<script src="https://cdn.polyfill.io/v2/polyfill.js"></script>
 
-  
-<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
-<script src="/js/third-party/search/local-search.js"></script>
+<script src="//cdn.jsdelivr.net/combine/npm/pace-js@1.0.2/pace.min.js,npm/pjax@0.2.8/pjax.min.js,npm/whatwg-fetch@3.4.0/dist/fetch.umd.min.js,npm/animejs@3.2.0/lib/anime.min.js,npm/algoliasearch@4/dist/algoliasearch-lite.umd.js,npm/instantsearch.js@4/dist/instantsearch.production.min.js,npm/lozad@1/dist/lozad.min.js,npm/quicklink@2/dist/quicklink.umd.js"></script>
 
-
-
-
-
-  
-
+<script src="/js/app.js?v=0.2.5"></script>
 
 
 

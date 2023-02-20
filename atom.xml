@@ -1,0 +1,560 @@
+<?xml version="1.0"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://maoding1.github.io</id>
+    <title>MikeMao&#39;s blog</title>
+    <link href="https://maoding1.github.io" />
+    <updated>2023-02-15T06:56:10.000Z</updated>
+    <category term="C++" />
+    <category term="git" />
+    <category term="Linux" />
+    <category term="Maven" />
+    <category term="STL C++" />
+    <category term="python 爬虫" />
+    <category term="python" />
+    <category term="爬虫" />
+    <entry>
+        <id>https://maoding1.github.io/2023/02/15/python%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%80%89%E8%AF%BE/</id>
+        <title>python实现自动选课</title>
+        <link rel="alternate" href="https://maoding1.github.io/2023/02/15/python%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%80%89%E8%AF%BE/"/>
+        <content type="html">&lt;h1 id=&#34;python实现自动选课&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#python实现自动选课&#34;&gt;#&lt;/a&gt; python 实现自动选课&lt;/h1&gt;
+&lt;p&gt;主要利用 selenium 与 ddddocr 库实现了对南大选课系统已收藏课程的自动化选择， 频率约为每两秒一次。实际测试中在一天时间内抢到了三门通识与两次近代史。&lt;/p&gt;
+&lt;p&gt;&lt;span id=&#34;more&#34;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;源码&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;from&lt;/span&gt; selenium &lt;span class=&#34;token keyword&#34;&gt;import&lt;/span&gt; webdriver&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;from&lt;/span&gt; selenium&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;webdriver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;common&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;by &lt;span class=&#34;token keyword&#34;&gt;import&lt;/span&gt; By&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;from&lt;/span&gt; selenium&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;webdriver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;support&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;ui &lt;span class=&#34;token keyword&#34;&gt;import&lt;/span&gt; WebDriverWait&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;from&lt;/span&gt; selenium&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;webdriver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;edge&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;options &lt;span class=&#34;token keyword&#34;&gt;import&lt;/span&gt; Options&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;import&lt;/span&gt; time&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;6&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;import&lt;/span&gt; ddddocr&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;7&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;import&lt;/span&gt; traceback&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;8&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;9&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;# 使用须知 需要安装：selenium 与 ddddorc 库 edge 浏览器及对应版本的驱动程序 并且参照注释对下面源码进行改动 将想选的课收藏&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;10&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;# 可能不明原因退出或报错 可能是收藏被吞了（重新收藏一下） 或者网络波动（重启程序即可）&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;11&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;username &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;&#34;&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# 添加用户名&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;12&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;password &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;&#34;&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# 添加密码&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;13&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;url &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;https://xk.nju.edu.cn/xsxkapp/sys/xsxkapp/*default/index.do&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;14&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;15&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;login_button &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;/html/body/div[1]/article/section/div[4]/div[1]/button&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;16&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;start &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;/html/body/div[1]/article/section/div[4]/div[2]/button&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;17&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;favorite &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;/html/body/div[1]/header/div[2]/ul/li[8]/a&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;18&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;special &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;/html/body/div[1]/header/div[2]/ul/li[1]/a&#34;&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# for refresh&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;19&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;20&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;select &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;/html/body/div[1]/article/div[2]/div[2]/table/tbody/tr[&amp;#123;&amp;#125;]/td[8]/a[2]&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;21&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;confirm &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;/html/body/div[3]/div[2]/div[2]/div[1]&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;22&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;confirm_ &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;/html/body/div[3]/div[2]/div[2]/div&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;23&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;24&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;course_list &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;25&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;26&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;27&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;# 识别验证码&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;28&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;Identify_verifi_code&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;driver&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;29&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    img &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;XPATH&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;//*[@id=&#34;vcodeImg&#34;]&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;30&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    img&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;screenshot&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#39;vcode.png&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;31&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    ocr &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; ddddocr&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;DdddOcr&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;32&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token keyword&#34;&gt;with&lt;/span&gt; &lt;span class=&#34;token builtin&#34;&gt;open&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#39;vcode.png&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;rb&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;token keyword&#34;&gt;as&lt;/span&gt; f&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;33&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        img_bytes &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; f&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;read&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;34&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    res &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; ocr&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;classification&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;img_bytes&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;35&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token keyword&#34;&gt;return&lt;/span&gt; res&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;36&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;37&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;38&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;login&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;driver&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;39&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token comment&#34;&gt;# driver.maximize_window ()  # 将窗口最大化&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;40&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    verifi_code &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; Identify_verifi_code&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;driver&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# 识别验证码&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;41&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token comment&#34;&gt;# 找到登录框 输入账号密码&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;42&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;ID&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;loginName&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;send_keys&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;username&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# 输入用户名&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;43&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;ID&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;loginPwd&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;send_keys&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;password&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# 输入密码&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;44&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;ID&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;verifyCode&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;send_keys&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;verifi_code&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# 输入验证码&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;45&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;46&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    wait &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; WebDriverWait&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;driver&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# 10 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;47&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    wait&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;until&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token keyword&#34;&gt;lambda&lt;/span&gt; driver&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt; driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;XPATH&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; login_button&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;48&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;XPATH&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; login_button&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;click&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# 点击登录&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;49&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;50&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token keyword&#34;&gt;try&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;51&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        &lt;span class=&#34;token keyword&#34;&gt;while&lt;/span&gt; &lt;span class=&#34;token boolean&#34;&gt;True&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;52&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;            verifi_code &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; Identify_verifi_code&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;driver&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# 识别验证码&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;53&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;            driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;ID&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;verifyCode&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;clear&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;54&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;            driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;ID&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;verifyCode&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;send_keys&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;verifi_code&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# 输入验证码&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;55&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;            time&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;sleep&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token number&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;56&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;            wait &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; WebDriverWait&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;driver&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# 10 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;57&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;            wait&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;until&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token keyword&#34;&gt;lambda&lt;/span&gt; driver&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt; driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;XPATH&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; login_button&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;58&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;            driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;XPATH&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; login_button&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;click&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# 点击登录&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;59&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token keyword&#34;&gt;except&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;60&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        &lt;span class=&#34;token punctuation&#34;&gt;&amp;#123;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;#125;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;61&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;62&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    wait &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; WebDriverWait&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;driver&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;20&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# 20 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;63&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    wait&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;until&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token keyword&#34;&gt;lambda&lt;/span&gt; driver&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt; driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;XPATH&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; start&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;64&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;XPATH&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; start&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;click&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;65&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;66&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;67&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;is_Login&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;driver&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;68&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token keyword&#34;&gt;try&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;69&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;ID&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;loginName&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;70&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        &lt;span class=&#34;token keyword&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;token boolean&#34;&gt;False&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;71&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token keyword&#34;&gt;except&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;72&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        &lt;span class=&#34;token keyword&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;token boolean&#34;&gt;True&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;73&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;74&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;75&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;start_select&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;driver&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;76&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token keyword&#34;&gt;if&lt;/span&gt; is_Login&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;driver&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;token boolean&#34;&gt;False&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;77&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        &lt;span class=&#34;token keyword&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;token boolean&#34;&gt;False&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;78&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    time&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;sleep&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token number&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;79&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    wait &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; WebDriverWait&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;driver&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;20&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# 20 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;80&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    wait&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;until&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token keyword&#34;&gt;lambda&lt;/span&gt; driver&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt; driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;XPATH&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; favorite&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;81&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;XPATH&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; favorite&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;click&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;82&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;83&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    time&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;sleep&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token number&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;84&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    course_board &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;CLASS_NAME&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;course-body&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;85&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    tr_list &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; course_board&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_elements&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;CLASS_NAME&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;course-tr &#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;86&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token keyword&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#39;已收藏课程：&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;87&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token keyword&#34;&gt;for&lt;/span&gt; tr &lt;span class=&#34;token keyword&#34;&gt;in&lt;/span&gt; tr_list&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;88&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        wait &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; WebDriverWait&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;tr&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;5&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;89&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        wait&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;until&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token keyword&#34;&gt;lambda&lt;/span&gt; tr&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt; tr&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;XPATH&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;./td[2]&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;90&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        course_name &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; tr&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;XPATH&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;./td[2]&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;text&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;91&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        &lt;span class=&#34;token keyword&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;course_name&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; end&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#34;\n&#34;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;92&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    count &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;93&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token keyword&#34;&gt;while&lt;/span&gt; &lt;span class=&#34;token boolean&#34;&gt;True&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;94&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        count &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; count &lt;span class=&#34;token operator&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;1&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;95&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        &lt;span class=&#34;token keyword&#34;&gt;if&lt;/span&gt; count &lt;span class=&#34;token operator&#34;&gt;%&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;100&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;96&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;            &lt;span class=&#34;token keyword&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#39;已尝试次数：&#39;&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;+&lt;/span&gt; count&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; end&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#34; &#34;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;97&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;            &lt;span class=&#34;token keyword&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;time&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;strftime&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#39;%Y-%m-%d %H:%M:%S&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; time&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;localtime&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;time&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;time&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;98&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;99&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        time&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;sleep&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token number&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;100&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        course_board &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;CLASS_NAME&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;course-body&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;101&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        tr_list &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; course_board&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_elements&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;CLASS_NAME&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;course-tr &#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;102&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        &lt;span class=&#34;token keyword&#34;&gt;for&lt;/span&gt; tr &lt;span class=&#34;token keyword&#34;&gt;in&lt;/span&gt; tr_list&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;103&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;            wait &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; WebDriverWait&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;tr&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;5&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;104&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;            wait&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;until&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token keyword&#34;&gt;lambda&lt;/span&gt; tr&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt; tr&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;XPATH&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;./td[8]/a[2]&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;105&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;106&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;            course_name &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; tr&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;XPATH&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;./td[2]&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;text&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;107&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;            select_button &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; tr&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;XPATH&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;./td[8]/a[2]&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;108&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;            select_button&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;click&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;109&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;            &lt;span class=&#34;token keyword&#34;&gt;try&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;110&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;                driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;XPATH&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; confirm&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;click&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;111&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;                &lt;span class=&#34;token keyword&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#34;选课成功！&#34;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;112&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;                &lt;span class=&#34;token keyword&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#34;已成功选中&amp;#123;&amp;#125;&#34;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;token builtin&#34;&gt;format&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;course_name&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;113&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;                course_list&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;append&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;course_name&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;114&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;                &lt;span class=&#34;token keyword&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#34;确认中&#34;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;115&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;                wait &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; WebDriverWait&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;driver&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# 20 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;116&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;                wait&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;until&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token keyword&#34;&gt;lambda&lt;/span&gt; driver&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt; driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;XPATH&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; confirm_&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;117&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;                driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;XPATH&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; confirm_&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;click&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;118&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;                &lt;span class=&#34;token keyword&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#34;确认成功!&#34;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;119&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;            &lt;span class=&#34;token keyword&#34;&gt;except&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;120&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;                &lt;span class=&#34;token punctuation&#34;&gt;&amp;#123;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;#125;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;121&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;122&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        wait &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; WebDriverWait&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;driver&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# 10 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;123&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        wait&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;until&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token keyword&#34;&gt;lambda&lt;/span&gt; driver&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt; driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;XPATH&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; special&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;124&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;XPATH&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; special&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;click&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;125&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;126&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        time&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;sleep&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token number&#34;&gt;0.5&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;127&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        wait &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; WebDriverWait&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;driver&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# 10 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;128&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        wait&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;until&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token keyword&#34;&gt;lambda&lt;/span&gt; driver&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt; driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;XPATH&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; favorite&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;129&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;find_element&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;By&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;XPATH&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; favorite&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;click&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;130&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;131&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;132&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;working&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;133&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    options &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; Options&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;134&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token comment&#34;&gt;# 关闭沙盒启动 把下面两行注释掉 会出现浏览器界面 建议注释掉看看能不能运行 可以再取消注释&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;135&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token comment&#34;&gt;#options.add_argument(&#39;--no-sandbox&#39;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;136&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token comment&#34;&gt;#options.add_argument(&#34;--headless&#34;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;137&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;138&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    driver &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; webdriver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;Edge&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;executable_path&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#34;msedgedriver.exe&#34;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; options&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;options&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# executable_path 改成下载的 edge 驱动程序路径&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;139&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;get&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;url&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;140&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;141&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token comment&#34;&gt;# 登录并查询&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;142&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token keyword&#34;&gt;try&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;143&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        login&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;driver&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;144&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        start_select&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;driver&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;145&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token keyword&#34;&gt;except&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;146&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        traceback&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;print_exc&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;147&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token keyword&#34;&gt;finally&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;148&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        &lt;span class=&#34;token keyword&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#34;已选到如下课程:&#34;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;149&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        &lt;span class=&#34;token keyword&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;course_list&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;150&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;        driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;quit&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;151&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;152&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;153&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;if&lt;/span&gt; __name__ &lt;span class=&#34;token operator&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;__main__&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;154&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    working&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</content>
+        <category term="python 爬虫" />
+        <updated>2023-02-15T06:56:10.000Z</updated>
+    </entry>
+    <entry>
+        <id>https://maoding1.github.io/2023/01/25/python%E7%88%AC%E8%99%AB%E5%AD%A6%E4%B9%A0/</id>
+        <title>python爬虫学习</title>
+        <link rel="alternate" href="https://maoding1.github.io/2023/01/25/python%E7%88%AC%E8%99%AB%E5%AD%A6%E4%B9%A0/"/>
+        <content type="html">&lt;h1 id=&#34;python爬虫学习总结&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#python爬虫学习总结&#34;&gt;#&lt;/a&gt; python 爬虫学习总结&lt;/h1&gt;
+&lt;p&gt;学习 python 爬虫的一些笔记&lt;/p&gt;
+&lt;p&gt;&lt;span id=&#34;more&#34;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;h2 id=&#34;requests模块&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#requests模块&#34;&gt;#&lt;/a&gt; requests 模块&lt;/h2&gt;
+&lt;p&gt;requests 模块流程：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;1. 指定url
+2. 发起请求 response = requests.get(url)
+3. 获取数据 page_source = response.text()
+4. 存储数据 文件操作/数据库操作
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;参数 tips：params 是用来发送查询字符串，而 data 是用来发送正文的。post 与 get 方法的特性是：这两种参数 post（）方法都可以用，get 方法只能发查询字符串，不能发送正文&lt;/p&gt;
+&lt;p&gt;text 返回字符串 content 返回二进制（爬取图片可用）  json 返回对象&lt;/p&gt;
+&lt;p&gt;分页爬取：&lt;/p&gt;
+&lt;p&gt;​	如果是 ajax，在检查、网络、xhr 中查看&lt;/p&gt;
+&lt;p&gt;​	如果是新链接，可以使用正则表达式匹配 url&lt;/p&gt;
+&lt;p&gt;如果是用 ajax 的包：要注意的：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;看请求方法 是 GET 还是 POST。。。&lt;/li&gt;
+&lt;li&gt;看响应头的 content-type 选择 reponse.text () 或 reponse.json ()&lt;/li&gt;
+&lt;li&gt;看负载中带的参数&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;中文乱码问题（文件编码格式为 utf8 json.dump 时 ensure acill 选项关闭）&lt;/p&gt;
+&lt;p&gt;什么是 ajax? （根据用户行为重新渲染界面。 不修改 url 在检查 - 网络 - XHR 中查看具体信息）&lt;/p&gt;
+&lt;h2 id=&#34;bs4-数据解析&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#bs4-数据解析&#34;&gt;#&lt;/a&gt; bs4 数据解析&lt;/h2&gt;
+&lt;p&gt;bs4 数据解析的原理：&lt;/p&gt;
+&lt;p&gt;1. 实例化一个 BeautifulSoup 对象 并且将页面原码数据加载到该对象中&lt;/p&gt;
+&lt;p&gt;2. 通过调用 bs 对象中相关的属性或方法进行标签定位和数据提取&lt;/p&gt;
+&lt;p&gt;如何实例化 beautifulsoup 对象：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;将本地的 html 文档中的数据加载到该对象中&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;fp &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token builtin&#34;&gt;open&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;soup &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; BeautifulSoup&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;fp&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#39;lxml&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;将互联网上获取的页面源码加载到该对象中&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;page_text = response.text
+soup = BeautifulSoup(page_text,&#39;lxml&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;提供的用于数据解析的方法和属性：&lt;/p&gt;
+&lt;p&gt;soup.tagname 返回 html 中第一次出现的 tagname 标签&lt;/p&gt;
+&lt;p&gt;soup.find (&#39;tagname&#39;) 等同于 soup.tagname&lt;/p&gt;
+&lt;p&gt;soup.find (&#39;tagname&#39;, class = &#39;classname&#39;) 定义属性位置， class 可以替换为 id attr&lt;/p&gt;
+&lt;p&gt;soup.find_all (&#39;tagname&#39;) 找到符合要求所有标签 返回列表&lt;/p&gt;
+&lt;p&gt;soup.select (&#39;.tang&#39;)  参数为某种选择器（id class 标签），返回一个列表&lt;/p&gt;
+&lt;p&gt;soup.select (&#39;.tang&amp;gt; ul &amp;gt; li &amp;gt; a&#39;) 层级选择器，返回一个列表&lt;/p&gt;
+&lt;p&gt;soup.selest (&#39;.tang&amp;gt; ul a&#39;) &amp;gt; 号表示一个层级，空格表示多个层级&lt;/p&gt;
+&lt;p&gt;怎么获取标签之间的文本数据：&lt;/p&gt;
+&lt;p&gt;使用	soup.a.text/string/get_text () 方法&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;-   text/get_text(): 可以获取某一个标签中所有的文本内容（多套几层也能得到）
+-   string：获取标签下直系的文本内容
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;怎么获取标签的属性值：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;soup.select(&#39;tang &amp;gt; ul &amp;gt; li &amp;gt; a&#39;)[0][&#39;href&#39;]&lt;/code&gt;  直接获得 a 标签中的 herf 属性值&lt;/p&gt;
+&lt;h2 id=&#34;xpath解析&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#xpath解析&#34;&gt;#&lt;/a&gt; xpath 解析&lt;/h2&gt;
+&lt;p&gt;xpath 解析： 最常用且最便捷高效的一种解析方式。&lt;/p&gt;
+&lt;p&gt;xpath 解析原理：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;1. 实例化一个etree的对象，且需要将被解析的页面源码数据加载到该对象中。
+2. 调用etree对象中的xpath方法结合xpath表达式实现标签的定位和内容的捕获。
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;环境安装：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;- pip install lxml
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;如何实例化 etree 对象&lt;/p&gt;
+&lt;p&gt;​	from lxml import etree&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;将本地的 html 文档中的源码数据加载到 etree 对象中：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt; etree.parse(filePath)&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;可以将从互联网上获取的源码数据加载到该对象中&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;etree.HTML(&#39;page_text&#39;)        -xpath(&#39;xpath表达式&#39;)&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;/ 表示一个层级  // 表示多个层级&lt;/p&gt;
+&lt;p&gt;路径后加 [@ 属性名] 精确定位 如 &lt;code&gt;xx_list = tree.xpath(&#39;//div[@class=&#39;song&#39;]&#39;)&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;中括号内加数字代表取第几个（索引下标从 1 开始） &lt;code&gt;xx_list[0]&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;获取文本：定位后加 /text ()&lt;/p&gt;
+&lt;h2 id=&#34;中文出现乱码常见的处理方法&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#中文出现乱码常见的处理方法&#34;&gt;#&lt;/a&gt; 中文出现乱码常见的处理方法&lt;/h2&gt;
+&lt;p&gt;两种常见方法，一般能解决所有中文乱码问题&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;对爬下来的整个数据改变编码：&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;response&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;encoding &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;utf-8&#39;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;对出现问题的对象单独进行编码与解码&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;img_name &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; img_name&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;encode&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#39;iso-8859-1&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;decode&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#39;gbk&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;selenium模块&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#selenium模块&#34;&gt;#&lt;/a&gt; selenium 模块&lt;/h2&gt;
+&lt;h3 id=&#34;selenium模块与爬虫之间具有怎样的关联&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#selenium模块与爬虫之间具有怎样的关联&#34;&gt;#&lt;/a&gt; selenium 模块与爬虫之间具有怎样的关联？&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;便捷的获取网站中动态加载的数据&lt;/li&gt;
+&lt;li&gt;便捷实现模拟登录&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;什么是selenium模块&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#什么是selenium模块&#34;&gt;#&lt;/a&gt; 什么是 selenium 模块&lt;/h3&gt;
+&lt;p&gt;基于浏览器自动化的一个模块。 （编写代码让浏览器完成自动化操作）&lt;/p&gt;
+&lt;h3 id=&#34;selenium使用流程&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#selenium使用流程&#34;&gt;#&lt;/a&gt; selenium 使用流程：&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;环境安装：pip install selenium&lt;/li&gt;
+&lt;li&gt;下载一个浏览器的驱动程序&lt;/li&gt;
+&lt;li&gt;实例化一个浏览器对象&lt;/li&gt;
+&lt;/ul&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;from&lt;/span&gt; selenium &lt;span class=&#34;token keyword&#34;&gt;import&lt;/span&gt; webdriver&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;from&lt;/span&gt; selenium&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;webdriver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;edge&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;service &lt;span class=&#34;token keyword&#34;&gt;import&lt;/span&gt; Service&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;# 实例化一个浏览器对象 参数中的路径为浏览器驱动程序的路径（建议与程序在同一路径下）&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;service &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; Service&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;executable_path &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;./edgedriver.exe&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;bro &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; webdriver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;Edge&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;service &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; service&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;ul&gt;
+&lt;li&gt;编写基于浏览器的代码&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;selenium常用函数&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#selenium常用函数&#34;&gt;#&lt;/a&gt; selenium 常用函数&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;bro.get (url)  											让浏览器发起一个指定 url 对应请求&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;page_text = bro.page_source		  获取浏览器当前页面的页面源码数据&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;标签定位：使用 find_element 方法&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;​	search_input = bro.find_element(By.[attrname], &amp;quot;[attr]&#39;s value&amp;quot;)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;标签交互：&lt;/p&gt;
+&lt;p&gt;​	search_input.send_keys(&#39;xxx&#39;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;执行一组 js 代码&lt;/p&gt;
+&lt;p&gt;​	bro.execute_script(&#39;code...&#39;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;点击按钮：&lt;/p&gt;
+&lt;p&gt;​	btn.click()&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;后退 / 前进&lt;/p&gt;
+&lt;p&gt;​	bro.back()/forward()&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;selenium处理iframe&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#selenium处理iframe&#34;&gt;#&lt;/a&gt; selenium 处理 iframe&lt;/h3&gt;
+&lt;p&gt;bro.switch_to.frame(&#39;frame_name&#39;)&lt;/p&gt;
+&lt;h3 id=&#34;动作链项目暂时用不到&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#动作链项目暂时用不到&#34;&gt;#&lt;/a&gt; 动作链 (项目暂时用不到)&lt;/h3&gt;
+&lt;p&gt;南大相关网站的登录还不需要滑块验证&lt;/p&gt;
+&lt;p&gt;碰到滑块验证的时候可能就需要用到了&lt;/p&gt;
+&lt;h3 id=&#34;selenium实现模拟登录&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#selenium实现模拟登录&#34;&gt;#&lt;/a&gt; selenium 实现模拟登录&lt;/h3&gt;
+&lt;p&gt;结合前面的基础知识 先点击账号密码登录按钮，找到账号输入框与密码输入框，&lt;/p&gt;
+&lt;p&gt;输入账号密码，点击登录按钮&lt;/p&gt;
+&lt;h2 id=&#34;模拟登陆cookie操作&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#模拟登陆cookie操作&#34;&gt;#&lt;/a&gt; 模拟登陆 cookie 操作&lt;/h2&gt;
+&lt;h3 id=&#34;cookie有什么作用&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#cookie有什么作用&#34;&gt;#&lt;/a&gt; cookie 有什么作用&lt;/h3&gt;
+&lt;p&gt;TCP/IP 协议是无状态的，因此通常的 get 请求 服务器端不知道你有没有处于登录状态&lt;/p&gt;
+&lt;p&gt;携带 cookie 值的 get 请求 能使服务器端知道你已经处于登录状态&lt;/p&gt;
+&lt;h3 id=&#34;手动cookie不推荐&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#手动cookie不推荐&#34;&gt;#&lt;/a&gt; 手动 cookie（不推荐）&lt;/h3&gt;
+&lt;p&gt;登录网站后通过抓包工具手动复制 cookie 值 将 cookie 值封装到 headers 中，写死在程序里&lt;/p&gt;
+&lt;p&gt;缺点：cookie 值一段时间后会过期&lt;/p&gt;
+&lt;h3 id=&#34;自动处理&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#自动处理&#34;&gt;#&lt;/a&gt; 自动处理&lt;/h3&gt;
+&lt;p&gt;cookie 值是如何产生的？既然 cookie 值能让服务器知道你已经处于登录状态，那么理所当然 cookie 值是登录时发送 post 请求后服务器端生成后发送给客户端的&lt;/p&gt;
+&lt;p&gt;session 会话对象：&lt;/p&gt;
+&lt;p&gt;作用：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;可以进行请求的发送&lt;/li&gt;
+&lt;li&gt;如果请求过程中产生了 cookie，则该 cookie 会被自动存储 / 携带在该 session 对象中&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;使用：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;创建一个 session 对象 ：  &lt;code&gt;session = requests.Session()&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;使用 session 对象进行模拟登录 post 请求的发送 (cookie 就会被存储在 session 中)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;session 对象对个人主页对应的 get 请求进行发送（携带了 cookie）&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;如果登录找不到 post 请求或遇到问题导致获得不到 cookie：&lt;/p&gt;
+&lt;p&gt;​	适用 selenium 登录后 用下列方法直接取得 cookie:&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;c &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; bro&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;get_cookies&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;bro&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;close&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;cookies &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;&amp;#123;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;#125;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;# 获取 cookie 中的 name 和 value, 转化成 requests 可以使⽤的形式&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;for&lt;/span&gt; cookie &lt;span class=&#34;token keyword&#34;&gt;in&lt;/span&gt; c&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;6&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    cookies&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;cookie&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#39;name&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; cookie&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#39;value&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;然后就能用 cookies 了：&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;response &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; requests&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;get&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;url&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;detail_url&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; headers&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;headers&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; cookies&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;cookies&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;h2 id=&#34;并行爬取异步爬虫&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#并行爬取异步爬虫&#34;&gt;#&lt;/a&gt; 并行爬取（异步爬虫）&lt;/h2&gt;
+&lt;p&gt;原理：利用进程池实现并行爬取&lt;/p&gt;
+&lt;p&gt;使用方法：&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;from&lt;/span&gt; multiprocessing &lt;span class=&#34;token keyword&#34;&gt;import&lt;/span&gt; Pool&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;# 创建进程池&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;pool &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; Pool&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;processes&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;token number&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;pool&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;token builtin&#34;&gt;map&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;function_name&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; iterable&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt;chunksize&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;&lt;strong&gt;processes 参数设置注意&lt;/strong&gt;：当进程数量大于 CPU 的内核数量时，等待运行的进程会等到其他进程运行完毕让出内核为止。因此，如果 CPU 是单核，就无法进行多进程并行。在使用多进程爬虫之前，我们需要先了解计算机 CPU 的核心数量。这里用到了 multiprocessing:&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;from&lt;/span&gt; multiprocessing &lt;span class=&#34;token keyword&#34;&gt;import&lt;/span&gt; cpu_count&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;cpu_count&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;运行结果为 16。&lt;/p&gt;
+&lt;p&gt;使用 eg：&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;urls &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#39;https://xjh.haitou.cc/xa/after/page-&amp;#123;&amp;#125;&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;token builtin&#34;&gt;format&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;i&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;token keyword&#34;&gt;for&lt;/span&gt; i &lt;span class=&#34;token keyword&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;token builtin&#34;&gt;range&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token number&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;token number&#34;&gt;21&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;pool &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; Pool&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;processes&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;token number&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;#get_xuanjing 为参数是一个 url 的爬虫函数&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;pool&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;token builtin&#34;&gt;map&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;get_xuanjiang&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt;urls&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;pool&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;close&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# 关闭进程池，不再接受新的进程&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;6&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;pool&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;join&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# 主进程阻塞等待子进程的退出&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;h2 id=&#34;有关爬虫的一些问题&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#有关爬虫的一些问题&#34;&gt;#&lt;/a&gt; 有关爬虫的一些问题：&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;爬下来的文本中带有 &amp;amp; nbsp 在 html 中表示 no breaking space（不自动换行的空格）&lt;/p&gt;
+&lt;p&gt;此时可以采用 str.replace (u&#39;\xa0&#39;, &#39;&#39;) 来解决 str 为待处理字符串&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;requests 里.text 与 .content 方法的区别：&lt;/p&gt;
+&lt;p&gt;两者区别在于，content 中间存的是字节码，而 text 中存的是 Beautifulsoup 根据猜测的编码方式将 content 内容编码成字符串。&lt;/p&gt;
+&lt;p&gt;直接输出 content，会发现前面存在 b&#39; 这样的标志，这是字节字符串的标志，而 text 是，没有前面的 b, 对于纯 ascii 码，这两个可以说一模一样，对于其他的文字，需要正确编码才能正常显示。大部分情况建议使用.text，因为显示的是汉字，但有时会显示乱码，这时需要用.content.decode (&#39;utf-8&#39;)，中文常用 utf-8 和 GBK，GB2312 等。这样可以手工选择文字编码方式。&lt;/p&gt;
+&lt;p&gt;所以简而言之，.text 是现成的字符串，.content 还要编码，但是.text 不是所有时候显示都正常，这是就需要用.content 进行手动编码&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;两种常见方法，一般能解决所有中文乱码问题&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;对爬下来的整个数据改变编码：&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;response&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;encoding &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;utf-8&#39;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;对出现问题的对象单独进行编码与解码&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;img_name &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; img_name&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;encode&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#39;iso-8859-1&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;decode&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#39;gbk&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+        <category term="python" />
+        <category term="爬虫" />
+        <updated>2023-01-25T03:21:52.000Z</updated>
+    </entry>
+    <entry>
+        <id>https://maoding1.github.io/2022/11/14/C-%EF%BC%9A%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89%E4%B8%8E%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8/</id>
+        <title>C++：移动语义与右值引用</title>
+        <link rel="alternate" href="https://maoding1.github.io/2022/11/14/C-%EF%BC%9A%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89%E4%B8%8E%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8/"/>
+        <content type="html">&lt;h1 id=&#34;c的移动语义与右值引用&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#c的移动语义与右值引用&#34;&gt;#&lt;/a&gt; C++ 的移动语义与右值引用&lt;/h1&gt;
+&lt;p&gt;&lt;span id=&#34;more&#34;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;preview.jpg&#34; alt=&#34;Gaze&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;移动语义&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#移动语义&#34;&gt;#&lt;/a&gt; 移动语义&lt;/h2&gt;
+&lt;h3 id=&#34;为何需要移动语义&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#为何需要移动语义&#34;&gt;#&lt;/a&gt; 为何需要移动语义&lt;/h3&gt;
+&lt;p&gt;假设有如下代码：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-c++&#34;&gt;vector&amp;lt;string&amp;gt; vstr;// build up a vector of 20000 strings,each of 1000 characters
+vector&amp;lt;string&amp;gt; vstr_copy1(vstr);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;为了初始化 vstr_copy1 先调用 vector 的复制构造函数，使用 new 给 20000 个 string 对象分配内存，而每个 string 对象又调用 string 的复制构造函数，为 1000 个字符分配内存。这很浪费时间，但如果 vstr 与 vstr_copy1 都需要使用，这很难避免。&lt;/p&gt;
+&lt;p&gt;可有时候这样不太妥当，例如 vstr 不再被使用时。例如如下定义的函数：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-c++&#34;&gt;vector&amp;lt;string&amp;gt; allcaps(const vector&amp;lt;string&amp;gt; &amp;amp; vs)
+&amp;#123;
+    vector&amp;lt;string&amp;gt; temp;
+    //让temp存储vs中string的大写版本的代码
+    return temp;
+&amp;#125;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;并这样使用它：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-c++&#34;&gt;vector&amp;lt;string&amp;gt; vstr;
+vector&amp;lt;string&amp;gt; vstr_copy1(vstr); //#1
+vector&amp;lt;string&amp;gt; vstr_copy2(allcaps(vstr)); //#2
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;allcaps () 创建了对象 temp，该对象管理着 20000000 个字符；语句二使用 vector 和 string 的复制构造函数创建了一个 temp 的副本，然后删除了 temp，做了大量无用功。如果编译器直接把 temp 对数据的所有权转让给 vstr_copy2，将会更好。&lt;/p&gt;
+&lt;p&gt;实际上，我们可以把实际内容保留在原来地方，而之修改记录，这就是移动语义的本质，它避免了移动原始数据，而转为修改记录。&lt;/p&gt;
+&lt;p&gt;要实现移动语义，需要采取某种方式，让编译器知道什么时候需要复制。这就是右值引用发挥作用的地方。可定义两个构造函数，其中一个是常规复制构造函数，它使用 const 左值引用作为参数，如语句 #1。另一个是移动构造函数，它使用右值引用作为参数，该引用关联到右值实参，如语句 #2 中 allcaps (vstr) 的返回值。移动构造函数可能修改其实参，这意味着右值引用参数不应是 const。&lt;/p&gt;
+&lt;h3 id=&#34;如何使用&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#如何使用&#34;&gt;#&lt;/a&gt; 如何使用&lt;/h3&gt;
+&lt;p&gt;直接将变量的值赋值为参数的变量值，如果变量为指针，为了防止 double free，还需将参数的指针改为 nullptr。&lt;/p&gt;
+&lt;p&gt;例如：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Useless(Useless &amp;amp;&amp;amp; f) : n(f.n)
+&amp;#123;
+	++ct;
+	pc = f.pc;
+	f.pc = nullptr;
+	f.n = 0;
+&amp;#125;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;强制移动&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#强制移动&#34;&gt;#&lt;/a&gt; 强制移动&lt;/h3&gt;
+&lt;p&gt;移动构造函数和移动赋值运算符使用右值，如果要让它们使用左值，该怎么办？例如，将一个左值变量赋值给一个对象，并立刻丢弃这个变量。此时可以使用头文件 utility 中声明的函数 std::move。&lt;/p&gt;
+</content>
+        <category term="C++" />
+        <updated>2022-11-14T08:08:33.000Z</updated>
+    </entry>
+    <entry>
+        <id>https://maoding1.github.io/2022/10/23/Maven-%E5%AD%A6%E4%B9%A0/</id>
+        <title>Maven 学习</title>
+        <link rel="alternate" href="https://maoding1.github.io/2022/10/23/Maven-%E5%AD%A6%E4%B9%A0/"/>
+        <content type="html">&lt;h1 id&gt;&lt;a class=&#34;anchor&#34; href=&#34;#&#34;&gt;#&lt;/a&gt; &lt;/h1&gt;
+&lt;h1 id=&#34;maven-学习&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#maven-学习&#34;&gt;#&lt;/a&gt; Maven  学习&lt;/h1&gt;
+&lt;p&gt;&lt;span id=&#34;more&#34;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;​																&lt;img data-src=&#34;rebecca.jpg&#34; alt=&#34;芝士rebecca&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;maven简介&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#maven简介&#34;&gt;#&lt;/a&gt; Maven 简介&lt;/h2&gt;
+&lt;p&gt;Maven 是 Apache 组织下一个比较著名的开源项目，主要服务于基于 java 平台的项目构建，依赖管理和项目信息管理。&lt;/p&gt;
+&lt;p&gt;类比做糖醋排骨，传统需要自己配置酱料，比如加入多少克糖，多少克水，多少克... 而现在只用去超市购买酱料包就好。Maven 项目省去了开发者去各大网站下载 jar 包并解决相互间复杂依赖关系的时间。除此之外，除了编写源代码，我们有相当一部分时间花在了编译，运行单元测试，生成文档，打包和部署等工作上，这就是构建。手工做这些工作的成本太高了，于是可以用软件的方法让这一系列工作完全自动化，使得繁琐的步骤能够自动完成，很快得到最终结果。&lt;/p&gt;
+&lt;h3 id=&#34;项目构建工具&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#项目构建工具&#34;&gt;#&lt;/a&gt; 项目构建工具&lt;/h3&gt;
+&lt;p&gt;Ant 构建： 2000 年左右出现的构建工具，当时是最流行的 java 构建工具，不过它的 XML 脚本编写格式让 XML 文件特别大。对工程构建过程中的过程控制特别好。&lt;/p&gt;
+&lt;p&gt;Maven 构建：项目对象模型，通过其描述信息来管理项目的构建，报告和文档的软件项目管理工具，填补了 Ant 的缺点。Maven 第一次支持了从网络上下载的功能。Maven 专注的是依赖管理，使用 java 编写。&lt;/p&gt;
+&lt;p&gt;Gradle：谷歌的御用 Android 管理工具&lt;/p&gt;
+&lt;p&gt;Ant 比较老，目前 Maven 使用较多&lt;/p&gt;
+&lt;h2 id=&#34;maven的四大特性&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#maven的四大特性&#34;&gt;#&lt;/a&gt; Maven 的四大特性&lt;/h2&gt;
+&lt;h3 id=&#34;依赖管理系统&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#依赖管理系统&#34;&gt;#&lt;/a&gt; 依赖管理系统&lt;/h3&gt;
+&lt;p&gt;Maven 为 java 世界引入了一个新的依赖管理系统 ——jar 包管理。jar 升级时修改配置文件即可。在 java 世界中，可以用 **&lt;em&gt;groupId&lt;/em&gt; **   、&lt;em&gt;&lt;strong&gt;artifactId&lt;/strong&gt;&lt;/em&gt;   、&lt;em&gt;&lt;strong&gt;version&lt;/strong&gt;&lt;/em&gt; 组成的 Coordination（坐标）唯一标识一个依赖&lt;/p&gt;
+&lt;p&gt;eg：&lt;/p&gt;
+&lt;figure class=&#34;highlight html&#34;&gt;&lt;figcaption data-lang=&#34;HTML&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;&lt;/span&gt;dependency&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;	&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;&lt;/span&gt;groupId&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt; javax.servlet &lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;/&lt;/span&gt;groupId&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt; //当前Maven项目隶属的实际项目或公司名称（jar包所在仓库路径）&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;	&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;&lt;/span&gt;artifactId&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt; javax.servlet-api &lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;/&lt;/span&gt;artifactId&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt; //定义实际项目中的一个Maven模块/项目名&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;	&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;&lt;/span&gt;version&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt; 3.1.0 &lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;/&lt;/span&gt;version&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt; //Maven项目当前所处的版本&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;/&lt;/span&gt;dependency&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;h3 id=&#34;多模块构建&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#多模块构建&#34;&gt;#&lt;/a&gt; 多模块构建&lt;/h3&gt;
+&lt;p&gt;可以将一个项目分解为多个模块。&lt;/p&gt;
+&lt;p&gt;在 Maven 中定义一个 parent POM 作为一组 module 的聚合 POM，在该 POM 中可以使用 &amp;lt;modules&amp;gt; 标签来定义一组子模块。parent POM 中的 build 配置和依赖配置都会继承给子 module。&lt;/p&gt;
+&lt;h3 id=&#34;一致的项目结构&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#一致的项目结构&#34;&gt;#&lt;/a&gt; 一致的项目结构&lt;/h3&gt;
+&lt;p&gt;Maven 理念： Convension over configuration (约定大于配置)。其制定了一套项目目录结构作为标准的 java 项目结构，解决不同 IDE 带来的文件目录不一致问题。&lt;/p&gt;
+&lt;h3 id=&#34;一致的构建模型和插件机制&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#一致的构建模型和插件机制&#34;&gt;#&lt;/a&gt; 一致的构建模型和插件机制&lt;/h3&gt;
+&lt;figure class=&#34;highlight html&#34;&gt;&lt;figcaption data-lang=&#34;HTML&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;&lt;/span&gt;plugin&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;	......&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;/&lt;/span&gt;plugin&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;引入插件&lt;/p&gt;
+&lt;h2 id=&#34;maven项目结构&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#maven项目结构&#34;&gt;#&lt;/a&gt; Maven 项目结构&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;- src
+	- main                   ：程序功能代码
+		- Java               ：java代码
+		- resource           ：资源代码、配置代码
+	- test                   ：测试代码
+		- Java               ：单元测试java代码
+		- resource           ：资源代码、配置代码
+	- pom.xml                ：项目对象模型
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;不用 IDE 的话上述结构都需要手动创建&lt;/p&gt;
+&lt;p&gt;pom 中的标签具体作用可以参考 &lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly93d3cucnVub29iLmNvbS9tYXZlbi9tYXZlbi1wb20uaHRtbA==&#34;&gt;https://www.runoob.com/maven/maven-pom.html&lt;/span&gt;&lt;/p&gt;
+&lt;h2 id=&#34;在idea中使用maven&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#在idea中使用maven&#34;&gt;#&lt;/a&gt; 在 IDEA 中使用 Maven&lt;/h2&gt;
+&lt;p&gt;IDEA 中默认捆绑了 Maven 可以在设置里更改 Maven 有关的配置&lt;/p&gt;
+&lt;p&gt;创建 Maven 项目：文件 -&amp;gt; 新建 -&amp;gt; 项目 构建系统选 Maven（上述是常规 Maven 项目）&lt;/p&gt;
+&lt;p&gt;​										可以选择生成器中的 Maven 中的 Archetype 选择模板（如 quickstart）&lt;/p&gt;
+&lt;h2 id=&#34;maven仓库&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#maven仓库&#34;&gt;#&lt;/a&gt; Maven 仓库&lt;/h2&gt;
+&lt;p&gt;对于 Maven 来说，仓库只有两类： 本地仓库和远程仓库&lt;/p&gt;
+&lt;p&gt;Maven 根据坐标寻找构件的时候，它首先会查看本地仓库，如果本地仓库存在，则直接使用；如果本地没有，Maven 就回去远程仓库查找，再下载到本地仓库再使用。如果本地和远程都没有就会报错。&lt;/p&gt;
+&lt;p&gt;远程仓库分为 3 种：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;中央仓库：默认下载 jar 包的地方，在国外，包含了 2000 多个开源项目，每天接收 1 亿次以上的访问。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;私服：一种特殊的远程仓库，它是架设在局域网内的仓库服务。私服代理广域网上的远程仓库，供局域网内的 Maven 用户使用。当 Maven 需要下载构件时，它去私服当中找，如果私服没有，则从外部远程仓库下载，并缓存在私服上，再为 maven 提供。此外，一些无法从外部仓库下载的构件也能从本地上传到私服提供局域网中其他人使用。（在公司或学校内网中自己写的构件就可以上传到私服让别人使用了） 私服优点： 节省自己的外网带宽、 加速 Maven 构建、部署第三方控件、提高稳定性、降低中央仓库的负荷&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;其他公共库&lt;/p&gt;
+&lt;p&gt;如阿里云仓库，国内地址下载比中央仓库快。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+</content>
+        <category term="Maven" />
+        <updated>2022-10-23T13:44:54.000Z</updated>
+    </entry>
+    <entry>
+        <id>https://maoding1.github.io/2022/10/05/STL%E5%AD%A6%E4%B9%A0-01-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E4%B8%8Evector/</id>
+        <title>STL学习-01-智能指针与vector</title>
+        <link rel="alternate" href="https://maoding1.github.io/2022/10/05/STL%E5%AD%A6%E4%B9%A0-01-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E4%B8%8Evector/"/>
+        <content type="html">&lt;h1 id=&#34;c-的标准模板库&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#c-的标准模板库&#34;&gt;#&lt;/a&gt; c++ 的标准模板库&lt;/h1&gt;
+&lt;p&gt;&lt;span id=&#34;more&#34;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;%E9%9B%A8%E5%A4%A9-%E5%A5%B3%E5%AD%A9-%E5%95%86%E5%BA%97.jpg&#34; alt=&#34;雨天 女孩 商店&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;智能指针模板类&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#智能指针模板类&#34;&gt;#&lt;/a&gt; 智能指针模板类&lt;/h2&gt;
+&lt;p&gt;智能指针是类似于指针的类对象，比较方便内存管理。传统的指针必须时时刻刻记得 new 与 delete 的配套使用，很容易造成内存泄漏。而智能指针实际上类似于一个类，有自己的析构函数，所以编译器再不需要智能指针时便可以自动调用其析构函数释放内存，也就是可以略去 delete 操作。&lt;/p&gt;
+&lt;h3 id=&#34;使用智能指针&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#使用智能指针&#34;&gt;#&lt;/a&gt; 使用智能指针&lt;/h3&gt;
+&lt;p&gt;要创建智能指针对象，必须包含头文件 memory 然后使用通常的模板语法来实例化所需类型的指针。&lt;/p&gt;
+&lt;p&gt;声明：  &lt;code&gt; template &amp;lt;class X&amp;gt; class auto_ptr&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;使用 eg：  &lt;code&gt; auto_ptr&amp;lt;double&amp;gt; pd(new double);&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;​					  &lt;code&gt;auto_ptr&amp;lt;string&amp;gt; ps(new string);&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;注意： 智能指针模板位于名称空间 std 中。&lt;/p&gt;
+&lt;h3 id=&#34;有关智能指针的注意事项&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#有关智能指针的注意事项&#34;&gt;#&lt;/a&gt; 有关智能指针的注意事项&lt;/h3&gt;
+&lt;p&gt;c++ 目前有三种常见智能指针：auto_ptr, unique_ptr,shared_ptr&lt;/p&gt;
+&lt;p&gt;在使用智能指针时，可能会遇到问题，比如如果两个智能指针指向同一块内存区域，则程序会删除同一个对象两次，这是会造成极大错误的。为避免这种问题，方法有多种。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;建立所有权概念，对于特定对象，只有一个智能指针可以拥有他。 这是用于 auto_ptr 和 unique_ptr 的策略，但 unique_ptr 更严格&lt;/li&gt;
+&lt;li&gt;创建智能更高的指针，跟踪引用特定对象的智能指针数，这称为引用计数。当最后一个指针过期时，才调用 delete。这是 shared_ptr 的策略&lt;/li&gt;
+&lt;li&gt;执行深拷贝&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;auto_ptr 和 unique_ptr 的区别：&lt;/p&gt;
+&lt;p&gt;​		两个 auto_ptr 指向同一块内存区域时，可以通过编译，但可能在运行时报错。两个 unique_ptr 指向同一块内存区域时，会在编译阶段就报错（除非赋值给其中一个 unique_ptr 的另一个 unique_ptr 是一个用完即毁的智能指针，如某一函数中 new 出来的 unique_ptr 的返回）。&lt;/p&gt;
+&lt;h2 id=&#34;模板类vector&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#模板类vector&#34;&gt;#&lt;/a&gt; 模板类 vector&lt;/h2&gt;
+&lt;h3 id=&#34;创建vector&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#创建vector&#34;&gt;#&lt;/a&gt; 创建 vector&lt;/h3&gt;
+&lt;p&gt;要创建 vector 模板对象， 可使用通常的 &amp;lt;type&amp;gt; 表示法来指出要使用的类型。另外，vector 模板使用动态内存分配，因此可以用初始化参数指出需要多少元素。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt; vector&amp;lt;int&amp;gt; ratings(5);  // a vector of 5 ints&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&#34;可对vector执行的操作&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#可对vector执行的操作&#34;&gt;#&lt;/a&gt; 可对 vector 执行的操作&lt;/h3&gt;
+&lt;p&gt;size ()—— 返回容器中元素数目        swap ()—— 交换两个容器的内容             begin ()—— 返回一个指向容器中第一个元素的 &lt;em&gt;&lt;strong&gt;迭代器&lt;/strong&gt;&lt;/em&gt;      end () 返回一个表示超过容器尾的&lt;em&gt;&lt;strong&gt;迭代器&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;什么是迭代器？ 它是一个广义的指针，可以对其执行类似指针的操作，如解除引用 *、递增 ++&lt;/p&gt;
+&lt;p&gt;STL 的每个容器类都定义了一个合适的迭代器，该迭代器的类型是一个名为 iterator 的 typedef，作用域为整个类。如要为 vector 的 double 类型规范声明一个迭代器，可以这样做：&lt;/p&gt;
+&lt;p&gt;​	 &lt;code&gt;vector&amp;lt;double&amp;gt;::iterator pd;//  pd an iterator&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;假设 scores 是一个 vector&amp;lt;double&amp;gt; 对象，可以利用好 auto 关键字简化书写：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;auto pd = scores.begin()&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;vector 还支持 push_back () (内存不够会自动扩充容器), erase () insert () 等方法&lt;/p&gt;
+&lt;h3 id=&#34;其它操作&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#其它操作&#34;&gt;#&lt;/a&gt; 其它操作&lt;/h3&gt;
+&lt;p&gt;有两个具有代表性的 STL 函数：for_each () 和 sort () 。&lt;/p&gt;
+&lt;p&gt;for_each () 函数可用于很多容器类，它接受 3 个参数。前两个是定义容器中的迭代器，最后一个是一个函数指针。for_each () 函数将被指向的函数应用于容器区间中的各个元素，可以用 for_each () 函数来代替 for 循环。&lt;/p&gt;
+&lt;p&gt;eg:  &lt;code&gt;for_each(books.begin(), books.end(), ShowReview);&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;sort () 函数也要求函数支持随机访问。该函数接收两个定义区间的迭代器参数。如果容器中的元素有内置的 &amp;lt; 运算符进行值比较，可以直接使用。如果容器中的元素是用户定义的类对象，则用户需要利用重载定义 &amp;lt; 运算符。&lt;/p&gt;
+&lt;p&gt;还有第二个版本的 sort () 函数，它接收第三个参数，该参数是一个函数指针，不一定是用于比较的 operator&amp;lt;()，而是一个返回值可转换为 bool 类型的函数，它接收两个容器中的元素，返回为 false 表示两个参数的顺序不正确。&lt;/p&gt;
+</content>
+        <category term="STL C++" />
+        <updated>2022-10-05T11:54:58.000Z</updated>
+    </entry>
+    <entry>
+        <id>https://maoding1.github.io/2022/10/02/Git%E5%AD%A6%E4%B9%A002-%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86/</id>
+        <title>Git学习02-分支管理</title>
+        <link rel="alternate" href="https://maoding1.github.io/2022/10/02/Git%E5%AD%A6%E4%B9%A002-%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86/"/>
+        <content type="html">&lt;h1 id=&#34;git学习02-分支管理&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#git学习02-分支管理&#34;&gt;#&lt;/a&gt; Git 学习 02 - 分支管理&lt;/h1&gt;
+&lt;p&gt;&lt;span id=&#34;more&#34;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;%E8%BD%BB%E9%9F%B3%E5%B0%91%E5%A5%B3.jpg&#34; alt=&#34;轻音少女&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;创建与合并分支&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#创建与合并分支&#34;&gt;#&lt;/a&gt; 创建与合并分支&lt;/h2&gt;
+&lt;p&gt;查看分支 ：  &lt;code&gt;git branch&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;创建分支：  &lt;code&gt;git branch &amp;lt;name&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;切换分支：  &lt;code&gt;git switch &amp;lt;name&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;创建 + 切换分支:  &lt;code&gt;git switch -c &amp;lt;name&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;合并某分支到当前分支 ：  &lt;code&gt;git merge &amp;lt;name&amp;gt;&lt;/code&gt;  这里的 name 使某分支的 name&lt;/p&gt;
+&lt;p&gt;删除分支：  &lt;code&gt;git branch -d &amp;lt;name&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id=&#34;解决冲突&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#解决冲突&#34;&gt;#&lt;/a&gt; 解决冲突&lt;/h2&gt;
+&lt;p&gt;eg：当你创建了一个 feature1 分支 其在 master 分支上添加了一些内容并进行提交，此时切换会 master 分支并使用  &lt;code&gt;git merge feature1&lt;/code&gt;  合并分支是不会有问题的（Git 会在底层移动 master 的指针到 feature1 上）。但如果你在 feature1 上修改了某个文件并提交，在切换会 master 分支后修改了同一份文件并提交，那么此时 git merge 就会报错了。&lt;/p&gt;
+&lt;p&gt;此时可以：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;使用 &lt;code&gt;git status&lt;/code&gt;  查看冲突的文件（如果你改了很多，分不清哪里冲突了）&lt;/li&gt;
+&lt;li&gt;手动解决冲突&lt;/li&gt;
+&lt;li&gt;再提交&lt;/li&gt;
+&lt;li&gt;最后删除分支（如删除 feature1)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;使用&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ git log --graph --pretty=oneline --abbrev-commit
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;可以形象地查看分支的合并情况（Git 会生成一副图）&lt;/p&gt;
+&lt;h2 id=&#34;分支管理策略&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#分支管理策略&#34;&gt;#&lt;/a&gt; 分支管理策略&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;git merge --no-ff -m &amp;quot;commit message&amp;quot; &amp;lt;branch name&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;通常 ，合并分支时，Git 会用 Fast forward 模式（移动指针） ，这种模式下，删除分支后，会丢掉分支信息&lt;/p&gt;
+&lt;p&gt;如果要强制禁用 Fast forward 模式， Git 就会再 merge 时生成一个新的 commit，这样，从分支历史上就可以看出分支信息。&lt;/p&gt;
+&lt;p&gt;--no--ff 参数表示禁用 Fast forward&lt;/p&gt;
+&lt;h2 id=&#34;git的更多操作&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#git的更多操作&#34;&gt;#&lt;/a&gt; git 的更多操作&lt;/h2&gt;
+&lt;p&gt;Git 还有许多高级功能。如暂时储存当前工作、多人协作、标签管理等。考虑到目前还接触不到 ，上述功能等需要使用了再来学习更新吧。&lt;/p&gt;
+</content>
+        <category term="git" />
+        <updated>2022-10-02T08:11:52.000Z</updated>
+    </entry>
+    <entry>
+        <id>https://maoding1.github.io/2022/10/01/Git%E5%AD%A6%E4%B9%A001-%20%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/</id>
+        <title>git操作</title>
+        <link rel="alternate" href="https://maoding1.github.io/2022/10/01/Git%E5%AD%A6%E4%B9%A001-%20%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/"/>
+        <content type="html">&lt;h1 id=&#34;git学习01-基本操作&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#git学习01-基本操作&#34;&gt;#&lt;/a&gt; Git 学习 01- 基本操作&lt;/h1&gt;
+&lt;p&gt;&lt;span id=&#34;more&#34;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;%E4%B8%89%E5%8F%B6.jpg&#34; alt=&#34;三叶&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;创建版本库&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#创建版本库&#34;&gt;#&lt;/a&gt; 创建版本库&lt;/h2&gt;
+&lt;p&gt;版本库 (repository) 是一个目录，这个目录里的所有文件都可以被 Git 管理起来，每个文件的修改、删除、Git 都能跟踪，以便任何时刻都可以追踪历史，或者在将来某个时刻可以还原。&lt;/p&gt;
+&lt;p&gt;创建版本库步骤：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;选择一个合适地方，创建一个空目录&lt;/li&gt;
+&lt;li&gt;通过  &lt;code&gt;git init&lt;/code&gt;  命令把这个目录变成 Git 可以管理的仓库&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;把文件添加到版本库&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#把文件添加到版本库&#34;&gt;#&lt;/a&gt; 把文件添加到版本库&lt;/h2&gt;
+&lt;p&gt;把一个文件放到仓库只需要两步（如添加一个 readme.txt 文件）：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;git add readme.txt&lt;/code&gt;   用命令 git add 告诉 Git， 把文件添加到暂存区。可反复多次使用，添加多个文件。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;git commit -m &amp;quot;wrote a readme file&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;git commit 告诉 Git, 把文件提交到仓库。-m 后面输入的是本次提交的说明，注意说明一定要有意义，如告诉仓库本次提交做了什么事，方便后续的版本控制。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;查看工作区状态&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#查看工作区状态&#34;&gt;#&lt;/a&gt; 查看工作区状态&lt;/h2&gt;
+&lt;p&gt;要查看当前工作区的状态，使用  &lt;code&gt;git status&lt;/code&gt;  命令&lt;/p&gt;
+&lt;p&gt;如果有文件被修改过，你又想知道修改了什么 用 &lt;code&gt;git diff filename&lt;/code&gt;  查看修改的内容。git diff 命令可以告诉你当前工作区的文件和仓库的有什么不同。&lt;/p&gt;
+&lt;h2 id=&#34;版本回退&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#版本回退&#34;&gt;#&lt;/a&gt; 版本回退&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;HEAD&lt;/code&gt;  指向的版本就是当前版本，因此，Git 允许我们在版本的历史之间穿梭，使用命令 &lt;code&gt;git reset --hard commit_id&lt;/code&gt; 。版号只要前几位就行了，只要能识别，也可以用 HEAD 和 ^ 表示回退到哪一版。&lt;/li&gt;
+&lt;li&gt;穿梭前，用 &lt;code&gt;git log&lt;/code&gt;  可以查看提交历史，以便确定要回退到哪个版本。&lt;/li&gt;
+&lt;li&gt;重返过去时未来的记录用 git log 就看不到了。要重返未来，用 &lt;code&gt;git reflog&lt;/code&gt;  查看命令历史，以便确定要回到未来的哪个版本。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;撤销修改&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#撤销修改&#34;&gt;#&lt;/a&gt; 撤销修改&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;场景 1：当你改乱了工作区某个文件的内容，想直接丢弃工作区的修改时，用命令 &lt;code&gt;git checkout -- filename&lt;/code&gt; 。&lt;/li&gt;
+&lt;li&gt;场景 2：当你不但改乱了工作区某个文件的内容，还添加到了暂存区时，想丢弃修改，分两步，第一步用命令 &lt;code&gt;git reset HEAD &amp;lt;filename&amp;gt;&lt;/code&gt; ，就回到了场景 1，第二步按场景 1 操作。&lt;/li&gt;
+&lt;li&gt;场景 3：已经提交了不合适的修改到版本库时，想要撤销本次提交，参考版本回退一节，不过前提是没有推送到远程库。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;删除文件&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#删除文件&#34;&gt;#&lt;/a&gt; 删除文件&lt;/h2&gt;
+&lt;p&gt;如果你在文件管理器中把某个文件删了，或者用 &lt;code&gt;rm&lt;/code&gt;  命令删了&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ rm test.txt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这个时候，Git 知道你删了文件，因此，工作区和版本库就不一致了。&lt;/p&gt;
+&lt;p&gt;现在有两种情况。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;确实要从版本库中删除该文件，那就用命令  &lt;code&gt;git rm&lt;/code&gt;  删掉 并且 git commit&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ git rm test.txt
+$ git commit -m &amp;quot;remove test.txt&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;tips：先手动删除文件，然后使用 git rm &amp;lt;file&amp;gt; 和 git add&amp;lt;file &amp;gt; 效果是一样的。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;删除错了，要从版本库中把误删的文件恢复到最新版本。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ git checkout -- test.txt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;git checkout 其实是用版本库里的版本替换工作区的版本，无论工作区是修改还是删除，都可以一键还原。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;添加远程库&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#添加远程库&#34;&gt;#&lt;/a&gt; 添加远程库&lt;/h2&gt;
+&lt;p&gt;远程库既可以充当本地仓库的备份，又可以让其他人通过该仓库来协作，可谓一举多得。&lt;/p&gt;
+&lt;p&gt;创建远程库并将本地与远程库连接。&lt;/p&gt;
+&lt;p&gt;步骤：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;登录 github 创建一个新的仓库，复制该仓库的 SSH&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在本地仓库上运行&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ git remote add origin git@github.com:maoding1/learngit.git
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;(后面的一大串是复制的 SSH) 使本地仓库与远程库连接。&lt;/p&gt;
+&lt;p&gt;git 会把远程库的名字默认设为 origin&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;把本地内容推送到远程库上&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ git push -u origin master
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;-u 参数实际上设置了远程仓库的默认值（比如有多个远程仓库） 之后就可以简化 git pull 和 git push 的命令&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;现在只要本地做了提交，就可以通过  &lt;code&gt;git push origin master&lt;/code&gt;  把本地分支的修改推送到 github&lt;/p&gt;
+&lt;p&gt;tips：要删除远程库 可以用 &lt;code&gt;git remote rm &amp;lt;name&amp;gt;&lt;/code&gt;  命令，但这只是解除了本地与远程的绑定关系，要真正删除远程库，需要登陆 github 手动删除。&lt;/p&gt;
+&lt;h2 id=&#34;克隆远程仓库&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#克隆远程仓库&#34;&gt;#&lt;/a&gt; 克隆远程仓库&lt;/h2&gt;
+&lt;p&gt;知道仓库的 SSH 后，通过 &lt;code&gt;git clone SSH&lt;/code&gt;  命令克隆到本地&lt;/p&gt;
+</content>
+        <category term="git" />
+        <updated>2022-10-01T03:34:47.000Z</updated>
+    </entry>
+    <entry>
+        <id>https://maoding1.github.io/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/</id>
+        <title>Linux—01-Linux安装常识</title>
+        <link rel="alternate" href="https://maoding1.github.io/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/"/>
+        <content type="html">&lt;h1 id=&#34;linux系统的安装&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#linux系统的安装&#34;&gt;#&lt;/a&gt; Linux 系统的安装&lt;/h1&gt;
+&lt;p&gt;&lt;span id=&#34;more&#34;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;preview.jpg&#34; alt=&#34;芝士辉夜&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;交换分区&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#交换分区&#34;&gt;#&lt;/a&gt; 交换分区&lt;/h2&gt;
+&lt;p&gt;直接从物理内存读写数据比从硬盘读写快的多，然而物理硬盘是有限的，这样就使用到了虚拟内存。虚拟内存是为了满足物理内存的不足而提出的一种策略，他是利用磁盘空间虚拟出的一块逻辑内存，用作虚拟内存的磁盘空间被称为&lt;strong&gt;交换分区（swap 分区）&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;内核会将暂时不用的内存信息写到交换分区，使物理内存得到释放并用于其它用途，当需要原始内容时，这些信息会被重新从交换分区读入物理内存。&lt;/p&gt;
+&lt;p&gt;Linux 的内存管理采用分页存取机制，为了保证物理内存能得到充分利用，内核会在适当时候将物理内存中不经常使用的数据块自动交换到虚拟内存中，而将经常使用的信息保留到物理内存。&lt;/p&gt;
+&lt;h2 id=&#34;分区命名&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#分区命名&#34;&gt;#&lt;/a&gt; 分区命名&lt;/h2&gt;
+&lt;p&gt;Linux 系统使用字母和数字的组合来指代硬盘分区，该命名方案是基于文件的，文件名的格式为 */dev/xxyN* (比如 /dev/sda1 分区)&lt;/p&gt;
+&lt;p&gt;/dev: 这是 Linux 系统中所有设备文件所在的目录名。因为分区位于硬盘上，而硬盘是设备，所以这些文件代表了在 /dev 上所有可能的分区&lt;/p&gt;
+&lt;p&gt;xx：分区名的前两个字母表示分区所在设备的类型，通常是 hd（IDE）硬盘或 sd（SCSI 硬盘）&lt;/p&gt;
+&lt;p&gt;y: 这个字母表示分区所在的设备。例如，/dev/hda（第一个 IDE 硬盘）或 /dev/sdb (第二个 SCSI 硬盘)&lt;/p&gt;
+&lt;p&gt;N：最后的数字 N 代表硬盘上的第几个分区。&lt;/p&gt;
+&lt;h2 id=&#34;挂载目录&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#挂载目录&#34;&gt;#&lt;/a&gt; 挂载目录&lt;/h2&gt;
+&lt;p&gt;Linux 系统中的每一个分区都是构成支持一组文件和目录 所必需的存储区的一部分。它是通过挂载来实现的，挂载 是将分区关联到某一目录的过程，挂载分区使起始于这个 指定目录（称为挂载目录）的存储区能够被使用。&lt;/p&gt;
+&lt;p&gt;例如，如果分区 /dev/sda5 被挂载在目录 /usr 上，这意味着 所有在 /usr 下的文件和目录在物理上位于 /dev/sda5。因此 文件 /usr/bin/cal 被保存在分区 /dev/sda5 上，而文件 /etc/passwd 却不是。&lt;/p&gt;
+&lt;p&gt;/usr 目录下的目录还有可能是其它分区的挂载目录。例如， 某个分区（如 /dev/sda7）可以被挂载到 /usr/local 目录下， 这意味着文件 /usr/local/man/whatis 将位于分区 /dev/sda7 上，而不是分区 /dev/sda5 上。&lt;/p&gt;
+&lt;h2 id=&#34;分区规划&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#分区规划&#34;&gt;#&lt;/a&gt; 分区规划&lt;/h2&gt;
+&lt;p&gt;合理的分区规划 ：&lt;/p&gt;
+&lt;p&gt;・swap 分区：实现虚拟内存，建议大小是物理内存 的 1～2 倍；&lt;/p&gt;
+&lt;p&gt;・/boot 分区：建议大小最少为 200MB；・/usr 分区：用来存放 Linux 系统中的应用程序， 其相关数据较多，建议大小最少为 8GB；&lt;/p&gt;
+&lt;p&gt;・/var 分区：用来存放 Linux 系统中经常变化的数 据以及日志文件，建议大小最少为 1GB；&lt;/p&gt;
+&lt;p&gt;・/ 分区：Linux 系统的根目录，所有的目录都挂在 这个目录下面，建议大小最少为 1GB；&lt;/p&gt;
+&lt;p&gt;・/home 分区：存放普通用户的数据，是普通用户 的宿主目录，建议大小为剩下的空间。&lt;/p&gt;
+</content>
+        <category term="Linux" />
+        <updated>2022-09-30T07:21:29.000Z</updated>
+    </entry>
+</feed>

@@ -1,0 +1,229 @@
+<?xml version="1.0"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://maoding1.github.io</id>
+    <title>MikeMao&#39;s blog • Posts by &#34;爬虫&#34; tag</title>
+    <link href="https://maoding1.github.io" />
+    <updated>2023-01-25T03:21:52.000Z</updated>
+    <category term="C++" />
+    <category term="git" />
+    <category term="Linux" />
+    <category term="Maven" />
+    <category term="STL C++" />
+    <category term="python 爬虫" />
+    <category term="python" />
+    <category term="爬虫" />
+    <entry>
+        <id>https://maoding1.github.io/2023/01/25/python%E7%88%AC%E8%99%AB%E5%AD%A6%E4%B9%A0/</id>
+        <title>python爬虫学习</title>
+        <link rel="alternate" href="https://maoding1.github.io/2023/01/25/python%E7%88%AC%E8%99%AB%E5%AD%A6%E4%B9%A0/"/>
+        <content type="html">&lt;h1 id=&#34;python爬虫学习总结&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#python爬虫学习总结&#34;&gt;#&lt;/a&gt; python 爬虫学习总结&lt;/h1&gt;
+&lt;p&gt;学习 python 爬虫的一些笔记&lt;/p&gt;
+&lt;p&gt;&lt;span id=&#34;more&#34;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;h2 id=&#34;requests模块&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#requests模块&#34;&gt;#&lt;/a&gt; requests 模块&lt;/h2&gt;
+&lt;p&gt;requests 模块流程：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;1. 指定url
+2. 发起请求 response = requests.get(url)
+3. 获取数据 page_source = response.text()
+4. 存储数据 文件操作/数据库操作
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;参数 tips：params 是用来发送查询字符串，而 data 是用来发送正文的。post 与 get 方法的特性是：这两种参数 post（）方法都可以用，get 方法只能发查询字符串，不能发送正文&lt;/p&gt;
+&lt;p&gt;text 返回字符串 content 返回二进制（爬取图片可用）  json 返回对象&lt;/p&gt;
+&lt;p&gt;分页爬取：&lt;/p&gt;
+&lt;p&gt;​	如果是 ajax，在检查、网络、xhr 中查看&lt;/p&gt;
+&lt;p&gt;​	如果是新链接，可以使用正则表达式匹配 url&lt;/p&gt;
+&lt;p&gt;如果是用 ajax 的包：要注意的：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;看请求方法 是 GET 还是 POST。。。&lt;/li&gt;
+&lt;li&gt;看响应头的 content-type 选择 reponse.text () 或 reponse.json ()&lt;/li&gt;
+&lt;li&gt;看负载中带的参数&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;中文乱码问题（文件编码格式为 utf8 json.dump 时 ensure acill 选项关闭）&lt;/p&gt;
+&lt;p&gt;什么是 ajax? （根据用户行为重新渲染界面。 不修改 url 在检查 - 网络 - XHR 中查看具体信息）&lt;/p&gt;
+&lt;h2 id=&#34;bs4-数据解析&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#bs4-数据解析&#34;&gt;#&lt;/a&gt; bs4 数据解析&lt;/h2&gt;
+&lt;p&gt;bs4 数据解析的原理：&lt;/p&gt;
+&lt;p&gt;1. 实例化一个 BeautifulSoup 对象 并且将页面原码数据加载到该对象中&lt;/p&gt;
+&lt;p&gt;2. 通过调用 bs 对象中相关的属性或方法进行标签定位和数据提取&lt;/p&gt;
+&lt;p&gt;如何实例化 beautifulsoup 对象：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;将本地的 html 文档中的数据加载到该对象中&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;fp &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token builtin&#34;&gt;open&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;soup &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; BeautifulSoup&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;fp&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#39;lxml&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;将互联网上获取的页面源码加载到该对象中&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;page_text = response.text
+soup = BeautifulSoup(page_text,&#39;lxml&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;提供的用于数据解析的方法和属性：&lt;/p&gt;
+&lt;p&gt;soup.tagname 返回 html 中第一次出现的 tagname 标签&lt;/p&gt;
+&lt;p&gt;soup.find (&#39;tagname&#39;) 等同于 soup.tagname&lt;/p&gt;
+&lt;p&gt;soup.find (&#39;tagname&#39;, class = &#39;classname&#39;) 定义属性位置， class 可以替换为 id attr&lt;/p&gt;
+&lt;p&gt;soup.find_all (&#39;tagname&#39;) 找到符合要求所有标签 返回列表&lt;/p&gt;
+&lt;p&gt;soup.select (&#39;.tang&#39;)  参数为某种选择器（id class 标签），返回一个列表&lt;/p&gt;
+&lt;p&gt;soup.select (&#39;.tang&amp;gt; ul &amp;gt; li &amp;gt; a&#39;) 层级选择器，返回一个列表&lt;/p&gt;
+&lt;p&gt;soup.selest (&#39;.tang&amp;gt; ul a&#39;) &amp;gt; 号表示一个层级，空格表示多个层级&lt;/p&gt;
+&lt;p&gt;怎么获取标签之间的文本数据：&lt;/p&gt;
+&lt;p&gt;使用	soup.a.text/string/get_text () 方法&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;-   text/get_text(): 可以获取某一个标签中所有的文本内容（多套几层也能得到）
+-   string：获取标签下直系的文本内容
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;怎么获取标签的属性值：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;soup.select(&#39;tang &amp;gt; ul &amp;gt; li &amp;gt; a&#39;)[0][&#39;href&#39;]&lt;/code&gt;  直接获得 a 标签中的 herf 属性值&lt;/p&gt;
+&lt;h2 id=&#34;xpath解析&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#xpath解析&#34;&gt;#&lt;/a&gt; xpath 解析&lt;/h2&gt;
+&lt;p&gt;xpath 解析： 最常用且最便捷高效的一种解析方式。&lt;/p&gt;
+&lt;p&gt;xpath 解析原理：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;1. 实例化一个etree的对象，且需要将被解析的页面源码数据加载到该对象中。
+2. 调用etree对象中的xpath方法结合xpath表达式实现标签的定位和内容的捕获。
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;环境安装：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;- pip install lxml
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;如何实例化 etree 对象&lt;/p&gt;
+&lt;p&gt;​	from lxml import etree&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;将本地的 html 文档中的源码数据加载到 etree 对象中：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt; etree.parse(filePath)&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;可以将从互联网上获取的源码数据加载到该对象中&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;etree.HTML(&#39;page_text&#39;)        -xpath(&#39;xpath表达式&#39;)&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;/ 表示一个层级  // 表示多个层级&lt;/p&gt;
+&lt;p&gt;路径后加 [@ 属性名] 精确定位 如 &lt;code&gt;xx_list = tree.xpath(&#39;//div[@class=&#39;song&#39;]&#39;)&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;中括号内加数字代表取第几个（索引下标从 1 开始） &lt;code&gt;xx_list[0]&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;获取文本：定位后加 /text ()&lt;/p&gt;
+&lt;h2 id=&#34;中文出现乱码常见的处理方法&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#中文出现乱码常见的处理方法&#34;&gt;#&lt;/a&gt; 中文出现乱码常见的处理方法&lt;/h2&gt;
+&lt;p&gt;两种常见方法，一般能解决所有中文乱码问题&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;对爬下来的整个数据改变编码：&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;response&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;encoding &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;utf-8&#39;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;对出现问题的对象单独进行编码与解码&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;img_name &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; img_name&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;encode&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#39;iso-8859-1&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;decode&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#39;gbk&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;selenium模块&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#selenium模块&#34;&gt;#&lt;/a&gt; selenium 模块&lt;/h2&gt;
+&lt;h3 id=&#34;selenium模块与爬虫之间具有怎样的关联&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#selenium模块与爬虫之间具有怎样的关联&#34;&gt;#&lt;/a&gt; selenium 模块与爬虫之间具有怎样的关联？&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;便捷的获取网站中动态加载的数据&lt;/li&gt;
+&lt;li&gt;便捷实现模拟登录&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;什么是selenium模块&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#什么是selenium模块&#34;&gt;#&lt;/a&gt; 什么是 selenium 模块&lt;/h3&gt;
+&lt;p&gt;基于浏览器自动化的一个模块。 （编写代码让浏览器完成自动化操作）&lt;/p&gt;
+&lt;h3 id=&#34;selenium使用流程&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#selenium使用流程&#34;&gt;#&lt;/a&gt; selenium 使用流程：&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;环境安装：pip install selenium&lt;/li&gt;
+&lt;li&gt;下载一个浏览器的驱动程序&lt;/li&gt;
+&lt;li&gt;实例化一个浏览器对象&lt;/li&gt;
+&lt;/ul&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;from&lt;/span&gt; selenium &lt;span class=&#34;token keyword&#34;&gt;import&lt;/span&gt; webdriver&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;from&lt;/span&gt; selenium&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;webdriver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;edge&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;service &lt;span class=&#34;token keyword&#34;&gt;import&lt;/span&gt; Service&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;# 实例化一个浏览器对象 参数中的路径为浏览器驱动程序的路径（建议与程序在同一路径下）&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;service &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; Service&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;executable_path &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;./edgedriver.exe&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;bro &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; webdriver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;Edge&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;service &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; service&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;ul&gt;
+&lt;li&gt;编写基于浏览器的代码&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;selenium常用函数&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#selenium常用函数&#34;&gt;#&lt;/a&gt; selenium 常用函数&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;bro.get (url)  											让浏览器发起一个指定 url 对应请求&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;page_text = bro.page_source		  获取浏览器当前页面的页面源码数据&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;标签定位：使用 find_element 方法&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;​	search_input = bro.find_element(By.[attrname], &amp;quot;[attr]&#39;s value&amp;quot;)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;标签交互：&lt;/p&gt;
+&lt;p&gt;​	search_input.send_keys(&#39;xxx&#39;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;执行一组 js 代码&lt;/p&gt;
+&lt;p&gt;​	bro.execute_script(&#39;code...&#39;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;点击按钮：&lt;/p&gt;
+&lt;p&gt;​	btn.click()&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;后退 / 前进&lt;/p&gt;
+&lt;p&gt;​	bro.back()/forward()&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;selenium处理iframe&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#selenium处理iframe&#34;&gt;#&lt;/a&gt; selenium 处理 iframe&lt;/h3&gt;
+&lt;p&gt;bro.switch_to.frame(&#39;frame_name&#39;)&lt;/p&gt;
+&lt;h3 id=&#34;动作链项目暂时用不到&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#动作链项目暂时用不到&#34;&gt;#&lt;/a&gt; 动作链 (项目暂时用不到)&lt;/h3&gt;
+&lt;p&gt;南大相关网站的登录还不需要滑块验证&lt;/p&gt;
+&lt;p&gt;碰到滑块验证的时候可能就需要用到了&lt;/p&gt;
+&lt;h3 id=&#34;selenium实现模拟登录&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#selenium实现模拟登录&#34;&gt;#&lt;/a&gt; selenium 实现模拟登录&lt;/h3&gt;
+&lt;p&gt;结合前面的基础知识 先点击账号密码登录按钮，找到账号输入框与密码输入框，&lt;/p&gt;
+&lt;p&gt;输入账号密码，点击登录按钮&lt;/p&gt;
+&lt;h2 id=&#34;模拟登陆cookie操作&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#模拟登陆cookie操作&#34;&gt;#&lt;/a&gt; 模拟登陆 cookie 操作&lt;/h2&gt;
+&lt;h3 id=&#34;cookie有什么作用&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#cookie有什么作用&#34;&gt;#&lt;/a&gt; cookie 有什么作用&lt;/h3&gt;
+&lt;p&gt;TCP/IP 协议是无状态的，因此通常的 get 请求 服务器端不知道你有没有处于登录状态&lt;/p&gt;
+&lt;p&gt;携带 cookie 值的 get 请求 能使服务器端知道你已经处于登录状态&lt;/p&gt;
+&lt;h3 id=&#34;手动cookie不推荐&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#手动cookie不推荐&#34;&gt;#&lt;/a&gt; 手动 cookie（不推荐）&lt;/h3&gt;
+&lt;p&gt;登录网站后通过抓包工具手动复制 cookie 值 将 cookie 值封装到 headers 中，写死在程序里&lt;/p&gt;
+&lt;p&gt;缺点：cookie 值一段时间后会过期&lt;/p&gt;
+&lt;h3 id=&#34;自动处理&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#自动处理&#34;&gt;#&lt;/a&gt; 自动处理&lt;/h3&gt;
+&lt;p&gt;cookie 值是如何产生的？既然 cookie 值能让服务器知道你已经处于登录状态，那么理所当然 cookie 值是登录时发送 post 请求后服务器端生成后发送给客户端的&lt;/p&gt;
+&lt;p&gt;session 会话对象：&lt;/p&gt;
+&lt;p&gt;作用：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;可以进行请求的发送&lt;/li&gt;
+&lt;li&gt;如果请求过程中产生了 cookie，则该 cookie 会被自动存储 / 携带在该 session 对象中&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;使用：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;创建一个 session 对象 ：  &lt;code&gt;session = requests.Session()&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;使用 session 对象进行模拟登录 post 请求的发送 (cookie 就会被存储在 session 中)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;session 对象对个人主页对应的 get 请求进行发送（携带了 cookie）&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;如果登录找不到 post 请求或遇到问题导致获得不到 cookie：&lt;/p&gt;
+&lt;p&gt;​	适用 selenium 登录后 用下列方法直接取得 cookie:&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;c &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; bro&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;get_cookies&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;bro&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;close&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;cookies &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;&amp;#123;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;#125;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;# 获取 cookie 中的 name 和 value, 转化成 requests 可以使⽤的形式&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;for&lt;/span&gt; cookie &lt;span class=&#34;token keyword&#34;&gt;in&lt;/span&gt; c&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;6&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    cookies&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;cookie&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#39;name&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; cookie&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#39;value&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;然后就能用 cookies 了：&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;response &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; requests&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;get&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;url&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;detail_url&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; headers&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;headers&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; cookies&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;cookies&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;h2 id=&#34;并行爬取异步爬虫&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#并行爬取异步爬虫&#34;&gt;#&lt;/a&gt; 并行爬取（异步爬虫）&lt;/h2&gt;
+&lt;p&gt;原理：利用进程池实现并行爬取&lt;/p&gt;
+&lt;p&gt;使用方法：&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;from&lt;/span&gt; multiprocessing &lt;span class=&#34;token keyword&#34;&gt;import&lt;/span&gt; Pool&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;# 创建进程池&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;pool &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; Pool&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;processes&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;token number&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;pool&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;token builtin&#34;&gt;map&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;function_name&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; iterable&lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt;chunksize&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;&lt;strong&gt;processes 参数设置注意&lt;/strong&gt;：当进程数量大于 CPU 的内核数量时，等待运行的进程会等到其他进程运行完毕让出内核为止。因此，如果 CPU 是单核，就无法进行多进程并行。在使用多进程爬虫之前，我们需要先了解计算机 CPU 的核心数量。这里用到了 multiprocessing:&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;from&lt;/span&gt; multiprocessing &lt;span class=&#34;token keyword&#34;&gt;import&lt;/span&gt; cpu_count&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;cpu_count&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;运行结果为 16。&lt;/p&gt;
+&lt;p&gt;使用 eg：&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;urls &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#39;https://xjh.haitou.cc/xa/after/page-&amp;#123;&amp;#125;&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;token builtin&#34;&gt;format&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;i&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;token keyword&#34;&gt;for&lt;/span&gt; i &lt;span class=&#34;token keyword&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;token builtin&#34;&gt;range&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token number&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;token number&#34;&gt;21&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;]&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;pool &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; Pool&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;processes&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;token number&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;#get_xuanjing 为参数是一个 url 的爬虫函数&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;pool&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;token builtin&#34;&gt;map&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;get_xuanjiang&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt;urls&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;pool&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;close&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# 关闭进程池，不再接受新的进程&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;6&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;pool&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;join&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;# 主进程阻塞等待子进程的退出&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;h2 id=&#34;有关爬虫的一些问题&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#有关爬虫的一些问题&#34;&gt;#&lt;/a&gt; 有关爬虫的一些问题：&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;爬下来的文本中带有 &amp;amp; nbsp 在 html 中表示 no breaking space（不自动换行的空格）&lt;/p&gt;
+&lt;p&gt;此时可以采用 str.replace (u&#39;\xa0&#39;, &#39;&#39;) 来解决 str 为待处理字符串&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;requests 里.text 与 .content 方法的区别：&lt;/p&gt;
+&lt;p&gt;两者区别在于，content 中间存的是字节码，而 text 中存的是 Beautifulsoup 根据猜测的编码方式将 content 内容编码成字符串。&lt;/p&gt;
+&lt;p&gt;直接输出 content，会发现前面存在 b&#39; 这样的标志，这是字节字符串的标志，而 text 是，没有前面的 b, 对于纯 ascii 码，这两个可以说一模一样，对于其他的文字，需要正确编码才能正常显示。大部分情况建议使用.text，因为显示的是汉字，但有时会显示乱码，这时需要用.content.decode (&#39;utf-8&#39;)，中文常用 utf-8 和 GBK，GB2312 等。这样可以手工选择文字编码方式。&lt;/p&gt;
+&lt;p&gt;所以简而言之，.text 是现成的字符串，.content 还要编码，但是.text 不是所有时候显示都正常，这是就需要用.content 进行手动编码&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;两种常见方法，一般能解决所有中文乱码问题&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;对爬下来的整个数据改变编码：&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;response&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;encoding &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;utf-8&#39;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;对出现问题的对象单独进行编码与解码&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;img_name &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; img_name&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;encode&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#39;iso-8859-1&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;decode&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#39;gbk&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+        <category term="python" />
+        <category term="爬虫" />
+        <updated>2023-01-25T03:21:52.000Z</updated>
+    </entry>
+</feed>

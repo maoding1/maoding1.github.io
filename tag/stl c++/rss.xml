@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+    <channel>
+        <title>MikeMao&#39;s blog • Posts by &#34;stl c++&#34; tag</title>
+        <link>https://maoding1.github.io</link>
+        <description>a student of NJU who use this website to record learning experience</description>
+        <language>zh-CN</language>
+        <pubDate>Wed, 05 Oct 2022 19:54:58 +0800</pubDate>
+        <lastBuildDate>Wed, 05 Oct 2022 19:54:58 +0800</lastBuildDate>
+        <category>C++</category>
+        <category>git</category>
+        <category>Linux</category>
+        <category>Maven</category>
+        <category>STL C++</category>
+        <category>python 爬虫</category>
+        <category>python</category>
+        <category>爬虫</category>
+        <item>
+            <guid isPermalink="true">https://maoding1.github.io/2022/10/05/STL%E5%AD%A6%E4%B9%A0-01-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E4%B8%8Evector/</guid>
+            <title>STL学习-01-智能指针与vector</title>
+            <link>https://maoding1.github.io/2022/10/05/STL%E5%AD%A6%E4%B9%A0-01-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E4%B8%8Evector/</link>
+            <category>STL C++</category>
+            <pubDate>Wed, 05 Oct 2022 19:54:58 +0800</pubDate>
+            <description><![CDATA[ &lt;h1 id=&#34;c-的标准模板库&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#c-的标准模板库&#34;&gt;#&lt;/a&gt; c++ 的标准模板库&lt;/h1&gt;
+&lt;p&gt;&lt;span id=&#34;more&#34;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;%E9%9B%A8%E5%A4%A9-%E5%A5%B3%E5%AD%A9-%E5%95%86%E5%BA%97.jpg&#34; alt=&#34;雨天 女孩 商店&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;智能指针模板类&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#智能指针模板类&#34;&gt;#&lt;/a&gt; 智能指针模板类&lt;/h2&gt;
+&lt;p&gt;智能指针是类似于指针的类对象，比较方便内存管理。传统的指针必须时时刻刻记得 new 与 delete 的配套使用，很容易造成内存泄漏。而智能指针实际上类似于一个类，有自己的析构函数，所以编译器再不需要智能指针时便可以自动调用其析构函数释放内存，也就是可以略去 delete 操作。&lt;/p&gt;
+&lt;h3 id=&#34;使用智能指针&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#使用智能指针&#34;&gt;#&lt;/a&gt; 使用智能指针&lt;/h3&gt;
+&lt;p&gt;要创建智能指针对象，必须包含头文件 memory 然后使用通常的模板语法来实例化所需类型的指针。&lt;/p&gt;
+&lt;p&gt;声明：  &lt;code&gt; template &amp;lt;class X&amp;gt; class auto_ptr&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;使用 eg：  &lt;code&gt; auto_ptr&amp;lt;double&amp;gt; pd(new double);&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;​					  &lt;code&gt;auto_ptr&amp;lt;string&amp;gt; ps(new string);&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;注意： 智能指针模板位于名称空间 std 中。&lt;/p&gt;
+&lt;h3 id=&#34;有关智能指针的注意事项&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#有关智能指针的注意事项&#34;&gt;#&lt;/a&gt; 有关智能指针的注意事项&lt;/h3&gt;
+&lt;p&gt;c++ 目前有三种常见智能指针：auto_ptr, unique_ptr,shared_ptr&lt;/p&gt;
+&lt;p&gt;在使用智能指针时，可能会遇到问题，比如如果两个智能指针指向同一块内存区域，则程序会删除同一个对象两次，这是会造成极大错误的。为避免这种问题，方法有多种。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;建立所有权概念，对于特定对象，只有一个智能指针可以拥有他。 这是用于 auto_ptr 和 unique_ptr 的策略，但 unique_ptr 更严格&lt;/li&gt;
+&lt;li&gt;创建智能更高的指针，跟踪引用特定对象的智能指针数，这称为引用计数。当最后一个指针过期时，才调用 delete。这是 shared_ptr 的策略&lt;/li&gt;
+&lt;li&gt;执行深拷贝&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;auto_ptr 和 unique_ptr 的区别：&lt;/p&gt;
+&lt;p&gt;​		两个 auto_ptr 指向同一块内存区域时，可以通过编译，但可能在运行时报错。两个 unique_ptr 指向同一块内存区域时，会在编译阶段就报错（除非赋值给其中一个 unique_ptr 的另一个 unique_ptr 是一个用完即毁的智能指针，如某一函数中 new 出来的 unique_ptr 的返回）。&lt;/p&gt;
+&lt;h2 id=&#34;模板类vector&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#模板类vector&#34;&gt;#&lt;/a&gt; 模板类 vector&lt;/h2&gt;
+&lt;h3 id=&#34;创建vector&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#创建vector&#34;&gt;#&lt;/a&gt; 创建 vector&lt;/h3&gt;
+&lt;p&gt;要创建 vector 模板对象， 可使用通常的 &amp;lt;type&amp;gt; 表示法来指出要使用的类型。另外，vector 模板使用动态内存分配，因此可以用初始化参数指出需要多少元素。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt; vector&amp;lt;int&amp;gt; ratings(5);  // a vector of 5 ints&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&#34;可对vector执行的操作&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#可对vector执行的操作&#34;&gt;#&lt;/a&gt; 可对 vector 执行的操作&lt;/h3&gt;
+&lt;p&gt;size ()—— 返回容器中元素数目        swap ()—— 交换两个容器的内容             begin ()—— 返回一个指向容器中第一个元素的 &lt;em&gt;&lt;strong&gt;迭代器&lt;/strong&gt;&lt;/em&gt;      end () 返回一个表示超过容器尾的&lt;em&gt;&lt;strong&gt;迭代器&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;什么是迭代器？ 它是一个广义的指针，可以对其执行类似指针的操作，如解除引用 *、递增 ++&lt;/p&gt;
+&lt;p&gt;STL 的每个容器类都定义了一个合适的迭代器，该迭代器的类型是一个名为 iterator 的 typedef，作用域为整个类。如要为 vector 的 double 类型规范声明一个迭代器，可以这样做：&lt;/p&gt;
+&lt;p&gt;​	 &lt;code&gt;vector&amp;lt;double&amp;gt;::iterator pd;//  pd an iterator&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;假设 scores 是一个 vector&amp;lt;double&amp;gt; 对象，可以利用好 auto 关键字简化书写：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;auto pd = scores.begin()&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;vector 还支持 push_back () (内存不够会自动扩充容器), erase () insert () 等方法&lt;/p&gt;
+&lt;h3 id=&#34;其它操作&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#其它操作&#34;&gt;#&lt;/a&gt; 其它操作&lt;/h3&gt;
+&lt;p&gt;有两个具有代表性的 STL 函数：for_each () 和 sort () 。&lt;/p&gt;
+&lt;p&gt;for_each () 函数可用于很多容器类，它接受 3 个参数。前两个是定义容器中的迭代器，最后一个是一个函数指针。for_each () 函数将被指向的函数应用于容器区间中的各个元素，可以用 for_each () 函数来代替 for 循环。&lt;/p&gt;
+&lt;p&gt;eg:  &lt;code&gt;for_each(books.begin(), books.end(), ShowReview);&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;sort () 函数也要求函数支持随机访问。该函数接收两个定义区间的迭代器参数。如果容器中的元素有内置的 &amp;lt; 运算符进行值比较，可以直接使用。如果容器中的元素是用户定义的类对象，则用户需要利用重载定义 &amp;lt; 运算符。&lt;/p&gt;
+&lt;p&gt;还有第二个版本的 sort () 函数，它接收第三个参数，该参数是一个函数指针，不一定是用于比较的 operator&amp;lt;()，而是一个返回值可转换为 bool 类型的函数，它接收两个容器中的元素，返回为 false 表示两个参数的顺序不正确。&lt;/p&gt;
+ ]]></description>
+        </item>
+    </channel>
+</rss>

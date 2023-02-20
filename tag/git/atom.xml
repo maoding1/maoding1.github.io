@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://maoding1.github.io</id>
+    <title>MikeMao&#39;s blog • Posts by &#34;git&#34; tag</title>
+    <link href="https://maoding1.github.io" />
+    <updated>2022-10-02T08:11:52.000Z</updated>
+    <category term="C++" />
+    <category term="git" />
+    <category term="Linux" />
+    <category term="Maven" />
+    <category term="STL C++" />
+    <category term="python 爬虫" />
+    <category term="python" />
+    <category term="爬虫" />
+    <entry>
+        <id>https://maoding1.github.io/2022/10/02/Git%E5%AD%A6%E4%B9%A002-%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86/</id>
+        <title>Git学习02-分支管理</title>
+        <link rel="alternate" href="https://maoding1.github.io/2022/10/02/Git%E5%AD%A6%E4%B9%A002-%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86/"/>
+        <content type="html">&lt;h1 id=&#34;git学习02-分支管理&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#git学习02-分支管理&#34;&gt;#&lt;/a&gt; Git 学习 02 - 分支管理&lt;/h1&gt;
+&lt;p&gt;&lt;span id=&#34;more&#34;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;%E8%BD%BB%E9%9F%B3%E5%B0%91%E5%A5%B3.jpg&#34; alt=&#34;轻音少女&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;创建与合并分支&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#创建与合并分支&#34;&gt;#&lt;/a&gt; 创建与合并分支&lt;/h2&gt;
+&lt;p&gt;查看分支 ：  &lt;code&gt;git branch&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;创建分支：  &lt;code&gt;git branch &amp;lt;name&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;切换分支：  &lt;code&gt;git switch &amp;lt;name&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;创建 + 切换分支:  &lt;code&gt;git switch -c &amp;lt;name&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;合并某分支到当前分支 ：  &lt;code&gt;git merge &amp;lt;name&amp;gt;&lt;/code&gt;  这里的 name 使某分支的 name&lt;/p&gt;
+&lt;p&gt;删除分支：  &lt;code&gt;git branch -d &amp;lt;name&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id=&#34;解决冲突&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#解决冲突&#34;&gt;#&lt;/a&gt; 解决冲突&lt;/h2&gt;
+&lt;p&gt;eg：当你创建了一个 feature1 分支 其在 master 分支上添加了一些内容并进行提交，此时切换会 master 分支并使用  &lt;code&gt;git merge feature1&lt;/code&gt;  合并分支是不会有问题的（Git 会在底层移动 master 的指针到 feature1 上）。但如果你在 feature1 上修改了某个文件并提交，在切换会 master 分支后修改了同一份文件并提交，那么此时 git merge 就会报错了。&lt;/p&gt;
+&lt;p&gt;此时可以：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;使用 &lt;code&gt;git status&lt;/code&gt;  查看冲突的文件（如果你改了很多，分不清哪里冲突了）&lt;/li&gt;
+&lt;li&gt;手动解决冲突&lt;/li&gt;
+&lt;li&gt;再提交&lt;/li&gt;
+&lt;li&gt;最后删除分支（如删除 feature1)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;使用&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ git log --graph --pretty=oneline --abbrev-commit
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;可以形象地查看分支的合并情况（Git 会生成一副图）&lt;/p&gt;
+&lt;h2 id=&#34;分支管理策略&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#分支管理策略&#34;&gt;#&lt;/a&gt; 分支管理策略&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;git merge --no-ff -m &amp;quot;commit message&amp;quot; &amp;lt;branch name&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;通常 ，合并分支时，Git 会用 Fast forward 模式（移动指针） ，这种模式下，删除分支后，会丢掉分支信息&lt;/p&gt;
+&lt;p&gt;如果要强制禁用 Fast forward 模式， Git 就会再 merge 时生成一个新的 commit，这样，从分支历史上就可以看出分支信息。&lt;/p&gt;
+&lt;p&gt;--no--ff 参数表示禁用 Fast forward&lt;/p&gt;
+&lt;h2 id=&#34;git的更多操作&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#git的更多操作&#34;&gt;#&lt;/a&gt; git 的更多操作&lt;/h2&gt;
+&lt;p&gt;Git 还有许多高级功能。如暂时储存当前工作、多人协作、标签管理等。考虑到目前还接触不到 ，上述功能等需要使用了再来学习更新吧。&lt;/p&gt;
+</content>
+        <category term="git" />
+        <updated>2022-10-02T08:11:52.000Z</updated>
+    </entry>
+    <entry>
+        <id>https://maoding1.github.io/2022/10/01/Git%E5%AD%A6%E4%B9%A001-%20%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/</id>
+        <title>git操作</title>
+        <link rel="alternate" href="https://maoding1.github.io/2022/10/01/Git%E5%AD%A6%E4%B9%A001-%20%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/"/>
+        <content type="html">&lt;h1 id=&#34;git学习01-基本操作&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#git学习01-基本操作&#34;&gt;#&lt;/a&gt; Git 学习 01- 基本操作&lt;/h1&gt;
+&lt;p&gt;&lt;span id=&#34;more&#34;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;%E4%B8%89%E5%8F%B6.jpg&#34; alt=&#34;三叶&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;创建版本库&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#创建版本库&#34;&gt;#&lt;/a&gt; 创建版本库&lt;/h2&gt;
+&lt;p&gt;版本库 (repository) 是一个目录，这个目录里的所有文件都可以被 Git 管理起来，每个文件的修改、删除、Git 都能跟踪，以便任何时刻都可以追踪历史，或者在将来某个时刻可以还原。&lt;/p&gt;
+&lt;p&gt;创建版本库步骤：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;选择一个合适地方，创建一个空目录&lt;/li&gt;
+&lt;li&gt;通过  &lt;code&gt;git init&lt;/code&gt;  命令把这个目录变成 Git 可以管理的仓库&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;把文件添加到版本库&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#把文件添加到版本库&#34;&gt;#&lt;/a&gt; 把文件添加到版本库&lt;/h2&gt;
+&lt;p&gt;把一个文件放到仓库只需要两步（如添加一个 readme.txt 文件）：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;git add readme.txt&lt;/code&gt;   用命令 git add 告诉 Git， 把文件添加到暂存区。可反复多次使用，添加多个文件。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;git commit -m &amp;quot;wrote a readme file&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;git commit 告诉 Git, 把文件提交到仓库。-m 后面输入的是本次提交的说明，注意说明一定要有意义，如告诉仓库本次提交做了什么事，方便后续的版本控制。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;查看工作区状态&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#查看工作区状态&#34;&gt;#&lt;/a&gt; 查看工作区状态&lt;/h2&gt;
+&lt;p&gt;要查看当前工作区的状态，使用  &lt;code&gt;git status&lt;/code&gt;  命令&lt;/p&gt;
+&lt;p&gt;如果有文件被修改过，你又想知道修改了什么 用 &lt;code&gt;git diff filename&lt;/code&gt;  查看修改的内容。git diff 命令可以告诉你当前工作区的文件和仓库的有什么不同。&lt;/p&gt;
+&lt;h2 id=&#34;版本回退&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#版本回退&#34;&gt;#&lt;/a&gt; 版本回退&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;HEAD&lt;/code&gt;  指向的版本就是当前版本，因此，Git 允许我们在版本的历史之间穿梭，使用命令 &lt;code&gt;git reset --hard commit_id&lt;/code&gt; 。版号只要前几位就行了，只要能识别，也可以用 HEAD 和 ^ 表示回退到哪一版。&lt;/li&gt;
+&lt;li&gt;穿梭前，用 &lt;code&gt;git log&lt;/code&gt;  可以查看提交历史，以便确定要回退到哪个版本。&lt;/li&gt;
+&lt;li&gt;重返过去时未来的记录用 git log 就看不到了。要重返未来，用 &lt;code&gt;git reflog&lt;/code&gt;  查看命令历史，以便确定要回到未来的哪个版本。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;撤销修改&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#撤销修改&#34;&gt;#&lt;/a&gt; 撤销修改&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;场景 1：当你改乱了工作区某个文件的内容，想直接丢弃工作区的修改时，用命令 &lt;code&gt;git checkout -- filename&lt;/code&gt; 。&lt;/li&gt;
+&lt;li&gt;场景 2：当你不但改乱了工作区某个文件的内容，还添加到了暂存区时，想丢弃修改，分两步，第一步用命令 &lt;code&gt;git reset HEAD &amp;lt;filename&amp;gt;&lt;/code&gt; ，就回到了场景 1，第二步按场景 1 操作。&lt;/li&gt;
+&lt;li&gt;场景 3：已经提交了不合适的修改到版本库时，想要撤销本次提交，参考版本回退一节，不过前提是没有推送到远程库。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;删除文件&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#删除文件&#34;&gt;#&lt;/a&gt; 删除文件&lt;/h2&gt;
+&lt;p&gt;如果你在文件管理器中把某个文件删了，或者用 &lt;code&gt;rm&lt;/code&gt;  命令删了&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ rm test.txt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这个时候，Git 知道你删了文件，因此，工作区和版本库就不一致了。&lt;/p&gt;
+&lt;p&gt;现在有两种情况。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;确实要从版本库中删除该文件，那就用命令  &lt;code&gt;git rm&lt;/code&gt;  删掉 并且 git commit&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ git rm test.txt
+$ git commit -m &amp;quot;remove test.txt&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;tips：先手动删除文件，然后使用 git rm &amp;lt;file&amp;gt; 和 git add&amp;lt;file &amp;gt; 效果是一样的。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;删除错了，要从版本库中把误删的文件恢复到最新版本。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ git checkout -- test.txt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;git checkout 其实是用版本库里的版本替换工作区的版本，无论工作区是修改还是删除，都可以一键还原。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;添加远程库&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#添加远程库&#34;&gt;#&lt;/a&gt; 添加远程库&lt;/h2&gt;
+&lt;p&gt;远程库既可以充当本地仓库的备份，又可以让其他人通过该仓库来协作，可谓一举多得。&lt;/p&gt;
+&lt;p&gt;创建远程库并将本地与远程库连接。&lt;/p&gt;
+&lt;p&gt;步骤：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;登录 github 创建一个新的仓库，复制该仓库的 SSH&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在本地仓库上运行&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ git remote add origin git@github.com:maoding1/learngit.git
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;(后面的一大串是复制的 SSH) 使本地仓库与远程库连接。&lt;/p&gt;
+&lt;p&gt;git 会把远程库的名字默认设为 origin&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;把本地内容推送到远程库上&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ git push -u origin master
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;-u 参数实际上设置了远程仓库的默认值（比如有多个远程仓库） 之后就可以简化 git pull 和 git push 的命令&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;现在只要本地做了提交，就可以通过  &lt;code&gt;git push origin master&lt;/code&gt;  把本地分支的修改推送到 github&lt;/p&gt;
+&lt;p&gt;tips：要删除远程库 可以用 &lt;code&gt;git remote rm &amp;lt;name&amp;gt;&lt;/code&gt;  命令，但这只是解除了本地与远程的绑定关系，要真正删除远程库，需要登陆 github 手动删除。&lt;/p&gt;
+&lt;h2 id=&#34;克隆远程仓库&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#克隆远程仓库&#34;&gt;#&lt;/a&gt; 克隆远程仓库&lt;/h2&gt;
+&lt;p&gt;知道仓库的 SSH 后，通过 &lt;code&gt;git clone SSH&lt;/code&gt;  命令克隆到本地&lt;/p&gt;
+</content>
+        <category term="git" />
+        <updated>2022-10-01T03:34:47.000Z</updated>
+    </entry>
+</feed>

@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+    <channel>
+        <title>MikeMao&#39;s blog • Posts by &#34;linux&#34; category</title>
+        <link>https://maoding1.github.io</link>
+        <description>a student of NJU who use this website to record learning experience</description>
+        <language>zh-CN</language>
+        <pubDate>Fri, 30 Sep 2022 15:21:29 +0800</pubDate>
+        <lastBuildDate>Fri, 30 Sep 2022 15:21:29 +0800</lastBuildDate>
+        <category>C++</category>
+        <category>git</category>
+        <category>Linux</category>
+        <category>Maven</category>
+        <category>STL C++</category>
+        <category>python 爬虫</category>
+        <category>python</category>
+        <category>爬虫</category>
+        <item>
+            <guid isPermalink="true">https://maoding1.github.io/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/</guid>
+            <title>Linux—01-Linux安装常识</title>
+            <link>https://maoding1.github.io/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/</link>
+            <category>Linux</category>
+            <pubDate>Fri, 30 Sep 2022 15:21:29 +0800</pubDate>
+            <description><![CDATA[ &lt;h1 id=&#34;linux系统的安装&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#linux系统的安装&#34;&gt;#&lt;/a&gt; Linux 系统的安装&lt;/h1&gt;
+&lt;p&gt;&lt;span id=&#34;more&#34;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;preview.jpg&#34; alt=&#34;芝士辉夜&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;交换分区&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#交换分区&#34;&gt;#&lt;/a&gt; 交换分区&lt;/h2&gt;
+&lt;p&gt;直接从物理内存读写数据比从硬盘读写快的多，然而物理硬盘是有限的，这样就使用到了虚拟内存。虚拟内存是为了满足物理内存的不足而提出的一种策略，他是利用磁盘空间虚拟出的一块逻辑内存，用作虚拟内存的磁盘空间被称为&lt;strong&gt;交换分区（swap 分区）&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;内核会将暂时不用的内存信息写到交换分区，使物理内存得到释放并用于其它用途，当需要原始内容时，这些信息会被重新从交换分区读入物理内存。&lt;/p&gt;
+&lt;p&gt;Linux 的内存管理采用分页存取机制，为了保证物理内存能得到充分利用，内核会在适当时候将物理内存中不经常使用的数据块自动交换到虚拟内存中，而将经常使用的信息保留到物理内存。&lt;/p&gt;
+&lt;h2 id=&#34;分区命名&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#分区命名&#34;&gt;#&lt;/a&gt; 分区命名&lt;/h2&gt;
+&lt;p&gt;Linux 系统使用字母和数字的组合来指代硬盘分区，该命名方案是基于文件的，文件名的格式为 */dev/xxyN* (比如 /dev/sda1 分区)&lt;/p&gt;
+&lt;p&gt;/dev: 这是 Linux 系统中所有设备文件所在的目录名。因为分区位于硬盘上，而硬盘是设备，所以这些文件代表了在 /dev 上所有可能的分区&lt;/p&gt;
+&lt;p&gt;xx：分区名的前两个字母表示分区所在设备的类型，通常是 hd（IDE）硬盘或 sd（SCSI 硬盘）&lt;/p&gt;
+&lt;p&gt;y: 这个字母表示分区所在的设备。例如，/dev/hda（第一个 IDE 硬盘）或 /dev/sdb (第二个 SCSI 硬盘)&lt;/p&gt;
+&lt;p&gt;N：最后的数字 N 代表硬盘上的第几个分区。&lt;/p&gt;
+&lt;h2 id=&#34;挂载目录&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#挂载目录&#34;&gt;#&lt;/a&gt; 挂载目录&lt;/h2&gt;
+&lt;p&gt;Linux 系统中的每一个分区都是构成支持一组文件和目录 所必需的存储区的一部分。它是通过挂载来实现的，挂载 是将分区关联到某一目录的过程，挂载分区使起始于这个 指定目录（称为挂载目录）的存储区能够被使用。&lt;/p&gt;
+&lt;p&gt;例如，如果分区 /dev/sda5 被挂载在目录 /usr 上，这意味着 所有在 /usr 下的文件和目录在物理上位于 /dev/sda5。因此 文件 /usr/bin/cal 被保存在分区 /dev/sda5 上，而文件 /etc/passwd 却不是。&lt;/p&gt;
+&lt;p&gt;/usr 目录下的目录还有可能是其它分区的挂载目录。例如， 某个分区（如 /dev/sda7）可以被挂载到 /usr/local 目录下， 这意味着文件 /usr/local/man/whatis 将位于分区 /dev/sda7 上，而不是分区 /dev/sda5 上。&lt;/p&gt;
+&lt;h2 id=&#34;分区规划&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#分区规划&#34;&gt;#&lt;/a&gt; 分区规划&lt;/h2&gt;
+&lt;p&gt;合理的分区规划 ：&lt;/p&gt;
+&lt;p&gt;・swap 分区：实现虚拟内存，建议大小是物理内存 的 1～2 倍；&lt;/p&gt;
+&lt;p&gt;・/boot 分区：建议大小最少为 200MB；・/usr 分区：用来存放 Linux 系统中的应用程序， 其相关数据较多，建议大小最少为 8GB；&lt;/p&gt;
+&lt;p&gt;・/var 分区：用来存放 Linux 系统中经常变化的数 据以及日志文件，建议大小最少为 1GB；&lt;/p&gt;
+&lt;p&gt;・/ 分区：Linux 系统的根目录，所有的目录都挂在 这个目录下面，建议大小最少为 1GB；&lt;/p&gt;
+&lt;p&gt;・/home 分区：存放普通用户的数据，是普通用户 的宿主目录，建议大小为剩下的空间。&lt;/p&gt;
+ ]]></description>
+        </item>
+    </channel>
+</rss>

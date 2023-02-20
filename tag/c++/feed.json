@@ -1,0 +1,18 @@
+{
+    "version": "https://jsonfeed.org/version/1",
+    "title": "MikeMao's blog • All posts by \"c++\" tag",
+    "description": "a student of NJU who use this website to record learning experience",
+    "home_page_url": "https://maoding1.github.io",
+    "items": [
+        {
+            "id": "https://maoding1.github.io/2022/11/14/C-%EF%BC%9A%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89%E4%B8%8E%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8/",
+            "url": "https://maoding1.github.io/2022/11/14/C-%EF%BC%9A%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89%E4%B8%8E%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8/",
+            "title": "C++：移动语义与右值引用",
+            "date_published": "2022-11-14T08:08:33.000Z",
+            "content_html": "<h1 id=\"c的移动语义与右值引用\"><a class=\"anchor\" href=\"#c的移动语义与右值引用\">#</a> C++ 的移动语义与右值引用</h1>\n<p><span id=\"more\"></span></p>\n<p><img data-src=\"preview.jpg\" alt=\"Gaze\"></p>\n<h2 id=\"移动语义\"><a class=\"anchor\" href=\"#移动语义\">#</a> 移动语义</h2>\n<h3 id=\"为何需要移动语义\"><a class=\"anchor\" href=\"#为何需要移动语义\">#</a> 为何需要移动语义</h3>\n<p>假设有如下代码：</p>\n<pre><code class=\"language-c++\">vector&lt;string&gt; vstr;// build up a vector of 20000 strings,each of 1000 characters\nvector&lt;string&gt; vstr_copy1(vstr);\n</code></pre>\n<p>为了初始化 vstr_copy1 先调用 vector 的复制构造函数，使用 new 给 20000 个 string 对象分配内存，而每个 string 对象又调用 string 的复制构造函数，为 1000 个字符分配内存。这很浪费时间，但如果 vstr 与 vstr_copy1 都需要使用，这很难避免。</p>\n<p>可有时候这样不太妥当，例如 vstr 不再被使用时。例如如下定义的函数：</p>\n<pre><code class=\"language-c++\">vector&lt;string&gt; allcaps(const vector&lt;string&gt; &amp; vs)\n&#123;\n    vector&lt;string&gt; temp;\n    //让temp存储vs中string的大写版本的代码\n    return temp;\n&#125;\n</code></pre>\n<p>并这样使用它：</p>\n<pre><code class=\"language-c++\">vector&lt;string&gt; vstr;\nvector&lt;string&gt; vstr_copy1(vstr); //#1\nvector&lt;string&gt; vstr_copy2(allcaps(vstr)); //#2\n</code></pre>\n<p>allcaps () 创建了对象 temp，该对象管理着 20000000 个字符；语句二使用 vector 和 string 的复制构造函数创建了一个 temp 的副本，然后删除了 temp，做了大量无用功。如果编译器直接把 temp 对数据的所有权转让给 vstr_copy2，将会更好。</p>\n<p>实际上，我们可以把实际内容保留在原来地方，而之修改记录，这就是移动语义的本质，它避免了移动原始数据，而转为修改记录。</p>\n<p>要实现移动语义，需要采取某种方式，让编译器知道什么时候需要复制。这就是右值引用发挥作用的地方。可定义两个构造函数，其中一个是常规复制构造函数，它使用 const 左值引用作为参数，如语句 #1。另一个是移动构造函数，它使用右值引用作为参数，该引用关联到右值实参，如语句 #2 中 allcaps (vstr) 的返回值。移动构造函数可能修改其实参，这意味着右值引用参数不应是 const。</p>\n<h3 id=\"如何使用\"><a class=\"anchor\" href=\"#如何使用\">#</a> 如何使用</h3>\n<p>直接将变量的值赋值为参数的变量值，如果变量为指针，为了防止 double free，还需将参数的指针改为 nullptr。</p>\n<p>例如：</p>\n<pre><code>Useless(Useless &amp;&amp; f) : n(f.n)\n&#123;\n\t++ct;\n\tpc = f.pc;\n\tf.pc = nullptr;\n\tf.n = 0;\n&#125;\n</code></pre>\n<h3 id=\"强制移动\"><a class=\"anchor\" href=\"#强制移动\">#</a> 强制移动</h3>\n<p>移动构造函数和移动赋值运算符使用右值，如果要让它们使用左值，该怎么办？例如，将一个左值变量赋值给一个对象，并立刻丢弃这个变量。此时可以使用头文件 utility 中声明的函数 std::move。</p>\n",
+            "tags": [
+                "C++"
+            ]
+        }
+    ]
+}

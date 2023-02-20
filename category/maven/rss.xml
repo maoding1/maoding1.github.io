@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+    <channel>
+        <title>MikeMao&#39;s blog • Posts by &#34;maven&#34; category</title>
+        <link>https://maoding1.github.io</link>
+        <description>a student of NJU who use this website to record learning experience</description>
+        <language>zh-CN</language>
+        <pubDate>Sun, 23 Oct 2022 21:44:54 +0800</pubDate>
+        <lastBuildDate>Sun, 23 Oct 2022 21:44:54 +0800</lastBuildDate>
+        <category>C++</category>
+        <category>git</category>
+        <category>Linux</category>
+        <category>Maven</category>
+        <category>STL C++</category>
+        <category>python 爬虫</category>
+        <category>python</category>
+        <category>爬虫</category>
+        <item>
+            <guid isPermalink="true">https://maoding1.github.io/2022/10/23/Maven-%E5%AD%A6%E4%B9%A0/</guid>
+            <title>Maven 学习</title>
+            <link>https://maoding1.github.io/2022/10/23/Maven-%E5%AD%A6%E4%B9%A0/</link>
+            <category>Maven</category>
+            <pubDate>Sun, 23 Oct 2022 21:44:54 +0800</pubDate>
+            <description><![CDATA[ &lt;h1 id&gt;&lt;a class=&#34;anchor&#34; href=&#34;#&#34;&gt;#&lt;/a&gt; &lt;/h1&gt;
+&lt;h1 id=&#34;maven-学习&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#maven-学习&#34;&gt;#&lt;/a&gt; Maven  学习&lt;/h1&gt;
+&lt;p&gt;&lt;span id=&#34;more&#34;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;​																&lt;img data-src=&#34;rebecca.jpg&#34; alt=&#34;芝士rebecca&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;maven简介&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#maven简介&#34;&gt;#&lt;/a&gt; Maven 简介&lt;/h2&gt;
+&lt;p&gt;Maven 是 Apache 组织下一个比较著名的开源项目，主要服务于基于 java 平台的项目构建，依赖管理和项目信息管理。&lt;/p&gt;
+&lt;p&gt;类比做糖醋排骨，传统需要自己配置酱料，比如加入多少克糖，多少克水，多少克... 而现在只用去超市购买酱料包就好。Maven 项目省去了开发者去各大网站下载 jar 包并解决相互间复杂依赖关系的时间。除此之外，除了编写源代码，我们有相当一部分时间花在了编译，运行单元测试，生成文档，打包和部署等工作上，这就是构建。手工做这些工作的成本太高了，于是可以用软件的方法让这一系列工作完全自动化，使得繁琐的步骤能够自动完成，很快得到最终结果。&lt;/p&gt;
+&lt;h3 id=&#34;项目构建工具&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#项目构建工具&#34;&gt;#&lt;/a&gt; 项目构建工具&lt;/h3&gt;
+&lt;p&gt;Ant 构建： 2000 年左右出现的构建工具，当时是最流行的 java 构建工具，不过它的 XML 脚本编写格式让 XML 文件特别大。对工程构建过程中的过程控制特别好。&lt;/p&gt;
+&lt;p&gt;Maven 构建：项目对象模型，通过其描述信息来管理项目的构建，报告和文档的软件项目管理工具，填补了 Ant 的缺点。Maven 第一次支持了从网络上下载的功能。Maven 专注的是依赖管理，使用 java 编写。&lt;/p&gt;
+&lt;p&gt;Gradle：谷歌的御用 Android 管理工具&lt;/p&gt;
+&lt;p&gt;Ant 比较老，目前 Maven 使用较多&lt;/p&gt;
+&lt;h2 id=&#34;maven的四大特性&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#maven的四大特性&#34;&gt;#&lt;/a&gt; Maven 的四大特性&lt;/h2&gt;
+&lt;h3 id=&#34;依赖管理系统&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#依赖管理系统&#34;&gt;#&lt;/a&gt; 依赖管理系统&lt;/h3&gt;
+&lt;p&gt;Maven 为 java 世界引入了一个新的依赖管理系统 ——jar 包管理。jar 升级时修改配置文件即可。在 java 世界中，可以用 **&lt;em&gt;groupId&lt;/em&gt; **   、&lt;em&gt;&lt;strong&gt;artifactId&lt;/strong&gt;&lt;/em&gt;   、&lt;em&gt;&lt;strong&gt;version&lt;/strong&gt;&lt;/em&gt; 组成的 Coordination（坐标）唯一标识一个依赖&lt;/p&gt;
+&lt;p&gt;eg：&lt;/p&gt;
+&lt;figure class=&#34;highlight html&#34;&gt;&lt;figcaption data-lang=&#34;HTML&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;&lt;/span&gt;dependency&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;	&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;&lt;/span&gt;groupId&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt; javax.servlet &lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;/&lt;/span&gt;groupId&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt; //当前Maven项目隶属的实际项目或公司名称（jar包所在仓库路径）&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;	&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;&lt;/span&gt;artifactId&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt; javax.servlet-api &lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;/&lt;/span&gt;artifactId&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt; //定义实际项目中的一个Maven模块/项目名&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;	&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;&lt;/span&gt;version&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt; 3.1.0 &lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;/&lt;/span&gt;version&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt; //Maven项目当前所处的版本&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;/&lt;/span&gt;dependency&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;h3 id=&#34;多模块构建&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#多模块构建&#34;&gt;#&lt;/a&gt; 多模块构建&lt;/h3&gt;
+&lt;p&gt;可以将一个项目分解为多个模块。&lt;/p&gt;
+&lt;p&gt;在 Maven 中定义一个 parent POM 作为一组 module 的聚合 POM，在该 POM 中可以使用 &amp;lt;modules&amp;gt; 标签来定义一组子模块。parent POM 中的 build 配置和依赖配置都会继承给子 module。&lt;/p&gt;
+&lt;h3 id=&#34;一致的项目结构&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#一致的项目结构&#34;&gt;#&lt;/a&gt; 一致的项目结构&lt;/h3&gt;
+&lt;p&gt;Maven 理念： Convension over configuration (约定大于配置)。其制定了一套项目目录结构作为标准的 java 项目结构，解决不同 IDE 带来的文件目录不一致问题。&lt;/p&gt;
+&lt;h3 id=&#34;一致的构建模型和插件机制&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#一致的构建模型和插件机制&#34;&gt;#&lt;/a&gt; 一致的构建模型和插件机制&lt;/h3&gt;
+&lt;figure class=&#34;highlight html&#34;&gt;&lt;figcaption data-lang=&#34;HTML&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;&lt;/span&gt;plugin&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;	......&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;/&lt;/span&gt;plugin&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;引入插件&lt;/p&gt;
+&lt;h2 id=&#34;maven项目结构&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#maven项目结构&#34;&gt;#&lt;/a&gt; Maven 项目结构&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;- src
+	- main                   ：程序功能代码
+		- Java               ：java代码
+		- resource           ：资源代码、配置代码
+	- test                   ：测试代码
+		- Java               ：单元测试java代码
+		- resource           ：资源代码、配置代码
+	- pom.xml                ：项目对象模型
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;不用 IDE 的话上述结构都需要手动创建&lt;/p&gt;
+&lt;p&gt;pom 中的标签具体作用可以参考 &lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly93d3cucnVub29iLmNvbS9tYXZlbi9tYXZlbi1wb20uaHRtbA==&#34;&gt;https://www.runoob.com/maven/maven-pom.html&lt;/span&gt;&lt;/p&gt;
+&lt;h2 id=&#34;在idea中使用maven&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#在idea中使用maven&#34;&gt;#&lt;/a&gt; 在 IDEA 中使用 Maven&lt;/h2&gt;
+&lt;p&gt;IDEA 中默认捆绑了 Maven 可以在设置里更改 Maven 有关的配置&lt;/p&gt;
+&lt;p&gt;创建 Maven 项目：文件 -&amp;gt; 新建 -&amp;gt; 项目 构建系统选 Maven（上述是常规 Maven 项目）&lt;/p&gt;
+&lt;p&gt;​										可以选择生成器中的 Maven 中的 Archetype 选择模板（如 quickstart）&lt;/p&gt;
+&lt;h2 id=&#34;maven仓库&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#maven仓库&#34;&gt;#&lt;/a&gt; Maven 仓库&lt;/h2&gt;
+&lt;p&gt;对于 Maven 来说，仓库只有两类： 本地仓库和远程仓库&lt;/p&gt;
+&lt;p&gt;Maven 根据坐标寻找构件的时候，它首先会查看本地仓库，如果本地仓库存在，则直接使用；如果本地没有，Maven 就回去远程仓库查找，再下载到本地仓库再使用。如果本地和远程都没有就会报错。&lt;/p&gt;
+&lt;p&gt;远程仓库分为 3 种：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;中央仓库：默认下载 jar 包的地方，在国外，包含了 2000 多个开源项目，每天接收 1 亿次以上的访问。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;私服：一种特殊的远程仓库，它是架设在局域网内的仓库服务。私服代理广域网上的远程仓库，供局域网内的 Maven 用户使用。当 Maven 需要下载构件时，它去私服当中找，如果私服没有，则从外部远程仓库下载，并缓存在私服上，再为 maven 提供。此外，一些无法从外部仓库下载的构件也能从本地上传到私服提供局域网中其他人使用。（在公司或学校内网中自己写的构件就可以上传到私服让别人使用了） 私服优点： 节省自己的外网带宽、 加速 Maven 构建、部署第三方控件、提高稳定性、降低中央仓库的负荷&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;其他公共库&lt;/p&gt;
+&lt;p&gt;如阿里云仓库，国内地址下载比中央仓库快。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+ ]]></description>
+        </item>
+    </channel>
+</rss>
