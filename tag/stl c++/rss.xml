@@ -2,7 +2,7 @@
 <rss version="2.0">
     <channel>
         <title>MikeMao&#39;s blog • Posts by &#34;stl c++&#34; tag</title>
-        <link>https://maoding1.github.io</link>
+        <link>http://example.com</link>
         <description>a student of NJU who use this website to record learning experience</description>
         <language>zh-CN</language>
         <pubDate>Wed, 05 Oct 2022 19:54:58 +0800</pubDate>
@@ -16,9 +16,9 @@
         <category>python</category>
         <category>爬虫</category>
         <item>
-            <guid isPermalink="true">https://maoding1.github.io/2022/10/05/STL%E5%AD%A6%E4%B9%A0-01-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E4%B8%8Evector/</guid>
+            <guid isPermalink="true">http://example.com/2022/10/05/STL%E5%AD%A6%E4%B9%A0-01-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E4%B8%8Evector/</guid>
             <title>STL学习-01-智能指针与vector</title>
-            <link>https://maoding1.github.io/2022/10/05/STL%E5%AD%A6%E4%B9%A0-01-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E4%B8%8Evector/</link>
+            <link>http://example.com/2022/10/05/STL%E5%AD%A6%E4%B9%A0-01-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E4%B8%8Evector/</link>
             <category>STL C++</category>
             <pubDate>Wed, 05 Oct 2022 19:54:58 +0800</pubDate>
             <description><![CDATA[ &lt;h1 id=&#34;c-的标准模板库&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#c-的标准模板库&#34;&gt;#&lt;/a&gt; c++ 的标准模板库&lt;/h1&gt;
