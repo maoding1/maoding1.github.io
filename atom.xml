@@ -3,7 +3,7 @@
     <id>http://example.com</id>
     <title>MikeMao&#39;s blog</title>
     <link href="http://example.com" />
-    <updated>2023-02-15T06:56:10.000Z</updated>
+    <updated>2023-02-28T06:03:36.000Z</updated>
     <category term="C++" />
     <category term="git" />
     <category term="Linux" />
@@ -12,6 +12,59 @@
     <category term="python 爬虫" />
     <category term="python" />
     <category term="爬虫" />
+    <category term="TVM 深度学习 机器学习 编译" />
+    <entry>
+        <id>http://example.com/2023/02/28/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%BC%96%E8%AF%91%E5%99%A8TVM-UserTutorial/</id>
+        <title>深度学习编译器TVM-UserTutorial</title>
+        <link rel="alternate" href="http://example.com/2023/02/28/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%BC%96%E8%AF%91%E5%99%A8TVM-UserTutorial/"/>
+        <content type="html">&lt;h1 id=&#34;tvm-usertutorial&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#tvm-usertutorial&#34;&gt;#&lt;/a&gt; TVM-UserTutorial&lt;/h1&gt;
+&lt;p&gt;自 2022 年 10 月份选择大创项目 —— 基于 TVM 实现针对国产 AI 芯片的深度算子库项目以来。花了许多时间弄懂什么是 TVM，项目的定位是什么，我们要做的到底是什么事。也经历了期末复习周，由于疫情延期期末考到开学考试，以及小组成员陆续阳性等等事。导致我们的项目在开题答辩之后迟迟没有开始。本学期初在学习了计算系统基础以及编译原理的导论之后，我对 TVM 的认识更加深刻了，项目也重新启动 (2023/2)。&lt;/p&gt;
+&lt;p&gt;&lt;span id=&#34;more&#34;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;h2 id=&#34;introduction&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#introduction&#34;&gt;#&lt;/a&gt; Introduction&lt;/h2&gt;
+&lt;p&gt;原文链接： &lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly90dm0uYXBhY2hlLm9yZy9kb2NzL3R1dG9yaWFsL2ludHJvZHVjdGlvbi5odG1sI3NwaHgtZ2xyLXR1dG9yaWFsLWludHJvZHVjdGlvbi1weQ==&#34;&gt;Introduction — tvm 0.11.dev0 documentation (apache.org)&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;TVM 隶属于 Apache 基金会，是开源项目。定义为一个可应用于各种 GPU CPU 深度学习加速器的深度学习编译器。&lt;/p&gt;
+&lt;h2 id=&#34;an-overview-of-tvm-and-model-optimization&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#an-overview-of-tvm-and-model-optimization&#34;&gt;#&lt;/a&gt; An Overview of TVM and Model Optimization&lt;/h2&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230228142729726.png&#34; alt=&#34;image-20230228142729726&#34;&gt;&lt;/p&gt;
+&lt;p&gt;主要思想： 专用 --&amp;gt; 通用 --&amp;gt; 专用    不同框架转化为统一的 IR 表示，在根据模型所部署的不同硬件的类型转化为对应的字节码 。&lt;/p&gt;
+&lt;p&gt;TVM 采用了多级 IR 的设计，而且每级之间的转化都会经过各种优化，比如切割子图，图优化，以及 AutoTVM/AutoScheduler (这两个是 TVM 带有的自动优化模块) 进行最优调度的选择。&lt;/p&gt;
+&lt;p&gt;TVM 支持的后端有 LLVM、NVCC 等，最重要的是可以支持 Embedded and specialized targets, 但是要使用 TVM 提供的 BYOC 功能，也是我们项目最需要实现的部分。&lt;/p&gt;
+&lt;h2 id=&#34;compiling-and-optimizing-a-model-with-tvmc&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#compiling-and-optimizing-a-model-with-tvmc&#34;&gt;#&lt;/a&gt; compiling and optimizing a Model with TVMC&lt;/h2&gt;
+&lt;p&gt;原文链接：&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly90dm0uYXBhY2hlLm9yZy9kb2NzL3R1dG9yaWFsL3R2bWNfY29tbWFuZF9saW5lX2RyaXZlci5odG1sI3NwaHgtZ2xyLXR1dG9yaWFsLXR2bWMtY29tbWFuZC1saW5lLWRyaXZlci1weQ==&#34;&gt;compiling and optimizing a model with TVMC&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;大部分操作已在虚拟机中运行成功&lt;/p&gt;
+&lt;p&gt;日期：3/1&lt;/p&gt;
+&lt;p&gt;这章主要熟悉了 TVMC 的简单使用。官方文档提供了一个预训练的 ResNet-50 v2 模型。为 TVM 的 runtime 编译此模型，并在这个模型上跑了一个真实的猫猫图片，得到运行结果。文章还包括了在实际的 CPU 上用 TVM 调优（tune）模型，并且使用 TVM 收集的 tuning data 重编译出一个优化的模型，重新跑一遍优化的模型，并与之前模型的表现进行对比（这部分较难）。&lt;/p&gt;
+&lt;p&gt;TVMC 是 TVM 的命令行工具，让你能在命令行中使用 TVM，C 表示 command line 的意思。&lt;/p&gt;
+&lt;p&gt;TVMC 支持 Keras, ONNX, TensorFlow, TFLite and Torch 构建的模型，本章模型用的是 onnx。&lt;/p&gt;
+&lt;h2 id=&#34;编译模型&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#编译模型&#34;&gt;#&lt;/a&gt; 编译模型&lt;/h2&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;tvmc compile &lt;span class=&#34;token punctuation&#34;&gt;\&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token parameter variable&#34;&gt;--target&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;llvm&#34;&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;\&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;--input-shapes &lt;span class=&#34;token string&#34;&gt;&#34;data:[1,3,224,224]&#34;&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;\&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token parameter variable&#34;&gt;--output&lt;/span&gt; resnet50-v2-7-tvm.tar &lt;span class=&#34;token punctuation&#34;&gt;\&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;resnet50-v2-7.onnx&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;6&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;# 编译出来一个 tar 文件&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;7&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;mkdir&lt;/span&gt; model&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;8&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;tar&lt;/span&gt; &lt;span class=&#34;token parameter variable&#34;&gt;-xvf&lt;/span&gt; resnet50-v2-7-tvm.tar &lt;span class=&#34;token parameter variable&#34;&gt;-C&lt;/span&gt; model&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;9&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;ls&lt;/span&gt; model&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;10&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;#解压后看看有什么&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;有三个东西：&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cDovL21vZC5zbw==&#34;&gt;mod.so&lt;/span&gt; : 就是那个模型，表现为一个 TVM runtime 能运行的 c++ 库&lt;/p&gt;
+&lt;p&gt;mod.json  : a text representation of the TVM Relay computation graph.&lt;/p&gt;
+&lt;p&gt;mod.params:  a file containing the parameters for the pre-trained model.--&lt;/p&gt;
+&lt;p&gt;编译时选择恰当的命令行选项能大大改变编译性能&lt;/p&gt;
+&lt;h2 id=&#34;用tvmc运行模型&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#用tvmc运行模型&#34;&gt;#&lt;/a&gt; 用 TVMC 运行模型&lt;/h2&gt;
+&lt;p&gt;为了对模型进行有效输入 要将预备的输入进行一些预处理.TVM 采用.npz 格式文件作为模型输入和输出，这是一个受良好支持的 Numpy 文件格式。&lt;/p&gt;
+&lt;p&gt;这里文章用一个 python 脚本预处理了猫猫图片（具体见原文），得到了一个 imagenet_cat.npz。&lt;/p&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;tvmc run &lt;span class=&#34;token punctuation&#34;&gt;\&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token parameter variable&#34;&gt;--inputs&lt;/span&gt; imagenet_cat.npz &lt;span class=&#34;token punctuation&#34;&gt;\&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token parameter variable&#34;&gt;--output&lt;/span&gt; predictions.npz &lt;span class=&#34;token punctuation&#34;&gt;\&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;resnet50-v2-7-tvm.tar&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;同样，这个文件也不是人能看懂的，原文提供了一个后处理脚本，把这个文件转化为人能看懂的结果。（见原文）&lt;/p&gt;
+&lt;p&gt;结果如下：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;h4 id=&#34;classn02123045-tabby-tabby-cat-with-probability0610553&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#classn02123045-tabby-tabby-cat-with-probability0610553&#34;&gt;#&lt;/a&gt; class=&#39;n02123045 tabby, tabby cat&#39; with probability=0.610553&lt;/h4&gt;
+&lt;h4 id=&#34;classn02123159-tiger-cat-with-probability0367179&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#classn02123159-tiger-cat-with-probability0367179&#34;&gt;#&lt;/a&gt; class=&#39;n02123159 tiger cat&#39; with probability=0.367179&lt;/h4&gt;
+&lt;h4 id=&#34;classn02124075-egyptian-cat-with-probability0019365&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#classn02124075-egyptian-cat-with-probability0019365&#34;&gt;#&lt;/a&gt; class=&#39;n02124075 Egyptian cat&#39; with probability=0.019365&lt;/h4&gt;
+&lt;h4 id=&#34;classn02129604-tiger-panthera-tigris-with-probability0001273&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#classn02129604-tiger-panthera-tigris-with-probability0001273&#34;&gt;#&lt;/a&gt; class=&#39;n02129604 tiger, Panthera tigris&#39; with probability=0.001273&lt;/h4&gt;
+&lt;h4 id=&#34;classn04040759-radiator-with-probability0000261&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#classn04040759-radiator-with-probability0000261&#34;&gt;#&lt;/a&gt; class=&#39;n04040759 radiator&#39; with probability=0.000261&lt;/h4&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;自动调优模型&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#自动调优模型&#34;&gt;#&lt;/a&gt; 自动调优模型&lt;/h2&gt;
+&lt;p&gt;TVM 的调优是根据具体硬件对模型进行优化，使其在给定目标上运行的更快。调优不会影响预测准确性，只会影响性能！&lt;/p&gt;
+&lt;p&gt;演示：&lt;/p&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;tvmc tune &lt;span class=&#34;token punctuation&#34;&gt;\&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token parameter variable&#34;&gt;--target&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;llvm&#34;&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;\&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token parameter variable&#34;&gt;--output&lt;/span&gt; resnet50-v2-7-autotuner_records.json &lt;span class=&#34;token punctuation&#34;&gt;\&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;resnet50-v2-7.onnx&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;如果为 ——target 指定一个更具体的目标能得到更好的结果，如在 i7 处理器上使用 --target llvm-mcpu=skylake&lt;/p&gt;
+&lt;p&gt;TVMC 将对模型的参数空间进行搜索，尝试不同的算子配置，并选择在您的平台上运行最快的配置。虽然这是一个基于 CPU 和模型运算的引导搜索，但仍然需要几个小时才能完成搜索。此搜索的输出将保存到 resnet50-v2-7-autotuner_records.json 文件中，稍后将用于编译一个优化的模型。&lt;/p&gt;
+&lt;h2 id=&#34;使用调优数据编译优化模型&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#使用调优数据编译优化模型&#34;&gt;#&lt;/a&gt; 使用调优数据编译优化模型&lt;/h2&gt;
+&lt;p&gt;编译器将使用调优结果为指定的目标上的模型生成高性能代码。编译命令为 tvmc compile --tuning-records。现在已经收集了模型的调优数据，我们可以使用优化后的算子重新编译模型，以加快计算速度。&lt;/p&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;tvmc compile &lt;span class=&#34;token punctuation&#34;&gt;\&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token parameter variable&#34;&gt;--target&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;llvm&#34;&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;\&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;--tuning-records resnet50-v2-7-autotuner_records.json  &lt;span class=&#34;token punctuation&#34;&gt;\&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token parameter variable&#34;&gt;--output&lt;/span&gt; resnet50-v2-7-tvm_autotuned.tar &lt;span class=&#34;token punctuation&#34;&gt;\&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;resnet50-v2-7.onnx&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;与之前作对比，重复 100 此次。平均性能快 47%。&lt;/p&gt;
+</content>
+        <category term="TVM 深度学习 机器学习 编译" />
+        <updated>2023-02-28T06:03:36.000Z</updated>
+    </entry>
     <entry>
         <id>http://example.com/2023/02/15/python%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%80%89%E8%AF%BE/</id>
         <title>python实现自动选课</title>
