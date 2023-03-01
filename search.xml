@@ -1,6 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>C++：移动语义与右值引用</title>
+    <url>/2022/11/14/C-%EF%BC%9A%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89%E4%B8%8E%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8/</url>
+    <content><![CDATA[<h1 id="c的移动语义与右值引用"><a class="anchor" href="#c的移动语义与右值引用">#</a> C++ 的移动语义与右值引用</h1>
+<p><span id="more"></span></p>
+<p><img data-src="preview.jpg" alt="Gaze"></p>
+<h2 id="移动语义"><a class="anchor" href="#移动语义">#</a> 移动语义</h2>
+<h3 id="为何需要移动语义"><a class="anchor" href="#为何需要移动语义">#</a> 为何需要移动语义</h3>
+<p>假设有如下代码：</p>
+<pre><code class="language-c++">vector&lt;string&gt; vstr;// build up a vector of 20000 strings,each of 1000 characters
+vector&lt;string&gt; vstr_copy1(vstr);
+</code></pre>
+<p>为了初始化 vstr_copy1 先调用 vector 的复制构造函数，使用 new 给 20000 个 string 对象分配内存，而每个 string 对象又调用 string 的复制构造函数，为 1000 个字符分配内存。这很浪费时间，但如果 vstr 与 vstr_copy1 都需要使用，这很难避免。</p>
+<p>可有时候这样不太妥当，例如 vstr 不再被使用时。例如如下定义的函数：</p>
+<pre><code class="language-c++">vector&lt;string&gt; allcaps(const vector&lt;string&gt; &amp; vs)
+&#123;
+    vector&lt;string&gt; temp;
+    //让temp存储vs中string的大写版本的代码
+    return temp;
+&#125;
+</code></pre>
+<p>并这样使用它：</p>
+<pre><code class="language-c++">vector&lt;string&gt; vstr;
+vector&lt;string&gt; vstr_copy1(vstr); //#1
+vector&lt;string&gt; vstr_copy2(allcaps(vstr)); //#2
+</code></pre>
+<p>allcaps () 创建了对象 temp，该对象管理着 20000000 个字符；语句二使用 vector 和 string 的复制构造函数创建了一个 temp 的副本，然后删除了 temp，做了大量无用功。如果编译器直接把 temp 对数据的所有权转让给 vstr_copy2，将会更好。</p>
+<p>实际上，我们可以把实际内容保留在原来地方，而之修改记录，这就是移动语义的本质，它避免了移动原始数据，而转为修改记录。</p>
+<p>要实现移动语义，需要采取某种方式，让编译器知道什么时候需要复制。这就是右值引用发挥作用的地方。可定义两个构造函数，其中一个是常规复制构造函数，它使用 const 左值引用作为参数，如语句 #1。另一个是移动构造函数，它使用右值引用作为参数，该引用关联到右值实参，如语句 #2 中 allcaps (vstr) 的返回值。移动构造函数可能修改其实参，这意味着右值引用参数不应是 const。</p>
+<h3 id="如何使用"><a class="anchor" href="#如何使用">#</a> 如何使用</h3>
+<p>直接将变量的值赋值为参数的变量值，如果变量为指针，为了防止 double free，还需将参数的指针改为 nullptr。</p>
+<p>例如：</p>
+<pre><code>Useless(Useless &amp;&amp; f) : n(f.n)
+&#123;
+	++ct;
+	pc = f.pc;
+	f.pc = nullptr;
+	f.n = 0;
+&#125;
+</code></pre>
+<h3 id="强制移动"><a class="anchor" href="#强制移动">#</a> 强制移动</h3>
+<p>移动构造函数和移动赋值运算符使用右值，如果要让它们使用左值，该怎么办？例如，将一个左值变量赋值给一个对象，并立刻丢弃这个变量。此时可以使用头文件 utility 中声明的函数 std::move。</p>
+]]></content>
+      <categories>
+        <category>C++</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>git操作</title>
     <url>/2022/10/01/Git%E5%AD%A6%E4%B9%A001-%20%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/</url>
     <content><![CDATA[<h1 id="git学习01-基本操作"><a class="anchor" href="#git学习01-基本操作">#</a> Git 学习 01- 基本操作</h1>
@@ -95,41 +145,6 @@ $ git commit -m &quot;remove test.txt&quot;
       </tags>
   </entry>
   <entry>
-    <title>Linux—01-Linux安装常识</title>
-    <url>/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/</url>
-    <content><![CDATA[<h1 id="linux系统的安装"><a class="anchor" href="#linux系统的安装">#</a> Linux 系统的安装</h1>
-<p><span id="more"></span></p>
-<p><img data-src="preview.jpg" alt="芝士辉夜"></p>
-<h2 id="交换分区"><a class="anchor" href="#交换分区">#</a> 交换分区</h2>
-<p>直接从物理内存读写数据比从硬盘读写快的多，然而物理硬盘是有限的，这样就使用到了虚拟内存。虚拟内存是为了满足物理内存的不足而提出的一种策略，他是利用磁盘空间虚拟出的一块逻辑内存，用作虚拟内存的磁盘空间被称为<strong>交换分区（swap 分区）</strong>。</p>
-<p>内核会将暂时不用的内存信息写到交换分区，使物理内存得到释放并用于其它用途，当需要原始内容时，这些信息会被重新从交换分区读入物理内存。</p>
-<p>Linux 的内存管理采用分页存取机制，为了保证物理内存能得到充分利用，内核会在适当时候将物理内存中不经常使用的数据块自动交换到虚拟内存中，而将经常使用的信息保留到物理内存。</p>
-<h2 id="分区命名"><a class="anchor" href="#分区命名">#</a> 分区命名</h2>
-<p>Linux 系统使用字母和数字的组合来指代硬盘分区，该命名方案是基于文件的，文件名的格式为 */dev/xxyN* (比如 /dev/sda1 分区)</p>
-<p>/dev: 这是 Linux 系统中所有设备文件所在的目录名。因为分区位于硬盘上，而硬盘是设备，所以这些文件代表了在 /dev 上所有可能的分区</p>
-<p>xx：分区名的前两个字母表示分区所在设备的类型，通常是 hd（IDE）硬盘或 sd（SCSI 硬盘）</p>
-<p>y: 这个字母表示分区所在的设备。例如，/dev/hda（第一个 IDE 硬盘）或 /dev/sdb (第二个 SCSI 硬盘)</p>
-<p>N：最后的数字 N 代表硬盘上的第几个分区。</p>
-<h2 id="挂载目录"><a class="anchor" href="#挂载目录">#</a> 挂载目录</h2>
-<p>Linux 系统中的每一个分区都是构成支持一组文件和目录 所必需的存储区的一部分。它是通过挂载来实现的，挂载 是将分区关联到某一目录的过程，挂载分区使起始于这个 指定目录（称为挂载目录）的存储区能够被使用。</p>
-<p>例如，如果分区 /dev/sda5 被挂载在目录 /usr 上，这意味着 所有在 /usr 下的文件和目录在物理上位于 /dev/sda5。因此 文件 /usr/bin/cal 被保存在分区 /dev/sda5 上，而文件 /etc/passwd 却不是。</p>
-<p>/usr 目录下的目录还有可能是其它分区的挂载目录。例如， 某个分区（如 /dev/sda7）可以被挂载到 /usr/local 目录下， 这意味着文件 /usr/local/man/whatis 将位于分区 /dev/sda7 上，而不是分区 /dev/sda5 上。</p>
-<h2 id="分区规划"><a class="anchor" href="#分区规划">#</a> 分区规划</h2>
-<p>合理的分区规划 ：</p>
-<p>・swap 分区：实现虚拟内存，建议大小是物理内存 的 1～2 倍；</p>
-<p>・/boot 分区：建议大小最少为 200MB；・/usr 分区：用来存放 Linux 系统中的应用程序， 其相关数据较多，建议大小最少为 8GB；</p>
-<p>・/var 分区：用来存放 Linux 系统中经常变化的数 据以及日志文件，建议大小最少为 1GB；</p>
-<p>・/ 分区：Linux 系统的根目录，所有的目录都挂在 这个目录下面，建议大小最少为 1GB；</p>
-<p>・/home 分区：存放普通用户的数据，是普通用户 的宿主目录，建议大小为剩下的空间。</p>
-]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
-      <tags>
-        <tag>Linux</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Git学习02-分支管理</title>
     <url>/2022/10/02/Git%E5%AD%A6%E4%B9%A002-%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86/</url>
     <content><![CDATA[<h1 id="git学习02-分支管理"><a class="anchor" href="#git学习02-分支管理">#</a> Git 学习 02 - 分支管理</h1>
@@ -168,6 +183,41 @@ $ git commit -m &quot;remove test.txt&quot;
       </categories>
       <tags>
         <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux—01-Linux安装常识</title>
+    <url>/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/</url>
+    <content><![CDATA[<h1 id="linux系统的安装"><a class="anchor" href="#linux系统的安装">#</a> Linux 系统的安装</h1>
+<p><span id="more"></span></p>
+<p><img data-src="preview.jpg" alt="芝士辉夜"></p>
+<h2 id="交换分区"><a class="anchor" href="#交换分区">#</a> 交换分区</h2>
+<p>直接从物理内存读写数据比从硬盘读写快的多，然而物理硬盘是有限的，这样就使用到了虚拟内存。虚拟内存是为了满足物理内存的不足而提出的一种策略，他是利用磁盘空间虚拟出的一块逻辑内存，用作虚拟内存的磁盘空间被称为<strong>交换分区（swap 分区）</strong>。</p>
+<p>内核会将暂时不用的内存信息写到交换分区，使物理内存得到释放并用于其它用途，当需要原始内容时，这些信息会被重新从交换分区读入物理内存。</p>
+<p>Linux 的内存管理采用分页存取机制，为了保证物理内存能得到充分利用，内核会在适当时候将物理内存中不经常使用的数据块自动交换到虚拟内存中，而将经常使用的信息保留到物理内存。</p>
+<h2 id="分区命名"><a class="anchor" href="#分区命名">#</a> 分区命名</h2>
+<p>Linux 系统使用字母和数字的组合来指代硬盘分区，该命名方案是基于文件的，文件名的格式为 */dev/xxyN* (比如 /dev/sda1 分区)</p>
+<p>/dev: 这是 Linux 系统中所有设备文件所在的目录名。因为分区位于硬盘上，而硬盘是设备，所以这些文件代表了在 /dev 上所有可能的分区</p>
+<p>xx：分区名的前两个字母表示分区所在设备的类型，通常是 hd（IDE）硬盘或 sd（SCSI 硬盘）</p>
+<p>y: 这个字母表示分区所在的设备。例如，/dev/hda（第一个 IDE 硬盘）或 /dev/sdb (第二个 SCSI 硬盘)</p>
+<p>N：最后的数字 N 代表硬盘上的第几个分区。</p>
+<h2 id="挂载目录"><a class="anchor" href="#挂载目录">#</a> 挂载目录</h2>
+<p>Linux 系统中的每一个分区都是构成支持一组文件和目录 所必需的存储区的一部分。它是通过挂载来实现的，挂载 是将分区关联到某一目录的过程，挂载分区使起始于这个 指定目录（称为挂载目录）的存储区能够被使用。</p>
+<p>例如，如果分区 /dev/sda5 被挂载在目录 /usr 上，这意味着 所有在 /usr 下的文件和目录在物理上位于 /dev/sda5。因此 文件 /usr/bin/cal 被保存在分区 /dev/sda5 上，而文件 /etc/passwd 却不是。</p>
+<p>/usr 目录下的目录还有可能是其它分区的挂载目录。例如， 某个分区（如 /dev/sda7）可以被挂载到 /usr/local 目录下， 这意味着文件 /usr/local/man/whatis 将位于分区 /dev/sda7 上，而不是分区 /dev/sda5 上。</p>
+<h2 id="分区规划"><a class="anchor" href="#分区规划">#</a> 分区规划</h2>
+<p>合理的分区规划 ：</p>
+<p>・swap 分区：实现虚拟内存，建议大小是物理内存 的 1～2 倍；</p>
+<p>・/boot 分区：建议大小最少为 200MB；・/usr 分区：用来存放 Linux 系统中的应用程序， 其相关数据较多，建议大小最少为 8GB；</p>
+<p>・/var 分区：用来存放 Linux 系统中经常变化的数 据以及日志文件，建议大小最少为 1GB；</p>
+<p>・/ 分区：Linux 系统的根目录，所有的目录都挂在 这个目录下面，建议大小最少为 1GB；</p>
+<p>・/home 分区：存放普通用户的数据，是普通用户 的宿主目录，建议大小为剩下的空间。</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
       </tags>
   </entry>
   <entry>
@@ -235,56 +285,6 @@ $ git commit -m &quot;remove test.txt&quot;
       </categories>
       <tags>
         <tag>Maven</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>C++：移动语义与右值引用</title>
-    <url>/2022/11/14/C-%EF%BC%9A%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89%E4%B8%8E%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8/</url>
-    <content><![CDATA[<h1 id="c的移动语义与右值引用"><a class="anchor" href="#c的移动语义与右值引用">#</a> C++ 的移动语义与右值引用</h1>
-<p><span id="more"></span></p>
-<p><img data-src="preview.jpg" alt="Gaze"></p>
-<h2 id="移动语义"><a class="anchor" href="#移动语义">#</a> 移动语义</h2>
-<h3 id="为何需要移动语义"><a class="anchor" href="#为何需要移动语义">#</a> 为何需要移动语义</h3>
-<p>假设有如下代码：</p>
-<pre><code class="language-c++">vector&lt;string&gt; vstr;// build up a vector of 20000 strings,each of 1000 characters
-vector&lt;string&gt; vstr_copy1(vstr);
-</code></pre>
-<p>为了初始化 vstr_copy1 先调用 vector 的复制构造函数，使用 new 给 20000 个 string 对象分配内存，而每个 string 对象又调用 string 的复制构造函数，为 1000 个字符分配内存。这很浪费时间，但如果 vstr 与 vstr_copy1 都需要使用，这很难避免。</p>
-<p>可有时候这样不太妥当，例如 vstr 不再被使用时。例如如下定义的函数：</p>
-<pre><code class="language-c++">vector&lt;string&gt; allcaps(const vector&lt;string&gt; &amp; vs)
-&#123;
-    vector&lt;string&gt; temp;
-    //让temp存储vs中string的大写版本的代码
-    return temp;
-&#125;
-</code></pre>
-<p>并这样使用它：</p>
-<pre><code class="language-c++">vector&lt;string&gt; vstr;
-vector&lt;string&gt; vstr_copy1(vstr); //#1
-vector&lt;string&gt; vstr_copy2(allcaps(vstr)); //#2
-</code></pre>
-<p>allcaps () 创建了对象 temp，该对象管理着 20000000 个字符；语句二使用 vector 和 string 的复制构造函数创建了一个 temp 的副本，然后删除了 temp，做了大量无用功。如果编译器直接把 temp 对数据的所有权转让给 vstr_copy2，将会更好。</p>
-<p>实际上，我们可以把实际内容保留在原来地方，而之修改记录，这就是移动语义的本质，它避免了移动原始数据，而转为修改记录。</p>
-<p>要实现移动语义，需要采取某种方式，让编译器知道什么时候需要复制。这就是右值引用发挥作用的地方。可定义两个构造函数，其中一个是常规复制构造函数，它使用 const 左值引用作为参数，如语句 #1。另一个是移动构造函数，它使用右值引用作为参数，该引用关联到右值实参，如语句 #2 中 allcaps (vstr) 的返回值。移动构造函数可能修改其实参，这意味着右值引用参数不应是 const。</p>
-<h3 id="如何使用"><a class="anchor" href="#如何使用">#</a> 如何使用</h3>
-<p>直接将变量的值赋值为参数的变量值，如果变量为指针，为了防止 double free，还需将参数的指针改为 nullptr。</p>
-<p>例如：</p>
-<pre><code>Useless(Useless &amp;&amp; f) : n(f.n)
-&#123;
-	++ct;
-	pc = f.pc;
-	f.pc = nullptr;
-	f.n = 0;
-&#125;
-</code></pre>
-<h3 id="强制移动"><a class="anchor" href="#强制移动">#</a> 强制移动</h3>
-<p>移动构造函数和移动赋值运算符使用右值，如果要让它们使用左值，该怎么办？例如，将一个左值变量赋值给一个对象，并立刻丢弃这个变量。此时可以使用头文件 utility 中声明的函数 std::move。</p>
-]]></content>
-      <categories>
-        <category>C++</category>
-      </categories>
-      <tags>
-        <tag>C++</tag>
       </tags>
   </entry>
   <entry>
