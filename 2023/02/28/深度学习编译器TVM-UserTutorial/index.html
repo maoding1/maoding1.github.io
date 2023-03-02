@@ -103,12 +103,12 @@ Yume Shoka = MikeMao's blog = 风烟俱净，天山共色 从流飘荡，任意�
       </div>
       <div id="imgs" class="pjax">
         <ul>
-          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1giclgrvbd6j20zk0m8qv5.jpg"></li>
-          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1gicli3sbvtj20zk0m8x6p.jpg"></li>
-          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1gipey0a334j20zk0m8qpt.jpg"></li>
-          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1gicitzannuj20zk0m8b29.jpg"></li>
-          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1gipevarprfj20zk0m8npd.jpg"></li>
-          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1giclfdu6exj20zk0m87hw.jpg"></li>
+          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1gipetlbztpj20zk0m84qp.jpg"></li>
+          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1gipeubcbajj20zk0m8h1h.jpg"></li>
+          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1giph4wqtg4j20zk0m8x6p.jpg"></li>
+          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1giclxp31goj20zk0m8qv5.jpg"></li>
+          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1gipet8c1a2j20zk0m8kct.jpg"></li>
+          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1gicis3attqj20zk0m8k7l.jpg"></li>
         </ul>
       </div>
     </header>
@@ -198,6 +198,20 @@ Yume Shoka = MikeMao's blog = 风烟俱净，天山共色 从流飘荡，任意�
 <h2 id="使用调优数据编译优化模型"><a class="anchor" href="#使用调优数据编译优化模型">#</a> 使用调优数据编译优化模型</h2>
 <p>编译器将使用调优结果为指定的目标上的模型生成高性能代码。编译命令为 tvmc compile --tuning-records。现在已经收集了模型的调优数据，我们可以使用优化后的算子重新编译模型，以加快计算速度。</p>
 <figure class="highlight bash"><figcaption data-lang="bash"></figcaption><table><tr><td data-num="1"></td><td><pre>tvmc compile <span class="token punctuation">\</span></pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token parameter variable">--target</span> <span class="token string">"llvm"</span> <span class="token punctuation">\</span></pre></td></tr><tr><td data-num="3"></td><td><pre>--tuning-records resnet50-v2-7-autotuner_records.json  <span class="token punctuation">\</span></pre></td></tr><tr><td data-num="4"></td><td><pre><span class="token parameter variable">--output</span> resnet50-v2-7-tvm_autotuned.tar <span class="token punctuation">\</span></pre></td></tr><tr><td data-num="5"></td><td><pre>resnet50-v2-7.onnx</pre></td></tr></table></figure><p>与之前作对比，重复 100 此次。平均性能快 47%。</p>
+<h2 id="getting-starting-using-tvmc-python-a-high-level-api-for-tvm"><a class="anchor" href="#getting-starting-using-tvmc-python-a-high-level-api-for-tvm">#</a> Getting Starting using TVMC Python: a high-level API for TVM</h2>
+<p>原文链接： [Getting Starting using TVMC Python: a high-level API for TVM](<span class="exturl" data-url="aHR0cHM6Ly90dm0uYXBhY2hlLm9yZy9kb2NzL3R1dG9yaWFsL3R2bWNfcHl0aG9uLmh0bWw=">Getting Starting using TVMC Python: a high-level API for TVM — tvm 0.11.dev0 documentation (apache.org)</span>)</p>
+<p>日期：3/2</p>
+<p>这章主要讲的是在 python 文件中怎么使用 tvmc。</p>
+<ul>
+<li>导入：  <code>from tvm.driver import tvmc</code></li>
+<li>把模型转化为 Relay 表示： <code>model = tvmc.load('my_model.onnx')</code></li>
+<li>编译： <code>package = tvmc.compile(model, target=&quot;llvm&quot;)</code></li>
+<li>运行： <code>result = tvmc.run(package, device=&quot;cpu&quot;)</code></li>
+</ul>
+<p>可以加入第 1.5 步：调优</p>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre>tvmc<span class="token punctuation">.</span>tune<span class="token punctuation">(</span>model<span class="token punctuation">,</span> target<span class="token operator">=</span><span class="token string">"llvm"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="2"></td><td><pre></pre></td></tr><tr><td data-num="3"></td><td><pre>tvmc<span class="token punctuation">.</span><span class="token builtin">compile</span><span class="token punctuation">(</span>model<span class="token punctuation">,</span> target<span class="token operator">=</span><span class="token string">"llvm"</span><span class="token punctuation">,</span> tuning_records <span class="token operator">=</span> <span class="token string">"records.log"</span><span class="token punctuation">)</span> <span class="token comment"># records.log 获取见下文如何保存调优结果</span></pre></td></tr></table></figure><h2 id="附加功能"><a class="anchor" href="#附加功能">#</a> 附加功能</h2>
+<p>可以在每一步都把中间结果保存下来。比如保存模型：在第一步后面  <code>model.save(desired_model_path)</code></p>
+<p>还能保存 package, 调优结果等</p>
 
       <div class="tags">
           <a href="/tags/TVM-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-%E7%BC%96%E8%AF%91/" rel="tag"><i class="ic i-tag"></i> TVM 深度学习 机器学习 编译</a>
@@ -212,7 +226,7 @@ Yume Shoka = MikeMao's blog = 风烟俱净，天山共色 从流飘荡，任意�
       <i class="ic i-calendar-check"></i>
     </span>
     <span class="text">更新于</span>
-    <time title="修改时间：2023-03-01 23:52:23" itemprop="dateModified" datetime="2023-03-01T23:52:23+08:00">2023-03-01</time>
+    <time title="修改时间：2023-03-02 11:01:31" itemprop="dateModified" datetime="2023-03-02T11:01:31+08:00">2023-03-02</time>
   </span>
 </div>
 
@@ -267,7 +281,7 @@ Yume Shoka = MikeMao's blog = 风烟俱净，天山共色 从流飘荡，任意�
     <div class="item left">
       
 
-  <a href="/2023/02/15/python%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%80%89%E8%AF%BE/" itemprop="url" rel="prev" data-background-image="https:&#x2F;&#x2F;lz.sinaimg.cn&#x2F;mw690&#x2F;6833939bly1gipetv6p75j20zk0m8x6p.jpg" title="python实现自动选课">
+  <a href="/2023/02/15/python%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%80%89%E8%AF%BE/" itemprop="url" rel="prev" data-background-image="https:&#x2F;&#x2F;lz.sinaimg.cn&#x2F;mw690&#x2F;6833939bly1gipevarprfj20zk0m8npd.jpg" title="python实现自动选课">
   <span class="type">上一篇</span>
   <span class="category"><i class="ic i-flag"></i> </span>
   <h3>python实现自动选课</h3>
@@ -291,7 +305,7 @@ Yume Shoka = MikeMao's blog = 风烟俱净，天山共色 从流飘荡，任意�
   <div class="panels">
     <div class="inner">
       <div class="contents panel pjax" data-title="文章目录">
-          <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#tvm-usertutorial"><span class="toc-number">1.</span> <span class="toc-text"> TVM-UserTutorial</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#introduction"><span class="toc-number">1.1.</span> <span class="toc-text"> Introduction</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#an-overview-of-tvm-and-model-optimization"><span class="toc-number">1.2.</span> <span class="toc-text"> An Overview of TVM and Model Optimization</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#compiling-and-optimizing-a-model-with-tvmc"><span class="toc-number">1.3.</span> <span class="toc-text"> compiling and optimizing a Model with TVMC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.4.</span> <span class="toc-text"> 编译模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8tvmc%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.5.</span> <span class="toc-text"> 用 TVMC 运行模型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#classn02123045-tabby-tabby-cat-with-probability0610553"><span class="toc-number">1.5.0.1.</span> <span class="toc-text"> class&#x3D;&#39;n02123045 tabby, tabby cat&#39; with probability&#x3D;0.610553</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#classn02123159-tiger-cat-with-probability0367179"><span class="toc-number">1.5.0.2.</span> <span class="toc-text"> class&#x3D;&#39;n02123159 tiger cat&#39; with probability&#x3D;0.367179</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#classn02124075-egyptian-cat-with-probability0019365"><span class="toc-number">1.5.0.3.</span> <span class="toc-text"> class&#x3D;&#39;n02124075 Egyptian cat&#39; with probability&#x3D;0.019365</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#classn02129604-tiger-panthera-tigris-with-probability0001273"><span class="toc-number">1.5.0.4.</span> <span class="toc-text"> class&#x3D;&#39;n02129604 tiger, Panthera tigris&#39; with probability&#x3D;0.001273</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#classn04040759-radiator-with-probability0000261"><span class="toc-number">1.5.0.5.</span> <span class="toc-text"> class&#x3D;&#39;n04040759 radiator&#39; with probability&#x3D;0.000261</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%8A%A8%E8%B0%83%E4%BC%98%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.6.</span> <span class="toc-text"> 自动调优模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E8%B0%83%E4%BC%98%E6%95%B0%E6%8D%AE%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.7.</span> <span class="toc-text"> 使用调优数据编译优化模型</span></a></li></ol></li></ol>
+          <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#tvm-usertutorial"><span class="toc-number">1.</span> <span class="toc-text"> TVM-UserTutorial</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#introduction"><span class="toc-number">1.1.</span> <span class="toc-text"> Introduction</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#an-overview-of-tvm-and-model-optimization"><span class="toc-number">1.2.</span> <span class="toc-text"> An Overview of TVM and Model Optimization</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#compiling-and-optimizing-a-model-with-tvmc"><span class="toc-number">1.3.</span> <span class="toc-text"> compiling and optimizing a Model with TVMC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.4.</span> <span class="toc-text"> 编译模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8tvmc%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.5.</span> <span class="toc-text"> 用 TVMC 运行模型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#classn02123045-tabby-tabby-cat-with-probability0610553"><span class="toc-number">1.5.0.1.</span> <span class="toc-text"> class&#x3D;&#39;n02123045 tabby, tabby cat&#39; with probability&#x3D;0.610553</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#classn02123159-tiger-cat-with-probability0367179"><span class="toc-number">1.5.0.2.</span> <span class="toc-text"> class&#x3D;&#39;n02123159 tiger cat&#39; with probability&#x3D;0.367179</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#classn02124075-egyptian-cat-with-probability0019365"><span class="toc-number">1.5.0.3.</span> <span class="toc-text"> class&#x3D;&#39;n02124075 Egyptian cat&#39; with probability&#x3D;0.019365</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#classn02129604-tiger-panthera-tigris-with-probability0001273"><span class="toc-number">1.5.0.4.</span> <span class="toc-text"> class&#x3D;&#39;n02129604 tiger, Panthera tigris&#39; with probability&#x3D;0.001273</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#classn04040759-radiator-with-probability0000261"><span class="toc-number">1.5.0.5.</span> <span class="toc-text"> class&#x3D;&#39;n04040759 radiator&#39; with probability&#x3D;0.000261</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%8A%A8%E8%B0%83%E4%BC%98%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.6.</span> <span class="toc-text"> 自动调优模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E8%B0%83%E4%BC%98%E6%95%B0%E6%8D%AE%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.7.</span> <span class="toc-text"> 使用调优数据编译优化模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#getting-starting-using-tvmc-python-a-high-level-api-for-tvm"><span class="toc-number">1.8.</span> <span class="toc-text"> Getting Starting using TVMC Python: a high-level API for TVM</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%E5%8A%A0%E5%8A%9F%E8%83%BD"><span class="toc-number">1.9.</span> <span class="toc-text"> 附加功能</span></a></li></ol></li></ol>
       </div>
       <div class="related panel pjax" data-title="系列文章">
         <ul>
@@ -371,36 +385,6 @@ Yume Shoka = MikeMao's blog = 风烟俱净，天山共色 从流飘荡，任意�
   <li class="item">
     
 <div class="breadcrumb">
-<a href="/categories/git/" title="分类于 git">git</a>
-</div>
-
-    <span><a href="/2022/10/02/Git%E5%AD%A6%E4%B9%A002-%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86/" title="Git学习02-分支管理">Git学习02-分支管理</a></span>
-  </li>
-
-      
-  <li class="item">
-    
-<div class="breadcrumb">
-<a href="/categories/Linux/" title="分类于 Linux">Linux</a>
-</div>
-
-    <span><a href="/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/" title="Linux—01-Linux安装常识">Linux—01-Linux安装常识</a></span>
-  </li>
-
-      
-  <li class="item">
-    
-<div class="breadcrumb">
-<a href="/categories/git/" title="分类于 git">git</a>
-</div>
-
-    <span><a href="/2022/10/01/Git%E5%AD%A6%E4%B9%A001-%20%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/" title="git操作">git操作</a></span>
-  </li>
-
-      
-  <li class="item">
-    
-<div class="breadcrumb">
 <a href="/categories/TVM/" title="分类于 TVM">TVM</a>
 </div>
 
@@ -421,19 +405,10 @@ Yume Shoka = MikeMao's blog = 风烟俱净，天山共色 从流飘荡，任意�
   <li class="item">
     
 <div class="breadcrumb">
+<a href="/categories/git/" title="分类于 git">git</a>
 </div>
 
-    <span><a href="/2023/02/15/python%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%80%89%E8%AF%BE/" title="python实现自动选课">python实现自动选课</a></span>
-  </li>
-
-      
-  <li class="item">
-    
-<div class="breadcrumb">
-<a href="/categories/C/" title="分类于 C++">C++</a>
-</div>
-
-    <span><a href="/2022/10/05/STL%E5%AD%A6%E4%B9%A0-01-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E4%B8%8Evector/" title="STL学习-01-智能指针与vector">STL学习-01-智能指针与vector</a></span>
+    <span><a href="/2022/10/01/Git%E5%AD%A6%E4%B9%A001-%20%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/" title="git操作">git操作</a></span>
   </li>
 
       
@@ -450,10 +425,49 @@ Yume Shoka = MikeMao's blog = 风烟俱净，天山共色 从流飘荡，任意�
   <li class="item">
     
 <div class="breadcrumb">
+<a href="/categories/C/" title="分类于 C++">C++</a>
+</div>
+
+    <span><a href="/2022/10/05/STL%E5%AD%A6%E4%B9%A0-01-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E4%B8%8Evector/" title="STL学习-01-智能指针与vector">STL学习-01-智能指针与vector</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+</div>
+
+    <span><a href="/2023/02/15/python%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%80%89%E8%AF%BE/" title="python实现自动选课">python实现自动选课</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/Linux/" title="分类于 Linux">Linux</a>
+</div>
+
+    <span><a href="/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/" title="Linux—01-Linux安装常识">Linux—01-Linux安装常识</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
 <a href="/categories/python/" title="分类于 python">python</a>
 </div>
 
     <span><a href="/2023/01/25/python%E7%88%AC%E8%99%AB%E5%AD%A6%E4%B9%A0/" title="python爬虫学习">python爬虫学习</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/git/" title="分类于 git">git</a>
+</div>
+
+    <span><a href="/2022/10/02/Git%E5%AD%A6%E4%B9%A002-%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86/" title="Git学习02-分支管理">Git学习02-分支管理</a></span>
   </li>
 
   </ul>
