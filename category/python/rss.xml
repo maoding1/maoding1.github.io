@@ -5,18 +5,115 @@
         <link>http://example.com</link>
         <description>a student of NJU who use this website to record learning experience</description>
         <language>zh-CN</language>
-        <pubDate>Wed, 25 Jan 2023 11:21:52 +0800</pubDate>
-        <lastBuildDate>Wed, 25 Jan 2023 11:21:52 +0800</lastBuildDate>
-        <category>git</category>
+        <pubDate>Thu, 16 Mar 2023 20:06:14 +0800</pubDate>
+        <lastBuildDate>Thu, 16 Mar 2023 20:06:14 +0800</lastBuildDate>
         <category>C++</category>
+        <category>git</category>
         <category>Linux</category>
         <category>Maven</category>
         <category>STL C++</category>
+        <category>python 爬虫 计算机网络</category>
         <category>python 爬虫</category>
-        <category>TVM 深度学习 机器学习 编译</category>
-        <category>编译原理</category>
         <category>python</category>
         <category>爬虫</category>
+        <category>TVM 深度学习 机器学习 编译</category>
+        <category>编译原理</category>
+        <item>
+            <guid isPermalink="true">http://example.com/2023/03/16/nova%E2%80%94%E2%80%94%E9%AB%98%E8%80%83%E7%BD%91%E7%AB%99%E5%AD%A6%E6%A0%A1%E5%90%8D%E7%A7%B0%E7%88%AC%E5%8F%96/</guid>
+            <title>nova——高考网站学校名称爬取</title>
+            <link>http://example.com/2023/03/16/nova%E2%80%94%E2%80%94%E9%AB%98%E8%80%83%E7%BD%91%E7%AB%99%E5%AD%A6%E6%A0%A1%E5%90%8D%E7%A7%B0%E7%88%AC%E5%8F%96/</link>
+            <category>python 爬虫 计算机网络</category>
+            <pubDate>Thu, 16 Mar 2023 20:06:14 +0800</pubDate>
+            <description><![CDATA[ &lt;h1 id=&#34;nova项目-高考网站学校名称爬取&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#nova项目-高考网站学校名称爬取&#34;&gt;#&lt;/a&gt; nova 项目 - 高考网站学校名称爬取&lt;/h1&gt;
+&lt;p&gt;任务：在高考特殊类型招生报名网站中爬取全中国的中学名称&lt;/p&gt;
+&lt;p&gt;但是遭遇了强大的反爬措施 遂把失败经历记录如下&lt;/p&gt;
+&lt;p&gt;&lt;span id=&#34;more&#34;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;首先使用 selenium 不加任何反爬措施登录网站试试：&lt;/p&gt;
+&lt;p&gt;发现第一关就过不了&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230318120750666.png&#34; alt=&#34;image-20230318120750666&#34;&gt;&lt;/p&gt;
+&lt;p&gt;请求显示 400 bad request 表明我们的请求被识别为非法的请求&lt;/p&gt;
+&lt;p&gt;在控制台输入  &lt;code&gt;window.navigator.webdriver&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;显示结果：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230318120845415.png&#34; alt=&#34;image-20230318120845415&#34;&gt;&lt;/p&gt;
+&lt;p&gt;间接地表示了你使用了 selenium 等自动化工具&lt;/p&gt;
+&lt;h2 id=&#34;尝试方案一加入配置&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#尝试方案一加入配置&#34;&gt;#&lt;/a&gt; 尝试方案一 (加入配置)：&lt;/h2&gt;
+&lt;p&gt;在 stackoverflow 搜索 selenium 400 bad request&lt;/p&gt;
+&lt;p&gt;有人提供了解决方案 :&lt;img data-src=&#34;image-20230318122455280.png&#34; alt=&#34;image-20230318122455280&#34;&gt;&lt;/p&gt;
+&lt;p&gt;在代码中加入：&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;edge_options&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;add_argument&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#34;--disable-blink-features=AutomationControlled&#34;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;这个配置可以去除 webdriver 的一些特征 但是在这个网站中还是失败&lt;/p&gt;
+&lt;p&gt;在控制台输入  &lt;code&gt;window.navigator.webdriver&lt;/code&gt;   仍然显示 true，说明特征没隐藏完&lt;/p&gt;
+&lt;h2 id=&#34;尝试方案二注入js代码&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#尝试方案二注入js代码&#34;&gt;#&lt;/a&gt; 尝试方案二 (注入 JS 代码)：&lt;/h2&gt;
+&lt;p&gt;加入代码如下：&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;execute_cdp_cmd&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#34;Page.addScriptToEvaluateOnNewDocument&#34;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;&amp;#123;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token string&#34;&gt;&#34;source&#34;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;token triple-quoted-string string&#34;&gt;&#34;&#34;&#34;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    Object.defineProperty(navigator, &#39;webdriver&#39;, &amp;#123;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;      get: () =&gt; false&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &amp;#125;)&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;6&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &#34;&#34;&#34;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;7&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;#125;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;cdp (Chrome Devtools Protocol) 命令 通过 CDP, 可以检查 / 调试 / 监听网络流量，&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Page.addScriptToEvaluateOnNewDocument：在浏览器启动之前执行给定的 JS 脚本&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Object.defineProperty：JS 语法，直接在一个对象上定义一个新属性，或者修改一个对象的现有属性，并返回此对象（代码中是将  &lt;code&gt;navigator.webdriver&lt;/code&gt;  设置为  &lt;code&gt;false&lt;/code&gt; ）&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;结果如下： 可以看到 webdriver 的一些特征确实被隐藏了&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230318124126335.png&#34; alt=&#34;image-20230318124126335&#34;&gt;&lt;/p&gt;
+&lt;p&gt;但是页面仍然一片空白 请求包仍然是 400 bad request&lt;/p&gt;
+&lt;h2 id=&#34;思考一&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#思考一&#34;&gt;#&lt;/a&gt; 思考一：&lt;/h2&gt;
+&lt;p&gt;上面的方法都在尝试隐藏某些你在使用爬虫的痕迹 部分网站检测不会那么深 但是使用爬虫总会留下痕迹&lt;/p&gt;
+&lt;p&gt;selenium 启动的浏览器 ，有几十个特征可以被检测到&lt;/p&gt;
+&lt;p&gt;有一个网站：&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly9ib3Quc2Fubnlzb2Z0LmNvbS8=&#34;&gt;https://bot.sannysoft.com/&lt;/span&gt; 可以检测你的浏览指纹&lt;/p&gt;
+&lt;p&gt;使用无头浏览器直接打开这个网站并截图：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230318130242034.png&#34; alt=&#34;image-20230318130242034&#34;&gt;&lt;/p&gt;
+&lt;p&gt;标红的都是未通过的测试&lt;/p&gt;
+&lt;p&gt;用刚刚尝试的方法 get 这个网站 好了很多 但仍显示未通过爬虫检测&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230318130449697.png&#34; alt&gt;&lt;/p&gt;
+&lt;p&gt;正常浏览器打开：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230318125152944.png&#34; alt&gt;&lt;/p&gt;
+&lt;h2 id=&#34;尝试方案三更强大的js注入&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#尝试方案三更强大的js注入&#34;&gt;#&lt;/a&gt; 尝试方案三 (更强大的 JS 注入):&lt;/h2&gt;
+&lt;p&gt;方案二的 js 代码还是太简单了，只能隐藏一个特定的特征（虽然这个特征比较常用）&lt;/p&gt;
+&lt;p&gt;在网上看看有没有更专业的开发者开发出来的更强大的 js 代码：&lt;/p&gt;
+&lt;p&gt;找到了一份  &lt;strong&gt;stealth.min.js&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;那么，这个 &lt;code&gt;stealth.min.js&lt;/code&gt;  文件是怎么来的呢？这就要说到 &lt;code&gt;pyppeteer&lt;/code&gt;  (一个与 selenium 同类的爬虫库) 了。，Python 版本的 &lt;code&gt;pyppeteer&lt;/code&gt;  已经很久没有人维护了，但是 Node.js 版本的  &lt;code&gt;puppeteer&lt;/code&gt;  持续有人维护，并且在持续更新，生态也越来越好。&lt;/p&gt;
+&lt;p&gt;有开发者给 puppeteer 写了一套插件，叫做 &lt;code&gt;puppeteer-extra&lt;/code&gt; 。其中，就有一个插件叫做&lt;strong&gt; puppeteer-extra-plugin-stealth&lt;/strong&gt;。这个东西，就来专门用来让 puppeteer 隐藏模拟浏览器的指纹特征。&lt;/p&gt;
+&lt;p&gt;那么，我们用 Python  selenium 的人怎么办呢？实际上也有办法。就是把其中的隐藏特征的脚本提取出来，做成一个单独的 js 文件。然后让 Selenium 在打开任意网页之前，先运行一下这个 js 文件里面的内容。&lt;/p&gt;
+&lt;p&gt;puppeteer-extra-plugin-stealth 的作者还写了另外一个工具，叫做&lt;strong&gt; extract-stealth-evasions&lt;/strong&gt;。这个东西就是用来生成 &lt;code&gt;stealth.min.js&lt;/code&gt;  文件的。&lt;/p&gt;
+&lt;p&gt;首先安装 Node.js，然后安装 Npm，接着运行如下命令：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;npx extract-stealth-evasions &lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;就能在文件夹下生成一个 stealth.min.js 文件了&lt;/p&gt;
+&lt;p&gt;使用 stealth.min.js 如下：&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;with&lt;/span&gt; &lt;span class=&#34;token builtin&#34;&gt;open&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#39;stealth.min.js&#39;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;token keyword&#34;&gt;as&lt;/span&gt; f&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    js &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; f&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;read&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;driver&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;execute_cdp_cmd&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#34;Page.addScriptToEvaluateOnNewDocument&#34;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;&amp;#123;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token string&#34;&gt;&#34;source&#34;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;:&lt;/span&gt; js&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;#125;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;再登录刚才的网站：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230318132200964.png&#34; alt&gt;&lt;/p&gt;
+&lt;p&gt;通过此网站的测试&lt;/p&gt;
+&lt;p&gt;再尝试我们要爬取的网站 请求包仍然是 400 bad request&lt;/p&gt;
+&lt;p&gt;猜测失败原因是反爬措施太强大了 不管怎么做都会留下使用爬虫的痕迹&lt;/p&gt;
+&lt;h2 id=&#34;尝试方案四连接手动打开的浏览器&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#尝试方案四连接手动打开的浏览器&#34;&gt;#&lt;/a&gt; 尝试方案四（连接手动打开的浏览器）：&lt;/h2&gt;
+&lt;p&gt;既然使用驱动程序的 selenium 总会留下特征，手动打开的浏览器不会被检测到，那我能不能从源头解决问题，先手动打开一个浏览器，然后尝试用 selenium 接管它呢。&lt;/p&gt;
+&lt;figure class=&#34;highlight python&#34;&gt;&lt;figcaption data-lang=&#34;python&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;cmd1 &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#39;cd &#34;C:\Program Files (x86)\Microsoft\Edge\Application&#34; &amp;amp;&amp;amp; start .\msedge.exe --remote-debugging-port=9225 &#39;&lt;/span&gt; \&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;           &lt;span class=&#34;token string&#34;&gt;&#39;--user-data-dir=&#34;C:\selenium\EdgeProfile&#34; &#39;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    os&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;system&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;cmd1&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    edge_options &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; Options&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    edge_options&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;add_experimental_option&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token string&#34;&gt;&#34;debuggerAddress&#34;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token string&#34;&gt;&#34;127.0.0.1:9225&#34;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;上面代码在命令行中用调试模式打开了 Edge 浏览器，并且开放了一个远程调试端口，我们再使用 selenium 连接上这个端口，取得控制权。&lt;/p&gt;
+&lt;p&gt;在 get 一下目标网址，并登录：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230318134112693.png&#34; alt&gt;&lt;/p&gt;
+&lt;p&gt;终于能进来了。&lt;/p&gt;
+&lt;p&gt;要爬取的中学名称信息分为四个下拉列表：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230318134447273.png&#34; alt=&#34;image-20230318134447273&#34;&gt;&lt;/p&gt;
+&lt;p&gt;当选中了上一级下拉列表的某个选项后，服务端会返回一个 ajax 包，并更新下一级下拉列表里的内容，在这里仍然遇到问题。&lt;/p&gt;
+&lt;p&gt;如果用 selenium 选择了某一个选项，发现后面的下拉列表并没有更新。&lt;/p&gt;
+&lt;p&gt;演示一下。&lt;/p&gt;
+&lt;p&gt;通过检查工具抓包，发现还是 400 bad request，猜测爬虫还是被检测出来了。&lt;/p&gt;
+&lt;h2 id=&#34;尝试方案五模拟真实环境&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#尝试方案五模拟真实环境&#34;&gt;#&lt;/a&gt; 尝试方案五 (模拟真实环境)&lt;/h2&gt;
+&lt;p&gt;猜测：爬虫遍历列表选项并点击的频率太快了，被识别出来非人工操作&lt;/p&gt;
+&lt;p&gt;在每次点击选项后都加上 time.sleep (1) 休眠一秒钟，仍然失败&lt;/p&gt;
+&lt;h2 id=&#34;尝试方案六直接对ajax包的url发请求&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#尝试方案六直接对ajax包的url发请求&#34;&gt;#&lt;/a&gt; 尝试方案六 (直接对 ajax 包的 url 发请求)&lt;/h2&gt;
+&lt;p&gt;一个 url 示例：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly9nYW9rYW8uY2hzaS5jb20uY24venpibS9xdWVyeVhqcy5hY3Rpb24/TFVWVndzODA9NUgyX1l0S2NmN0FCQXZhV00xVThCWjJJNFFWWHUuWlhuQ0RITUVsR0JKY0Vma3dxY0dWNDlIUzQ2d2FTOWQ5ZXk3eUlTZG5BOG95WUh6MkxTVkdJYnVHVEpRVXpBWjNaRUt0d3pKZ0NtSm5oMDNjNlhteVA2ZnVwdXVTUTN6elVOdlFUUndTX1cxeTZtY055TEhDdl82czhIX1IzY2xRYUk3czN4OG5yNFg3NVdDUUFCbFRTWURTMnhtU3p6MnczQ21fMDh6bDJ3Ymd1aTR2NjVCb2laMkw2c0hEYWdSWl95d3ZtTmpfLlg1SDlhbTYwYlpNMGpZaEtwQ19Fck9RcUxfdjhWRmgyN0plQ1g5YldSNW9JTTlRSjEyNldqTUdmM1NldzJTNjhzeFhUVHdmWG9NcTVULjE3WXdrbjRwZGlralZsUWhDc25jbGV4Z3cwaW94dVVjMTMwVEhVdFVQaEQudGx0M2pKYnp5WnpfU1pJLlhyTVJuU3ZWamdpcHBvWg==&#34;&gt;https://gaokao.chsi.com.cn/zzbm/queryXjs.action?LUVVws80=5H2_YtKcf7ABAvaWM1U8BZ2I4QVXu.ZXnCDHMElGBJcEfkwqcGV49HS46waS9d9ey7yISdnA8oyYHz2LSVGIbuGTJQUzAZ3ZEKtwzJgCmJnh03c6XmyP6fupuuSQ3zzUNvQTRwS_W1y6mcNyLHCv_6s8H_R3clQaI7s3x8nr4X75WCQABlTSYDS2xmSzz2w3Cm_08zl2wbgui4v65BoiZ2L6sHDagRZ_ywvmNj_.X5H9am60bZM0jYhKpC_ErOQqL_v8VFh27JeCX9bWR5oIM9QJ126WjMGf3Sew2S68sxXTTwfXoMq5T.17Ywkn4pdikjVlQhCsnclexgw0ioxuUc130THUtUPhD.tlt3jJbzyZz_SZI.XrMRnSvVjgippoZ&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;对要携带的参数的 key 值和 value 进行了加密 找不到规律 也失败&lt;/p&gt;
+&lt;h2 id=&#34;尝试方案七undetected_driver&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#尝试方案七undetected_driver&#34;&gt;#&lt;/a&gt; 尝试方案七 (undetected_driver)&lt;/h2&gt;
+&lt;p&gt;向老师求助后得到的方案&lt;/p&gt;
+&lt;p&gt;undetected_driver 也是 selenium 提供的一个模块 可以防止浏览器特征被识别，并且可以根据浏览器版本自动下载驱动。&lt;/p&gt;
+&lt;p&gt;可以过登录 但是发来的 ajax 请求包还是 400 bad request&lt;/p&gt;
+&lt;h2 id=&#34;总结&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#总结&#34;&gt;#&lt;/a&gt; 总结&lt;/h2&gt;
+&lt;p&gt;猜测失败原因：还是有没有隐藏好的特征被反爬措施检查到了。&lt;/p&gt;
+&lt;p&gt;查找替代方案：在搜索引擎搜索全国中学名称，有结果，但是数据比较老，而且权威性无法保证。在中国教育部官网搜索没有结果。可能需要在同类的政府网站填写个人信息的时候可以找到。&lt;/p&gt;
+ ]]></description>
+        </item>
         <item>
             <guid isPermalink="true">http://example.com/2023/01/25/python%E7%88%AC%E8%99%AB%E5%AD%A6%E4%B9%A0/</guid>
             <title>python爬虫学习</title>

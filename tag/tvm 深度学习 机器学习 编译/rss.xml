@@ -7,16 +7,17 @@
         <language>zh-CN</language>
         <pubDate>Tue, 28 Feb 2023 14:03:36 +0800</pubDate>
         <lastBuildDate>Tue, 28 Feb 2023 14:03:36 +0800</lastBuildDate>
-        <category>git</category>
         <category>C++</category>
+        <category>git</category>
         <category>Linux</category>
         <category>Maven</category>
         <category>STL C++</category>
+        <category>python 爬虫 计算机网络</category>
         <category>python 爬虫</category>
-        <category>TVM 深度学习 机器学习 编译</category>
-        <category>编译原理</category>
         <category>python</category>
         <category>爬虫</category>
+        <category>TVM 深度学习 机器学习 编译</category>
+        <category>编译原理</category>
         <item>
             <guid isPermalink="true">http://example.com/2023/02/28/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%BC%96%E8%AF%91%E5%99%A8TVM-UserTutorial/</guid>
             <title>深度学习编译器TVM-UserTutorial</title>

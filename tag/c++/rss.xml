@@ -7,16 +7,17 @@
         <language>zh-CN</language>
         <pubDate>Mon, 14 Nov 2022 16:08:33 +0800</pubDate>
         <lastBuildDate>Mon, 14 Nov 2022 16:08:33 +0800</lastBuildDate>
-        <category>git</category>
         <category>C++</category>
+        <category>git</category>
         <category>Linux</category>
         <category>Maven</category>
         <category>STL C++</category>
+        <category>python 爬虫 计算机网络</category>
         <category>python 爬虫</category>
-        <category>TVM 深度学习 机器学习 编译</category>
-        <category>编译原理</category>
         <category>python</category>
         <category>爬虫</category>
+        <category>TVM 深度学习 机器学习 编译</category>
+        <category>编译原理</category>
         <item>
             <guid isPermalink="true">http://example.com/2022/11/14/C-%EF%BC%9A%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89%E4%B8%8E%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8/</guid>
             <title>C++：移动语义与右值引用</title>
