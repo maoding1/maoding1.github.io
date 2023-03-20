@@ -7,10 +7,10 @@
     <category term="C++" />
     <category term="git" />
     <category term="Linux" />
+    <category term="python 爬虫" />
     <category term="Maven" />
     <category term="STL C++" />
     <category term="python 爬虫 计算机网络" />
-    <category term="python 爬虫" />
     <category term="python" />
     <category term="爬虫" />
     <category term="TVM 深度学习 机器学习 编译" />
@@ -140,33 +140,54 @@ public class SimpleExprTest &amp;#123;
 &lt;li&gt;look back  ?= 符号，表示后面字符要满足 xxx，但不匹配 xxx&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;nfa与dfa&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#nfa与dfa&#34;&gt;#&lt;/a&gt; NFA 与 DFA&lt;/h2&gt;
-&lt;p&gt;NFA：非确定性自动机  DFA: 确定性自动机&lt;/p&gt;
-&lt;p&gt;区别：其中 L (A) 是使当前自动机能进入接受状态的输入集合&lt;/p&gt;
+&lt;p&gt;NFA：非确定性自动机  DFA: 确定性有穷自动机（Deterministic Finite Automaton)&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230320200945838.png&#34; alt=&#34;image-20230320200945838&#34;&gt;&lt;/p&gt;
+&lt;p&gt;区别：&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;NFA 简洁易于理解，便于描述语言 L (A)&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;DFA 易于判断 x 属于 L (A)，适合产生词法分析器&lt;/p&gt;
-&lt;/li&gt;
+&lt;li&gt;NFA 简洁易于理解，便于描述语言 L (A)&lt;/li&gt;
+&lt;li&gt;DFA 易于判断 x 属于 L (A)，适合产生词法分析器&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h2 id=&#34;汤普森构造法&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#汤普森构造法&#34;&gt;#&lt;/a&gt; 汤普森构造法&lt;/h2&gt;
+&lt;p&gt;​    其中 L (A) 是使当前自动机能进入接受状态的输入集合&lt;/p&gt;
+&lt;p&gt;一般用 NFA 描述语言，用 DFA 实现词法分析器&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;实现词法分析器的步骤：RE --&amp;gt; NFA --&amp;gt; DFA --&amp;gt; 词法分析器&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;如图： 根据 DFA 生成 RE 不需要掌握&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230320201739378.png&#34; alt=&#34;image-20230320201739378&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;thompson构造法从re-到-nfa&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#thompson构造法从re-到-nfa&#34;&gt;#&lt;/a&gt; Thompson 构造法（从 RE 到 NFA）&lt;/h2&gt;
 &lt;p&gt;&lt;img data-src=&#34;image-20230315141912075.png&#34; alt=&#34;image-20230315141912075&#34;&gt;&lt;/p&gt;
+&lt;p&gt;构造方法如下：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230320203523098.png&#34; alt=&#34;image-20230320203523098&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230320203542881.png&#34; alt=&#34;image-20230320203542881&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230320203600728.png&#34; alt=&#34;image-20230320203600728&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230320203629409.png&#34; alt=&#34;image-20230320203629409&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230320203705399.png&#34; alt=&#34;image-20230320203705399&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230320203721076.png&#34; alt=&#34;image-20230320203721076&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img data-src=&#34;image-20230315142444609.png&#34; alt=&#34;image-20230315142444609&#34;&gt;&lt;/p&gt;
-&lt;p&gt;举个例子：(a|b)*abb 的构造&lt;/p&gt;
+&lt;p&gt;举个例子：(a|b)*abb 的构造（考试会考）&lt;/p&gt;
 &lt;p&gt;&lt;img data-src=&#34;image-20230315142551213.png&#34; alt=&#34;image-20230315142551213&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;从nfa到dfa的转换&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#从nfa到dfa的转换&#34;&gt;#&lt;/a&gt; 从 NFA 到 DFA 的转换：&lt;/h2&gt;
 &lt;p&gt;&lt;img data-src=&#34;image-20230315142711571.png&#34; alt=&#34;image-20230315142711571&#34;&gt;&lt;/p&gt;
+&lt;p&gt;规则如下 其中 s 是单个状态 T 是一个状态子集&lt;/p&gt;
+&lt;p&gt;这个过程一定会有一个终点&lt;/p&gt;
 &lt;p&gt;&lt;img data-src=&#34;image-20230315143847385.png&#34; alt=&#34;image-20230315143847385&#34;&gt;&lt;/p&gt;
 &lt;p&gt;符号化的表示：&lt;/p&gt;
 &lt;p&gt;&lt;img data-src=&#34;image-20230315143949988.png&#34; alt=&#34;image-20230315143949988&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;复杂度：NFA 有 n 个状态 DFA 最多有 2 的 n 次方个状态 指数爆炸&lt;/strong&gt;&lt;/p&gt;
 &lt;h2 id=&#34;dfa最小化算法&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#dfa最小化算法&#34;&gt;#&lt;/a&gt; DFA 最小化算法&lt;/h2&gt;
+&lt;p&gt;问题一： 如何定义等价状态&lt;/p&gt;
+&lt;p&gt;想法一： 其中波浪号意为等价&lt;/p&gt;
+&lt;p&gt;​					即 s 状态等价与 t 状态 当且仅当 任意 a 属于字母表 s 与 t 在 a 输入下发生转移后的状态是等价的&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230320210948252.png&#34; alt=&#34;image-20230320210948252&#34;&gt;&lt;/p&gt;
+&lt;p&gt;但是这个定义是错误的 课件上有反例&lt;/p&gt;
+&lt;p&gt;反过来是正确做法：&lt;/p&gt;
 &lt;p&gt;核心思想&lt;strong&gt;做划分而非合并&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;接受状态与非接受状态必定不等价 ，然后接着划分，知道不能再分为止。每一步做迭代 对一个状态集合的任意两个状态，如果在字符 a 的驱动下跑到了不同的组，则这两个状态一定不等价。&lt;/p&gt;
+&lt;p&gt;做之前要补齐死状态。&lt;/p&gt;
 &lt;h3 id=&#34;复杂度&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#复杂度&#34;&gt;#&lt;/a&gt; 复杂度&lt;/h3&gt;
 &lt;p&gt;太复杂了&lt;/p&gt;
-&lt;h3 id=&#34;为什么dfa最小化算法是正确的&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#为什么dfa最小化算法是正确的&#34;&gt;#&lt;/a&gt; 为什么 DFA 最小化算法是正确的&lt;/h3&gt;
-&lt;h3 id=&#34;最小化dfa是唯一的吗&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#最小化dfa是唯一的吗&#34;&gt;#&lt;/a&gt; 最小化 DFA 是唯一的吗&lt;/h3&gt;
+&lt;h2 id=&#34;从dfa得到词法分析器&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#从dfa得到词法分析器&#34;&gt;#&lt;/a&gt; 从 DFA 得到词法分析器&lt;/h2&gt;
+&lt;p&gt;需要消除死状态 ，避免徒劳消耗输入流&lt;/p&gt;
+&lt;p&gt;模拟运行该 DFA, 直到无法继续为止（输入结束或状态无转移）：假设此时状态为 s，若 s 为接受状态，则识别成功，否则，回溯（包括状态与输入流）至最近一次经过的接受状态，识别成功；若没有经过任何接受状态，则报错（忽略第一个字符，重新开始）&lt;/p&gt;
+&lt;p&gt;用在词法分析器场景下的 DFA 的最小化第一步不同，所有的接受状态一定不等价&lt;/p&gt;
 &lt;h2 id=&#34;根据dfa得到re非重点&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#根据dfa得到re非重点&#34;&gt;#&lt;/a&gt; 根据 DFA 得到 RE (非重点)&lt;/h2&gt;
 &lt;h2 id=&#34;lab-1&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#lab-1&#34;&gt;#&lt;/a&gt; lab 1&lt;/h2&gt;
 &lt;p&gt;编程一小时 配置环境一天的典型代表。&lt;/p&gt;
