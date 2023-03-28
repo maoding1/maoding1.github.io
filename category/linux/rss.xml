@@ -8,16 +8,16 @@
         <pubDate>Fri, 30 Sep 2022 15:21:29 +0800</pubDate>
         <lastBuildDate>Fri, 30 Sep 2022 15:21:29 +0800</lastBuildDate>
         <category>C++</category>
-        <category>git</category>
         <category>Linux</category>
-        <category>python 爬虫</category>
+        <category>git</category>
         <category>Maven</category>
         <category>STL C++</category>
         <category>python 爬虫 计算机网络</category>
+        <category>python 爬虫</category>
+        <category>编译原理</category>
+        <category>TVM 深度学习 机器学习 编译</category>
         <category>python</category>
         <category>爬虫</category>
-        <category>TVM 深度学习 机器学习 编译</category>
-        <category>编译原理</category>
         <item>
             <guid isPermalink="true">http://example.com/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/</guid>
             <title>Linux—01-Linux安装常识</title>
