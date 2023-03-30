@@ -103,12 +103,12 @@ Yume Shoka = MikeMao's blog = 风烟俱净，天山共色 从流飘荡，任意�
       </div>
       <div id="imgs" class="pjax">
         <ul>
-          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1giciusoyjnj219g0u0x56.jpg"></li>
-          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1gipexj2jgzj20zk0m8b09.jpg"></li>
-          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1gipetlbztpj20zk0m84qp.jpg"></li>
-          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1gipetfk5zwj20zk0m8e81.jpg"></li>
-          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1giph4wqtg4j20zk0m8x6p.jpg"></li>
-          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1gipeubcbajj20zk0m8h1h.jpg"></li>
+          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1gipey84bjtj20zk0m8hdt.jpg"></li>
+          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1gipeu1usa7j20zk0m8b29.jpg"></li>
+          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1gicmnywqgpj20zk0m8dwx.jpg"></li>
+          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1gipew28b65j20zk0m8hdt.jpg"></li>
+          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1giclil3m4ej20zk0m8tn8.jpg"></li>
+          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1giciryrr3rj20zk0m8nhk.jpg"></li>
         </ul>
       </div>
     </header>
@@ -158,6 +158,7 @@ Yume Shoka = MikeMao's blog = 风烟俱净，天山共色 从流飘荡，任意�
 <p>主要内容：如何用 antlr4 生成一个语法分析器。手写语法分析器比较困难，不作要求。</p>
 <p>lesson1 任务： 用 cymbol 语言（龙书中提供的一种简化版 c 语言）写一段程序，并生成如下的函数调用关系图。</p>
 <p><img data-src="image-20230326120955042.png" alt="image-20230326120955042"></p>
+<p>lesson2 任务：写一个简单的计算器</p>
 <p>在为自己的语言编写语法分析器时，可能会遇到一些问题。</p>
 <h2 id="问题一二义性文法"><a class="anchor" href="#问题一二义性文法">#</a> 问题一：二义性文法</h2>
 <p>考虑下列定义：</p>
@@ -192,6 +193,27 @@ Yume Shoka = MikeMao's blog = 风烟俱净，天山共色 从流飘荡，任意�
 <h2 id="如何生成一个调用图"><a class="anchor" href="#如何生成一个调用图">#</a> 如何生成一个调用图</h2>
 <p>按 Graphviz 语法编写.dot 文件，会自动生成调用图</p>
 <p><img data-src="image-20230326201151771.png" alt="image-20230326201151771"></p>
+<h2 id="实现一个简单的计算器"><a class="anchor" href="#实现一个简单的计算器">#</a> 实现一个简单的计算器</h2>
+<h3 id="listener模式的一个弊端"><a class="anchor" href="#listener模式的一个弊端">#</a> listener 模式的一个弊端</h3>
+<p>antlr 提供的 listener 模式方法的返回值是 void，但是我们想实现一个计算器的话，在 dfs 语法树的时候就必须利用子节点的值来计算。为了解决这个问题，antlr4 提供了一个标注（Annotate) 语法树的功能。</p>
+<p>eg:</p>
+<figure class="highlight java"><figcaption data-lang="java"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token comment">//calcuListener 里的方法</span></pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token annotation punctuation">@Override</span></pre></td></tr><tr><td data-num="3"></td><td><pre><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">exitParens</span><span class="token punctuation">(</span><span class="token class-name">CymbolParser<span class="token punctuation">.</span>ParensContext</span> ctx<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="4"></td><td><pre>	values<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span>values<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>ctx<span class="token punctuation">.</span><span class="token function">expr</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="5"></td><td><pre><span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="6"></td><td><pre></pre></td></tr><tr><td data-num="7"></td><td><pre><span class="token annotation punctuation">@Override</span></pre></td></tr><tr><td data-num="8"></td><td><pre><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">exitAddSub</span><span class="token punctuation">(</span><span class="token class-name">CymbolParser<span class="token punctuation">.</span>AddSubContext</span> ctx<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="9"></td><td><pre>	<span class="token keyword">int</span> lvalue <span class="token operator">=</span> values<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>ctx<span class="token punctuation">.</span>lhs<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//lhs (left hand side) 在.g4 文件中赋值为前面的 expr</span></pre></td></tr><tr><td data-num="10"></td><td><pre>	<span class="token keyword">int</span> rvalue <span class="token operator">=</span> values<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>ctx<span class="token punctuation">.</span>rhs<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="11"></td><td><pre>	<span class="token keyword">if</span> <span class="token punctuation">(</span>ctx<span class="token punctuation">.</span>op<span class="token punctuation">.</span><span class="token function">getType</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token constant">ADD</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="12"></td><td><pre>		values<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span> lvalue<span class="token operator">+</span>rvalue<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="13"></td><td><pre>	<span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="14"></td><td><pre>		values<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span>lvalue<span class="token operator">-</span>rvalue<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="15"></td><td><pre>	<span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="16"></td><td><pre><span class="token punctuation">&#125;</span></pre></td></tr></table></figure><h2 id="上下文无关文法"><a class="anchor" href="#上下文无关文法">#</a> 上下文无关文法</h2>
+<p><img data-src="image-20230329150049799.png" alt="image-20230329150049799"></p>
+<p>编写 g4 文件时实际上用的就是上下文无关文法</p>
+<h3 id="什么是上下文相关文法"><a class="anchor" href="#什么是上下文相关文法">#</a> 什么是上下文相关文法</h3>
+<p><img data-src="image-20230329150412566.png" alt="image-20230329150412566"></p>
+<p>以第三行与第七行为例：B 是展开为 Z 还是 b 与它的上下文（这里是前面的字符）有关</p>
+<p>这段文法表示的是 a<sup>n*b</sup>n*c^n ，可以证明用上下文无关文法是无法描述这个语言的。</p>
+<h3 id="推导"><a class="anchor" href="#推导">#</a> 推导</h3>
+<p><img data-src="image-20230329150648976.png" alt="image-20230329150648976"></p>
+<p><img data-src="image-20230329150810626.png" alt="image-20230329150810626"></p>
+<h3 id="为什么不使用正则表达式去描述语法"><a class="anchor" href="#为什么不使用正则表达式去描述语法">#</a> 为什么不使用正则表达式去描述语法</h3>
+<p><img data-src="image-20230329153448085.png" alt="image-20230329153448085"></p>
+<p>证明如下：</p>
+<p><img data-src="image-20230329153850498.png" alt="image-20230329153850498"></p>
+<p><img data-src="image-20230329154356116.png" alt="image-20230329154356116"></p>
+<p>因为 m &gt; k, 所以一定存在状态 si ，在 si 停留了两次，假设又经过了 j 步能够到达第二次 si</p>
+<p>根据假设，a<sup>ib</sup>i 能够到达终止状态，那么 a<sup>(i+j)b</sup>i 也能到达终止状态，与假设矛盾，证明完毕。</p>
 <h2 id="lab2"><a class="anchor" href="#lab2">#</a> lab2</h2>
 <h3 id="实验内容"><a class="anchor" href="#实验内容">#</a> 实验内容</h3>
 <ul>
@@ -204,7 +226,7 @@ Yume Shoka = MikeMao's blog = 风烟俱净，天山共色 从流飘荡，任意�
 </ul>
 </li>
 </ul>
-<h2 id="实验过程"><a class="anchor" href="#实验过程">#</a> 实验过程</h2>
+<h3 id="实验过程"><a class="anchor" href="#实验过程">#</a> 实验过程</h3>
 <p>仍然需要重写 BaseErrorListener 实现一个自己的 myErrorListener。与实验一不同的是，除法 ErrorListener 的方式不同，本次实验要在语法分析的过程中进行错误检查。改写的 main 函数如下：</p>
 <figure class="highlight java"><figcaption data-lang="java"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IOException</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="2"></td><td><pre>		<span class="token keyword">if</span> <span class="token punctuation">(</span>args<span class="token punctuation">.</span>length <span class="token operator">&lt;</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="3"></td><td><pre>			<span class="token class-name">System</span><span class="token punctuation">.</span>err<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"input path is required"</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="4"></td><td><pre>		<span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="5"></td><td><pre>		<span class="token class-name">String</span> source <span class="token operator">=</span> args<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="6"></td><td><pre>		<span class="token class-name">CharStream</span> input <span class="token operator">=</span> <span class="token class-name">CharStreams</span><span class="token punctuation">.</span><span class="token function">fromFileName</span><span class="token punctuation">(</span>source<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="7"></td><td><pre><span class="token comment">//		SysYLexer sysYLexer = new SysYLexer(input);</span></pre></td></tr><tr><td data-num="8"></td><td><pre><span class="token comment">//		sysYLexer.removeErrorListeners();</span></pre></td></tr><tr><td data-num="9"></td><td><pre><span class="token comment">//		sysYLexer.addErrorListener(new myErrorListener());</span></pre></td></tr><tr><td data-num="10"></td><td><pre><span class="token comment">//		List&lt;Token> tokens = (List&lt;Token>) sysYLexer.getAllTokens();</span></pre></td></tr><tr><td data-num="11"></td><td><pre>		<span class="token class-name">SysYLexer</span> sysYLexer <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">SysYLexer</span><span class="token punctuation">(</span>input<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="12"></td><td><pre>		<span class="token class-name">CommonTokenStream</span> tokens <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">CommonTokenStream</span><span class="token punctuation">(</span>sysYLexer<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="13"></td><td><pre>		<span class="token class-name">SysYParser</span> parser <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">SysYParser</span><span class="token punctuation">(</span>tokens<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="14"></td><td><pre>		parser<span class="token punctuation">.</span><span class="token function">removeErrorListeners</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="15"></td><td><pre>		parser<span class="token punctuation">.</span><span class="token function">addErrorListener</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token function">myErrorListener</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="16"></td><td><pre>		<span class="token class-name">ParseTree</span> tree <span class="token operator">=</span> parser<span class="token punctuation">.</span><span class="token function">program</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="17"></td><td><pre>		<span class="token keyword">if</span> <span class="token punctuation">(</span>error<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="18"></td><td><pre>			<span class="token keyword">return</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="19"></td><td><pre>		<span class="token class-name">Visitor</span> visitor <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Visitor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="20"></td><td><pre>		visitor<span class="token punctuation">.</span><span class="token function">visit</span><span class="token punctuation">(</span>tree<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="21"></td><td><pre><span class="token comment">//		String[] rulenames = sysYLexer.getRuleNames();</span></pre></td></tr><tr><td data-num="22"></td><td><pre><span class="token comment">//		for (Token token : tokens) &#123;</span></pre></td></tr><tr><td data-num="23"></td><td><pre><span class="token comment">//			String tokenType = rulenames[token.getType()-1];</span></pre></td></tr><tr><td data-num="24"></td><td><pre><span class="token comment">//			String tokenText = toDemical(token.getText());</span></pre></td></tr><tr><td data-num="25"></td><td><pre><span class="token comment">//			String tokenLine = ""+token.getLine();</span></pre></td></tr><tr><td data-num="26"></td><td><pre><span class="token comment">//			System.err.println(tokenType + " " + tokenText + " at Line "+tokenLine+'.');</span></pre></td></tr><tr><td data-num="27"></td><td><pre><span class="token comment">//		&#125;</span></pre></td></tr><tr><td data-num="28"></td><td><pre>    <span class="token punctuation">&#125;</span></pre></td></tr></table></figure><p>其中注释掉的部分是实验一的代码。这次要将 errorlistener 加到语法分析器 parser 上 并且利用 parser.program () 触发错误检查并生成语法树。注意，之所以用 program () 方法当做入口方法是因为 SysYParser.g4 的定义中 program 是最高的语言层次。</p>
 <p>本次实验最重要的内容就是重写了一个继承自 SysYParserBaseVisitor 的类 Vistor 代码如下：</p>
@@ -225,7 +247,7 @@ Yume Shoka = MikeMao's blog = 风烟俱净，天山共色 从流飘荡，任意�
       <i class="ic i-calendar-check"></i>
     </span>
     <span class="text">更新于</span>
-    <time title="修改时间：2023-03-28 21:15:56" itemprop="dateModified" datetime="2023-03-28T21:15:56+08:00">2023-03-28</time>
+    <time title="修改时间：2023-03-29 15:49:31" itemprop="dateModified" datetime="2023-03-29T15:49:31+08:00">2023-03-29</time>
   </span>
 </div>
 
@@ -280,10 +302,10 @@ Yume Shoka = MikeMao's blog = 风烟俱净，天山共色 从流飘荡，任意�
     <div class="item left">
       
 
-  <a href="/2023/03/23/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8601-%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90/%E5%AD%A6%E6%A0%A1%E5%90%8D%E7%A7%B0%E5%8C%B9%E9%85%8D/" itemprop="url" rel="prev" data-background-image="https:&#x2F;&#x2F;lz.sinaimg.cn&#x2F;mw690&#x2F;6833939bly1giph4lm9i7j20zk0m84qp.jpg" title="未命名">
+  <a href="/2023/03/16/nova%E2%80%94%E2%80%94%E9%AB%98%E8%80%83%E7%BD%91%E7%AB%99%E5%AD%A6%E6%A0%A1%E5%90%8D%E7%A7%B0%E7%88%AC%E5%8F%96/" itemprop="url" rel="prev" data-background-image="https:&#x2F;&#x2F;lz.sinaimg.cn&#x2F;mw690&#x2F;6833939bly1giclhtuo6nj20zk0m8ttm.jpg" title="nova——高考网站学校名称爬取">
   <span class="type">上一篇</span>
-  <span class="category"><i class="ic i-flag"></i> </span>
-  <h3>未命名</h3>
+  <span class="category"><i class="ic i-flag"></i> python</span>
+  <h3>nova——高考网站学校名称爬取</h3>
   </a>
 
     </div>
@@ -304,7 +326,7 @@ Yume Shoka = MikeMao's blog = 风烟俱净，天山共色 从流飘荡，任意�
   <div class="panels">
     <div class="inner">
       <div class="contents panel pjax" data-title="文章目录">
-          <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8602-%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90"><span class="toc-number">1.</span> <span class="toc-text"> 编译原理 02 - 语法分析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E4%B8%80%E4%BA%8C%E4%B9%89%E6%80%A7%E6%96%87%E6%B3%95"><span class="toc-number">1.1.</span> <span class="toc-text"> 问题一：二义性文法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%90%E7%AE%97%E7%AC%A6%E7%9A%84%E7%BB%93%E5%90%88%E6%80%A7%E5%B8%A6%E6%9D%A5%E7%9A%84%E4%BA%8C%E4%B9%89%E6%80%A7"><span class="toc-number">1.1.1.</span> <span class="toc-text"> 运算符的结合性带来的二义性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%90%E7%AE%97%E7%AC%A6%E4%BC%98%E5%85%88%E7%BA%A7%E5%B8%A6%E6%9D%A5%E7%9A%84%E4%BA%8C%E4%B9%89%E6%80%A7"><span class="toc-number">1.1.2.</span> <span class="toc-text"> 运算符优先级带来的二义性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E6%A0%B9%E6%8D%AE%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E5%9B%BE"><span class="toc-number">1.2.</span> <span class="toc-text"> 如何根据代码生成函数调用图</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%93%BA%E5%9E%AB"><span class="toc-number">1.2.1.</span> <span class="toc-text"> 铺垫</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E7%94%9F%E6%88%90%E4%B8%80%E4%B8%AA%E8%B0%83%E7%94%A8%E5%9B%BE"><span class="toc-number">1.3.</span> <span class="toc-text"> 如何生成一个调用图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lab2"><span class="toc-number">1.4.</span> <span class="toc-text"> lab2</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E5%86%85%E5%AE%B9"><span class="toc-number">1.4.1.</span> <span class="toc-text"> 实验内容</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E8%BF%87%E7%A8%8B"><span class="toc-number">1.5.</span> <span class="toc-text"> 实验过程</span></a></li></ol></li></ol>
+          <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8602-%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90"><span class="toc-number">1.</span> <span class="toc-text"> 编译原理 02 - 语法分析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E4%B8%80%E4%BA%8C%E4%B9%89%E6%80%A7%E6%96%87%E6%B3%95"><span class="toc-number">1.1.</span> <span class="toc-text"> 问题一：二义性文法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%90%E7%AE%97%E7%AC%A6%E7%9A%84%E7%BB%93%E5%90%88%E6%80%A7%E5%B8%A6%E6%9D%A5%E7%9A%84%E4%BA%8C%E4%B9%89%E6%80%A7"><span class="toc-number">1.1.1.</span> <span class="toc-text"> 运算符的结合性带来的二义性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%90%E7%AE%97%E7%AC%A6%E4%BC%98%E5%85%88%E7%BA%A7%E5%B8%A6%E6%9D%A5%E7%9A%84%E4%BA%8C%E4%B9%89%E6%80%A7"><span class="toc-number">1.1.2.</span> <span class="toc-text"> 运算符优先级带来的二义性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E6%A0%B9%E6%8D%AE%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E5%9B%BE"><span class="toc-number">1.2.</span> <span class="toc-text"> 如何根据代码生成函数调用图</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%93%BA%E5%9E%AB"><span class="toc-number">1.2.1.</span> <span class="toc-text"> 铺垫</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E7%94%9F%E6%88%90%E4%B8%80%E4%B8%AA%E8%B0%83%E7%94%A8%E5%9B%BE"><span class="toc-number">1.3.</span> <span class="toc-text"> 如何生成一个调用图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E8%AE%A1%E7%AE%97%E5%99%A8"><span class="toc-number">1.4.</span> <span class="toc-text"> 实现一个简单的计算器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#listener%E6%A8%A1%E5%BC%8F%E7%9A%84%E4%B8%80%E4%B8%AA%E5%BC%8A%E7%AB%AF"><span class="toc-number">1.4.1.</span> <span class="toc-text"> listener 模式的一个弊端</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E6%97%A0%E5%85%B3%E6%96%87%E6%B3%95"><span class="toc-number">1.5.</span> <span class="toc-text"> 上下文无关文法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E4%B8%8A%E4%B8%8B%E6%96%87%E7%9B%B8%E5%85%B3%E6%96%87%E6%B3%95"><span class="toc-number">1.5.1.</span> <span class="toc-text"> 什么是上下文相关文法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A8%E5%AF%BC"><span class="toc-number">1.5.2.</span> <span class="toc-text"> 推导</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E4%BD%BF%E7%94%A8%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8E%BB%E6%8F%8F%E8%BF%B0%E8%AF%AD%E6%B3%95"><span class="toc-number">1.5.3.</span> <span class="toc-text"> 为什么不使用正则表达式去描述语法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lab2"><span class="toc-number">1.6.</span> <span class="toc-text"> lab2</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E5%86%85%E5%AE%B9"><span class="toc-number">1.6.1.</span> <span class="toc-text"> 实验内容</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E8%BF%87%E7%A8%8B"><span class="toc-number">1.6.2.</span> <span class="toc-text"> 实验过程</span></a></li></ol></li></ol></li></ol>
       </div>
       <div class="related panel pjax" data-title="系列文章">
         <ul>
@@ -322,7 +344,7 @@ Yume Shoka = MikeMao's blog = 风烟俱净，天山共色 从流飘荡，任意�
 <nav class="state">
     <div class="item posts">
       <a href="/archives/">
-        <span class="count">13</span>
+        <span class="count">12</span>
         <span class="name">文章</span>
       </a>
     </div>
@@ -384,59 +406,20 @@ Yume Shoka = MikeMao's blog = 风烟俱净，天山共色 从流飘荡，任意�
   <li class="item">
     
 <div class="breadcrumb">
+<a href="/categories/Linux/" title="分类于 Linux">Linux</a>
+</div>
+
+    <span><a href="/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/" title="Linux—01-Linux安装常识">Linux—01-Linux安装常识</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
 <a href="/categories/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/" title="分类于 编译原理">编译原理</a>
 </div>
 
-    <span><a href="/2023/03/24/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8602-%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90/" title="编译原理02-语法分析">编译原理02-语法分析</a></span>
-  </li>
-
-      
-  <li class="item">
-    
-<div class="breadcrumb">
-<a href="/categories/C/" title="分类于 C++">C++</a>
-</div>
-
-    <span><a href="/2022/11/14/C-%EF%BC%9A%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89%E4%B8%8E%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8/" title="C++：移动语义与右值引用">C++：移动语义与右值引用</a></span>
-  </li>
-
-      
-  <li class="item">
-    
-<div class="breadcrumb">
-<a href="/categories/TVM/" title="分类于 TVM">TVM</a>
-</div>
-
-    <span><a href="/2023/02/28/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%BC%96%E8%AF%91%E5%99%A8TVM-UserTutorial/" title="深度学习编译器TVM-UserTutorial">深度学习编译器TVM-UserTutorial</a></span>
-  </li>
-
-      
-  <li class="item">
-    
-<div class="breadcrumb">
-<a href="/categories/python/" title="分类于 python">python</a>
-</div>
-
-    <span><a href="/2023/01/25/python%E7%88%AC%E8%99%AB%E5%AD%A6%E4%B9%A0/" title="python爬虫学习">python爬虫学习</a></span>
-  </li>
-
-      
-  <li class="item">
-    
-<div class="breadcrumb">
-<a href="/categories/Maven/" title="分类于 Maven">Maven</a>
-</div>
-
-    <span><a href="/2022/10/23/Maven-%E5%AD%A6%E4%B9%A0/" title="Maven 学习">Maven 学习</a></span>
-  </li>
-
-      
-  <li class="item">
-    
-<div class="breadcrumb">
-</div>
-
-    <span><a href="/2023/02/15/python%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%80%89%E8%AF%BE/" title="python实现自动选课">python实现自动选课</a></span>
+    <span><a href="/2023/03/09/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8601-%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90/" title="编译原理01-词法分析">编译原理01-词法分析</a></span>
   </li>
 
       
@@ -453,19 +436,60 @@ Yume Shoka = MikeMao's blog = 风烟俱净，天山共色 从流飘荡，任意�
   <li class="item">
     
 <div class="breadcrumb">
-<a href="/categories/Linux/" title="分类于 Linux">Linux</a>
+<a href="/categories/Maven/" title="分类于 Maven">Maven</a>
 </div>
 
-    <span><a href="/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/" title="Linux—01-Linux安装常识">Linux—01-Linux安装常识</a></span>
+    <span><a href="/2022/10/23/Maven-%E5%AD%A6%E4%B9%A0/" title="Maven 学习">Maven 学习</a></span>
   </li>
 
       
   <li class="item">
     
 <div class="breadcrumb">
+<a href="/categories/git/" title="分类于 git">git</a>
 </div>
 
-    <span><a href="/2023/03/23/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8601-%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90/%E5%AD%A6%E6%A0%A1%E5%90%8D%E7%A7%B0%E5%8C%B9%E9%85%8D/" title="未命名">未命名</a></span>
+    <span><a href="/2022/10/02/Git%E5%AD%A6%E4%B9%A002-%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86/" title="Git学习02-分支管理">Git学习02-分支管理</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/python/" title="分类于 python">python</a>
+</div>
+
+    <span><a href="/2023/01/25/python%E7%88%AC%E8%99%AB%E5%AD%A6%E4%B9%A0/" title="python爬虫学习">python爬虫学习</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/C/" title="分类于 C++">C++</a>
+</div>
+
+    <span><a href="/2022/10/05/STL%E5%AD%A6%E4%B9%A0-01-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E4%B8%8Evector/" title="STL学习-01-智能指针与vector">STL学习-01-智能指针与vector</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/TVM/" title="分类于 TVM">TVM</a>
+</div>
+
+    <span><a href="/2023/02/28/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%BC%96%E8%AF%91%E5%99%A8TVM-UserTutorial/" title="深度学习编译器TVM-UserTutorial">深度学习编译器TVM-UserTutorial</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/git/" title="分类于 git">git</a>
+</div>
+
+    <span><a href="/2022/10/01/Git%E5%AD%A6%E4%B9%A001-%20%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/" title="git操作">git操作</a></span>
   </li>
 
       
@@ -475,7 +499,7 @@ Yume Shoka = MikeMao's blog = 风烟俱净，天山共色 从流飘荡，任意�
 <a href="/categories/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/" title="分类于 编译原理">编译原理</a>
 </div>
 
-    <span><a href="/2023/03/09/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8601-%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90/" title="编译原理01-词法分析">编译原理01-词法分析</a></span>
+    <span><a href="/2023/03/24/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8602-%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90/" title="编译原理02-语法分析">编译原理02-语法分析</a></span>
   </li>
 
   </ul>

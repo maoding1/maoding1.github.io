@@ -5,16 +5,16 @@
     <link href="http://example.com" />
     <updated>2022-10-05T11:54:58.000Z</updated>
     <category term="C++" />
-    <category term="Linux" />
     <category term="git" />
     <category term="Maven" />
+    <category term="Linux" />
     <category term="STL C++" />
     <category term="python 爬虫 计算机网络" />
     <category term="python 爬虫" />
-    <category term="编译原理" />
-    <category term="TVM 深度学习 机器学习 编译" />
     <category term="python" />
     <category term="爬虫" />
+    <category term="TVM 深度学习 机器学习 编译" />
+    <category term="编译原理" />
     <entry>
         <id>http://example.com/2022/10/05/STL%E5%AD%A6%E4%B9%A0-01-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E4%B8%8Evector/</id>
         <title>STL学习-01-智能指针与vector</title>
