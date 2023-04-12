@@ -5,12 +5,12 @@
         <link>http://example.com</link>
         <description>a student of NJU who use this website to record learning experience</description>
         <language>zh-CN</language>
-        <pubDate>Fri, 24 Mar 2023 14:05:42 +0800</pubDate>
-        <lastBuildDate>Fri, 24 Mar 2023 14:05:42 +0800</lastBuildDate>
+        <pubDate>Wed, 12 Apr 2023 15:46:23 +0800</pubDate>
+        <lastBuildDate>Wed, 12 Apr 2023 15:46:23 +0800</lastBuildDate>
         <category>C++</category>
         <category>git</category>
-        <category>Maven</category>
         <category>Linux</category>
+        <category>Maven</category>
         <category>STL C++</category>
         <category>python 爬虫 计算机网络</category>
         <category>python 爬虫</category>
@@ -18,6 +18,17 @@
         <category>爬虫</category>
         <category>TVM 深度学习 机器学习 编译</category>
         <category>编译原理</category>
+        <item>
+            <guid isPermalink="true">http://example.com/2023/04/12/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8603-%E8%AF%AD%E4%B9%89%E5%88%86%E6%9E%90/</guid>
+            <title>编译原理03-语义分析</title>
+            <link>http://example.com/2023/04/12/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8603-%E8%AF%AD%E4%B9%89%E5%88%86%E6%9E%90/</link>
+            <category>编译原理</category>
+            <pubDate>Wed, 12 Apr 2023 15:46:23 +0800</pubDate>
+            <description><![CDATA[ &lt;h1 id=&#34;语义分析&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#语义分析&#34;&gt;#&lt;/a&gt; 语义分析&lt;/h1&gt;
+&lt;h2 id=&#34;符号表&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#符号表&#34;&gt;#&lt;/a&gt; 符号表&lt;/h2&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230412154717575.png&#34; alt=&#34;image-20230412154717575&#34;&gt;&lt;/p&gt;
+ ]]></description>
+        </item>
         <item>
             <guid isPermalink="true">http://example.com/2023/03/24/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8602-%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90/</guid>
             <title>编译原理02-语法分析</title>
@@ -84,6 +95,131 @@
 &lt;p&gt;&lt;img data-src=&#34;image-20230329154356116.png&#34; alt=&#34;image-20230329154356116&#34;&gt;&lt;/p&gt;
 &lt;p&gt;因为 m &amp;gt; k, 所以一定存在状态 si ，在 si 停留了两次，假设又经过了 j 步能够到达第二次 si&lt;/p&gt;
 &lt;p&gt;根据假设，a&lt;sup&gt;ib&lt;/sup&gt;i 能够到达终止状态，那么 a&lt;sup&gt;(i+j)b&lt;/sup&gt;i 也能到达终止状态，与假设矛盾，证明完毕。&lt;/p&gt;
+&lt;h2 id=&#34;ll1语法分析器&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#ll1语法分析器&#34;&gt;#&lt;/a&gt; LL (1) 语法分析器&lt;/h2&gt;
+&lt;h3 id=&#34;总览&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#总览&#34;&gt;#&lt;/a&gt; 总览&lt;/h3&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230411205542981.png&#34; alt=&#34;image-20230411205542981&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230331143754540.png&#34; alt=&#34;image-20230331143754540&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;自顶向下的含义&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#自顶向下的含义&#34;&gt;#&lt;/a&gt; 自顶向下的含义&lt;/h3&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230331140837017.png&#34; alt=&#34;image-20230331140837017&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;两个l的含义&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#两个l的含义&#34;&gt;#&lt;/a&gt; 两个 L 的含义&lt;/h3&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230331141034044.png&#34; alt=&#34;image-20230331141034044&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;递归下降的含义&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#递归下降的含义&#34;&gt;#&lt;/a&gt; 递归下降的含义&lt;/h3&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230331141214747.png&#34; alt=&#34;image-20230331141214747&#34;&gt;&lt;/p&gt;
+&lt;p&gt;eg: 先默认选择产生式的问题已经被解决了，只演示递归下降的过程&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230331141731554.png&#34; alt=&#34;image-20230331141731554&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230331142317647.png&#34; alt=&#34;image-20230331142317647&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;如何选择产生式&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#如何选择产生式&#34;&gt;#&lt;/a&gt; 如何选择产生式&lt;/h3&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230331142728269.png&#34; alt=&#34;image-20230331142728269&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230331142916987.png&#34; alt=&#34;image-20230331142916987&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;什么是ll1文法&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#什么是ll1文法&#34;&gt;#&lt;/a&gt; 什么是 LL (1) 文法&lt;/h3&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230331143057195.png&#34; alt=&#34;image-20230331143057195&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;LL（1）中 1 的含义：只需要查看当前的输入符号就可以确定选择哪条产生式进行展开&lt;/strong&gt;&lt;/p&gt;
+&lt;h3 id=&#34;ll1的伪代码&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#ll1的伪代码&#34;&gt;#&lt;/a&gt; LL (1) 的伪代码&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;假设预测分析表已经有了&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230331143540005.png&#34; alt=&#34;image-20230331143540005&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230331143718582.png&#34; alt=&#34;image-20230331143718582&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;难点如何生成预测分析表&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#难点如何生成预测分析表&#34;&gt;#&lt;/a&gt; 难点：如何生成预测分析表&lt;/h3&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230331150322238.png&#34; alt=&#34;image-20230331150322238&#34;&gt;&lt;/p&gt;
+&lt;p&gt;竖着看：什么时候选择展开为 func_call, 还是 decl。很简单，看当前输入的前面是 int 还是 ID。&lt;/p&gt;
+&lt;p&gt;横着看：如何确定 optional_init 是否展开为空串&lt;/p&gt;
+&lt;p&gt;问题：什么时候可以选择空串展开？ 见后&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230331151147854.png&#34; alt=&#34;image-20230331151147854&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230331151439293.png&#34; alt=&#34;image-20230331151439293&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230331151512669.png&#34; alt=&#34;image-20230331151512669&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230331152131492.png&#34; alt=&#34;image-20230331152131492&#34;&gt;&lt;/p&gt;
+&lt;p&gt;为什么中间两步要去除空串，比如：因为即使 Y1 可以被展开为空串，后面的 Y2-YK 不一定能展开为空串，X 的开头不一定是空串。空串要单独判断&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230331152345075.png&#34; alt=&#34;image-20230331152345075&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230411223059716.png&#34; alt=&#34;image-20230411223059716&#34;&gt;&lt;/p&gt;
+&lt;p&gt;dollar 符是文件结束符号&lt;/p&gt;
+&lt;p&gt;因为 follow 集合考虑的是终结符，所以规则 3 要去掉空串&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230407140712901.png&#34; alt=&#34;image-20230407140712901&#34;&gt;&lt;/p&gt;
+&lt;p&gt;例子：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230407140907285.png&#34; alt=&#34;image-20230407140907285&#34;&gt;&lt;/p&gt;
+&lt;p&gt;这个例子中只看 c 无法确定 Y 是由 3 号还是 4 号规则展开，则不是 LL (1) 文法&lt;/p&gt;
+&lt;h3 id=&#34;非递归的预测分析算法不作要求&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#非递归的预测分析算法不作要求&#34;&gt;#&lt;/a&gt; 非递归的预测分析算法（不作要求）&lt;/h3&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230407141535578.png&#34; alt=&#34;image-20230407141535578&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;改造为ll1文法&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#改造为ll1文法&#34;&gt;#&lt;/a&gt; 改造为 LL (1) 文法&lt;/h2&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230407141907838.png&#34; alt=&#34;image-20230407141907838&#34;&gt;&lt;/p&gt;
+&lt;p&gt;为什么左递归不是 LL (1) 文法：&lt;/p&gt;
+&lt;p&gt;LL (1) 的递归下降算法会出问题：&lt;/p&gt;
+&lt;p&gt;E 展开为 E+T，然后 E+T 中的 E 展开为 E+T。。。&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230407142036246.png&#34; alt=&#34;image-20230407142036246&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230407142224345.png&#34; alt=&#34;image-20230407142224345&#34;&gt;&lt;/p&gt;
+&lt;p&gt;问题：改写成右递归比较复杂，而且改造后可读性较差&lt;/p&gt;
+&lt;h3 id=&#34;直接左递归的改造&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#直接左递归的改造&#34;&gt;#&lt;/a&gt; 直接左递归的改造&lt;/h3&gt;
+&lt;p&gt;改造的模板：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230407142538910.png&#34; alt=&#34;image-20230407142538910&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;间接左递归的改造&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#间接左递归的改造&#34;&gt;#&lt;/a&gt; 间接左递归的改造&lt;/h3&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230407142905861.png&#34; alt=&#34;image-20230407142905861&#34;&gt;&lt;/p&gt;
+&lt;p&gt;思路：改造后的文法中的每一条展开式都应该满足红框里的条件 因为展开后的编号越来越大，就永远回不到自己。&lt;/p&gt;
+&lt;p&gt;例子：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;首先对所有的非终结符编号： S：A1， A：A2， B：A3&lt;/li&gt;
+&lt;li&gt;看所有的非终结符的展开式是否满足单调递增性质&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230407143533868.png&#34; alt=&#34;image-20230407143533868&#34;&gt;&lt;/p&gt;
+&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;发现 B-&amp;gt; Sa|a 不满足改造条件， 将非终结符慢慢展开，发现展开为最后一行时变成了直接左递归，直接左递归用上面的方法处理。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;左递归改造算法要求&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#左递归改造算法要求&#34;&gt;#&lt;/a&gt; 左递归改造算法要求：&lt;/h3&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230407143729991.png&#34; alt=&#34;image-20230407143729991&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;左公因子的改造&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#左公因子的改造&#34;&gt;#&lt;/a&gt; 左公因子的改造&lt;/h3&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230407144035629.png&#34; alt=&#34;image-20230407144035629&#34;&gt;&lt;/p&gt;
+&lt;p&gt;为什么左公因子不行 ，比如第八行原来的 decl 内容，两个展开式开头都是 &#39;int&#39;。&lt;/p&gt;
+&lt;p&gt;改造方法简单，如第 13 行的定义&lt;/p&gt;
+&lt;h2 id=&#34;adaptive-ll语法分析算法&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#adaptive-ll语法分析算法&#34;&gt;#&lt;/a&gt; Adaptive LL (*) 语法分析算法&lt;/h2&gt;
+&lt;p&gt;也称 ALL STAR 算法，antrl4 采用这种算法&lt;/p&gt;
+&lt;p&gt;ChatGPT 评价：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230407144342359.png&#34; alt=&#34;image-20230407144342359&#34;&gt;&lt;/p&gt;
+&lt;p&gt;第 2,3 行 含有 LL (1) 的特性：不用猜测 自顶向下&lt;/p&gt;
+&lt;p&gt;第 4 行： 解决二义性&lt;/p&gt;
+&lt;p&gt;第 7 行：解决左递归&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230407145002698.png&#34; alt=&#34;image-20230407145002698&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;antrl4对左递归的改造将左递归改造成循环迭代&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#antrl4对左递归的改造将左递归改造成循环迭代&#34;&gt;#&lt;/a&gt; antrl4 对左递归的改造，将左递归改造成循环 (迭代)&lt;/h3&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230407150629592.png&#34; alt=&#34;image-20230407150629592&#34;&gt;&lt;/p&gt;
+&lt;p&gt;参数_p 指的是优先级，优先级按下面书写的顺序（ID 1,INT 2, 加法 3 乘法 4） 当 3 &amp;gt;= _p 时 才能展开为加法。展开后变成了 expr [4]，优先级升了一级（优先级上升算法名称的由来）&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230407152404434.png&#34; alt=&#34;image-20230407152404434&#34;&gt;&lt;/p&gt;
+&lt;p&gt;以 1+2+3 为例，右侧手写部分为算法伪代码&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230407152625774.png&#34; alt=&#34;image-20230407152625774&#34;&gt;&lt;/p&gt;
+&lt;p&gt;以 1+2*3 为例&lt;/p&gt;
+&lt;h3 id=&#34;右结合运算符的处理&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#右结合运算符的处理&#34;&gt;#&lt;/a&gt; 右结合运算符的处理&lt;/h3&gt;
+&lt;p&gt;想让一个运算符为右结合，再递归调用的时候传入的优先级应该不变。&lt;/p&gt;
+&lt;h2 id=&#34;antlr4是如何进行错误报告的&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#antlr4是如何进行错误报告的&#34;&gt;#&lt;/a&gt; antlr4 是如何进行错误报告的&lt;/h2&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230407154816857.png&#34; alt=&#34;image-20230407154816857&#34;&gt;&lt;/p&gt;
+&lt;p&gt;NoViableAltException: 面对当前的输入时，要展开当前的非终结符，发现没有备选分支可选&lt;/p&gt;
+&lt;p&gt;InputMismatchException: 根据选择好的备选分支展开时，发生终结符不匹配错误。&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230412141343590.png&#34; alt=&#34;image-20230412141343590&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;四项基本原则&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;特殊情况，特殊处理&lt;/li&gt;
+&lt;li&gt;一般情况，统一处理&lt;/li&gt;
+&lt;li&gt;统一处理，精细控制&lt;/li&gt;
+&lt;li&gt;自定义错误处理策略&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;特殊情况特殊处理&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#特殊情况特殊处理&#34;&gt;#&lt;/a&gt; 特殊情况，特殊处理&lt;/h3&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230412141619597.png&#34; alt=&#34;image-20230412141619597&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;一般情况统一处理&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#一般情况统一处理&#34;&gt;#&lt;/a&gt; 一般情况，统一处理&lt;/h3&gt;
+&lt;p&gt;例子：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230412142107657.png&#34; alt=&#34;image-20230412142107657&#34;&gt;&lt;/p&gt;
+&lt;p&gt;antlr4 看到一个中括号，可以报错：中间缺失一个 expr&lt;/p&gt;
+&lt;p&gt;antlr 通过递归调用匹配，发现当前终结符匹配不了，于是递归返回，每一层看当前符号是不是一个&lt;strong&gt;想要的符号&lt;/strong&gt;（所谓想要的符号，即假装当前想匹配的非终结符已经匹配成功，接下来应该遇到什么终结符，类似 Follow 集合，但不等价，称为 Following 集合）, 恢复到 expr 层，假装 expr 已经匹配成功，右中括号可以匹配，然后继续解析后面的。&lt;/p&gt;
+&lt;p&gt;注意 Follow（静态）集合与 Following（动态）集合的区别。&lt;/p&gt;
+&lt;h3 id=&#34;统一处理精细控制&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#统一处理精细控制&#34;&gt;#&lt;/a&gt; 统一处理，精细控制&lt;/h3&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230412143257921.png&#34; alt=&#34;image-20230412143257921&#34;&gt;&lt;/p&gt;
+&lt;p&gt;例子：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230412143706102.png&#34; alt=&#34;image-20230412143706102&#34;&gt;&lt;/p&gt;
+&lt;p&gt;不优雅的错误恢复：匹配 member 的时候，看到 y 不属于一个 member，直接退出 while 循环。&lt;/p&gt;
+&lt;p&gt;优雅的错误恢复，相当于在匹配 member 的 while 循环中加了一个 continue，继续匹配。&lt;/p&gt;
+&lt;h3 id=&#34;自定义错误处理策略&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#自定义错误处理策略&#34;&gt;#&lt;/a&gt; 自定义错误处理策略&lt;/h3&gt;
+&lt;p&gt;比如，（已知语法正确）关闭默认错误处理功能，提高运行效率&lt;/p&gt;
+&lt;p&gt;比如，（出错代价太大）在遇到第一个语法错误时，就停止分析&lt;/p&gt;
+&lt;p&gt;使用 antrl4 提供的 strategy 模式：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230412144102502.png&#34; alt=&#34;image-20230412144102502&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;构建lookahead-dfa&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#构建lookahead-dfa&#34;&gt;#&lt;/a&gt; 构建 lookahead DFA&lt;/h2&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230412150939866.png&#34; alt=&#34;image-20230412150939866&#34;&gt;&lt;/p&gt;
+&lt;p&gt;策略：既然不知道要选哪条备选分支，就并行地探索所有的备选分支&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230412151956767.png&#34; alt=&#34;image-20230412151956767&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230412154019808.png&#34; alt=&#34;image-20230412154019808&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;lab2&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#lab2&#34;&gt;#&lt;/a&gt; lab2&lt;/h2&gt;
 &lt;h3 id=&#34;实验内容&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#实验内容&#34;&gt;#&lt;/a&gt; 实验内容&lt;/h3&gt;
 &lt;ul&gt;
