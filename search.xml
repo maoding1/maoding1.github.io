@@ -853,7 +853,7 @@ public class SimpleExprTest &#123;
 <h2 id="正则表达式"><a class="anchor" href="#正则表达式">#</a> 正则表达式</h2>
 <p>基本的知识就不记录了 记录一些重要的</p>
 <ul>
-<li>非贪婪匹配  <code>,*?</code></li>
+<li>非贪婪匹配  <code>.*?</code></li>
 <li>反向引用 要引用的用（）括起来，后面引用通过子表达式下标访问，如 \1，下标从 1 开始</li>
 <li>look ahead ?&lt;= 符号，表示前面字符要满足 xxx，但不匹配 xxx</li>
 <li>look back  ?= 符号，表示后面字符要满足 xxx，但不匹配 xxx</li>
@@ -878,17 +878,42 @@ public class SimpleExprTest &#123;
 <p><img data-src="image-20230320203542881.png" alt="image-20230320203542881"></p>
 <p><img data-src="image-20230320203600728.png" alt="image-20230320203600728"></p>
 <p><img data-src="image-20230320203629409.png" alt="image-20230320203629409"></p>
+<p>这里是 “一边做构造 一边做证明”，只要保证从最基本的情况开始，每一步 NFA 的构造都保证只会有唯一的开始状态和接受状态即可。综合所有情况下的构造方法，可以看到这一点是正确的。</p>
 <p><img data-src="image-20230320203705399.png" alt="image-20230320203705399"></p>
 <p><img data-src="image-20230320203721076.png" alt="image-20230320203721076"></p>
 <p><img data-src="image-20230315142444609.png" alt="image-20230315142444609"></p>
+<p>关于第三点中的运算符合运算分量 gpt 的解释：</p>
+<p>正则表达式语言 r 的运算符和运算分量：</p>
+<p>常见运算符：</p>
+<ul>
+<li>|：或运算符，用于匹配两种情况中的一种。</li>
+<li>()：分组运算符，用于将多个运算分量组合起来形成一个单元，进行整体匹配或量词修饰。</li>
+<li>[]：字符类运算符，用于匹配方括号内任意一个字符。</li>
+<li>{}：重复运算符，用于指定运算分量重复出现的次数。</li>
+</ul>
+<p>运算分量：</p>
+<ul>
+<li>字符：指定具体的字符，例如 a、b、c 等。</li>
+<li>元字符：具有特殊意义的字符，例如 *、?、+ 等。</li>
+<li>点号：匹配除换行符以外的任意字符。</li>
+</ul>
+<p>这些运算符和运算分量可以组合在一起形成复杂的正则表达式，用于模式匹配和字符串搜索。</p>
+<p><strong>在每一步构造的时候，最多加一个起始状态，一个终止状态，总共进行了 | r | 次，所以第三点正确</strong></p>
 <p>举个例子：(a|b)*abb 的构造（考试会考）</p>
 <p><img data-src="image-20230315142551213.png" alt="image-20230315142551213"></p>
-<h2 id="从nfa到dfa的转换"><a class="anchor" href="#从nfa到dfa的转换">#</a> 从 NFA 到 DFA 的转换：</h2>
+<h2 id="子集构造法从nfa到dfa的转换"><a class="anchor" href="#子集构造法从nfa到dfa的转换">#</a> 子集构造法 (从 NFA 到 DFA 的转换)：</h2>
 <p><img data-src="image-20230315142711571.png" alt="image-20230315142711571"></p>
-<p>规则如下 其中 s 是单个状态 T 是一个状态子集</p>
+<p>举个例子： 可以看出简化了很多，并且遇到某一词法单元改走到那一步更加明确了</p>
+<p><img data-src="image-20230610165958021.png" alt="image-20230610165958021"></p>
+<p>从 0 号状态开始，通过 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi></mrow><annotation encoding="application/x-tex">\epsilon</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">ϵ</span></span></span></span> 转移可以到达 1,2,4,7 因此这 5 个状态合为一个状态 A，然后看 A 状态下可以通过 a 字符和 b 字符转移到哪些状态，即下图的规则三，然后利用规则二和规则一求可到达状态的<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi></mrow><annotation encoding="application/x-tex">\epsilon</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">ϵ</span></span></span></span> 闭包，这个过程循环下去直到结束。</p>
+<p><strong>什么时候算结束？</strong></p>
+<p>只要 DFA 的某个状态所对应的 NFA 中的状态集合中含有接受状态，则 DFA 的这个状态是接受状态</p>
+<p><img data-src="image-20230610174226627.png" alt="image-20230610174226627"></p>
+<p>这里 E 对应的 NFA 状态中有 10 号状态，而 10 号状态是 NFA 的接受状态，所以 E 也是接受状态</p>
+<p>三个基本规则如下 其中 s 是单个状态 T 是一个状态子集</p>
 <p>这个过程一定会有一个终点</p>
 <p><img data-src="image-20230315143847385.png" alt="image-20230315143847385"></p>
-<p>符号化的表示：</p>
+<p>原理如下：</p>
 <p><img data-src="image-20230315143949988.png" alt="image-20230315143949988"></p>
 <p><strong>复杂度：NFA 有 n 个状态 DFA 最多有 2 的 n 次方个状态 指数爆炸</strong></p>
 <h2 id="dfa最小化算法"><a class="anchor" href="#dfa最小化算法">#</a> DFA 最小化算法</h2>
@@ -899,8 +924,12 @@ public class SimpleExprTest &#123;
 <p>但是这个定义是错误的 课件上有反例</p>
 <p>反过来是正确做法：</p>
 <p>核心思想<strong>做划分而非合并</strong></p>
-<p>接受状态与非接受状态必定不等价 ，然后接着划分，知道不能再分为止。每一步做迭代 对一个状态集合的任意两个状态，如果在字符 a 的驱动下跑到了不同的组，则这两个状态一定不等价。</p>
-<p>做之前要补齐死状态。</p>
+<p>接受状态与非接受状态必定不等价 ，然后接着划分，直到不能再分为止。每一步做迭代 对一个状态集合的任意两个状态，如果在字符 a 的驱动下跑到了不同的组，则这两个状态一定不等价。</p>
+<p><strong>做之前要补齐死状态。</strong></p>
+<p>因为这是所谓的 DFA 最小化算法 首先得保证最小化的是一个 DFA。比如下图中如果一开始只有红字部分，需要加上黄字部分补成一个 DFA。</p>
+<p><img data-src="image-20230622220426917.png" alt="image-20230622220426917"></p>
+<p>如果某个等价类包含初始状态，那么合并后这个等价类就是初始状态，如果某个等价类包含结束状态，那么合并后这个等价类就是合并状态。</p>
+<p><img data-src="image-20230610182322478.png" alt="image-20230610182322478"></p>
 <h3 id="复杂度"><a class="anchor" href="#复杂度">#</a> 复杂度</h3>
 <p>太复杂了</p>
 <h2 id="从dfa得到词法分析器"><a class="anchor" href="#从dfa得到词法分析器">#</a> 从 DFA 得到词法分析器</h2>
@@ -910,7 +939,6 @@ public class SimpleExprTest &#123;
 <h2 id="根据dfa得到re非重点"><a class="anchor" href="#根据dfa得到re非重点">#</a> 根据 DFA 得到 RE (非重点)</h2>
 <h2 id="lab-1"><a class="anchor" href="#lab-1">#</a> lab 1</h2>
 <p>编程一小时 配置环境一天的典型代表。</p>
-<p>从 lab1 知道了以后应该恶补 ssh 远程连接 linux 命令行 makefile .gitignore 导入依赖 java 基本语法 IDEA 的使用......</p>
 <h3 id="实验输入"><a class="anchor" href="#实验输入">#</a> 实验输入</h3>
 <p>本次实验的输入是一个包含了 <code>SysY</code>  源代码的文件，你的程序需要接受一个文件名作为参数</p>
 <h3 id="实验内容"><a class="anchor" href="#实验内容">#</a> 实验内容</h3>
@@ -958,10 +986,10 @@ public class SimpleExprTest &#123;
 <p>第一个难题就是怎么在 windows 里的 IDEA 编程，但是运行和调试环境是虚拟机中的 ubuntu20.04+lab0 配置好的环境 想法就是用 IDEA 的 remote deployment 功能，在网上搜索教程后发现我的 IDEA 竟然没有这个功能，原因是我的是 community 版本，所以卸载了之前的 IDEA 装了专业版。然后 remote deployment 原理应该是使用 ssh 连接，虽然虚拟机是装在电脑里，但其实和与远程服务器相连原理是一样的。</p>
 </li>
 <li>
-<p>然后编写.g4 文件比较顺利，生成了 SysYlexer.java 文件，但是在 main 函数中使用 SysYlexer 类也遇见了困难，首先是导入 antlr，IDEA 一直报错无法解析 symbol antlr，但是 lab0 中我应该是配好了 antlr 环境的，不知道为什么，所以还是用 IDEA 的 libraries 中导入了 antlr 才好</p>
+<p>然后编写.g4 文件比较顺利，生成了 SysYlexer.java 文件，但是在 main 函数中使用 SysYlexer 类也遇见了困难，首先是导入 antlr，IDEA 一直报错无法解析 symbol antlr，但是 lab0 中我应该是配好了 antlr 环境的，不知道为什么，所以还是用 IDEA 的 libraries 中导入了 antlr 才好   (回来再看，IDEA 是可以导入本地的 jar 包的)</p>
 </li>
 <li>
-<p>第三个难题就是删除 SysYLexer 中自带的 ErrorListeners, 使用自己编写的 errorlisteners，这里老师上课应该是没有讲的，所以也是无从下手。后面借助搜索引擎和 ChatGPT 学了很久才会。原理很简单，先放上自己实现的 myErrorListener 如下：</p>
+<p>第三个难题就是删除 SysYLexer 中自带的 ErrorListeners, 使用自己编写的 errorlisteners，这里蚂蚁老师上课应该是没有讲的，所以也是无从下手。后面借助搜索引擎和 ChatGPT 学了很久才会。原理很简单，先放上自己实现的 myErrorListener 如下：</p>
 <figure class="highlight java"><figcaption data-lang="java"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">class</span> myErrorListener <span class="token keyword">extends</span> <span class="token class-name">BaseErrorListener</span><span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="2"></td><td><pre>		<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">syntaxError</span><span class="token punctuation">(</span><span class="token class-name">Recognizer</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span><span class="token punctuation">,</span> <span class="token operator">?</span><span class="token punctuation">></span></span> recognizer<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="3"></td><td><pre>								<span class="token class-name">Object</span> offendingSymbol<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="4"></td><td><pre>								<span class="token keyword">int</span> line<span class="token punctuation">,</span> <span class="token keyword">int</span> charPositionInLine<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="5"></td><td><pre>								<span class="token class-name">String</span> msg<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="6"></td><td><pre>								<span class="token class-name">RecognitionException</span> e<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="7"></td><td><pre>		<span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="8"></td><td><pre>			<span class="token class-name">System</span><span class="token punctuation">.</span>err<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"Error type A at Line "</span><span class="token operator">+</span>line<span class="token operator">+</span><span class="token string">": "</span><span class="token operator">+</span>msg<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="9"></td><td><pre>			error <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="10"></td><td><pre>		<span class="token punctuation">&#125;</span></pre></td></tr></table></figure><p>主要是重写了 syntaxError 这个函数，他里面的参数应该是报错相关的信息，这里只用到了 line（出错的行）和 msg（具体的报错信息），其它的是什么意思忘记了。应该是每出现一个错误就会调用一次 syntaxError 函数。</p>
 </li>
 <li>
@@ -1040,6 +1068,7 @@ public class SimpleExprTest &#123;
 <p><img data-src="image-20230329153448085.png" alt="image-20230329153448085"></p>
 <p>证明如下：</p>
 <p><img data-src="image-20230329153850498.png" alt="image-20230329153850498"></p>
+<p>其中 Ai 对应的是 DFA 中的第 i-1 个状态</p>
 <p><img data-src="image-20230329154356116.png" alt="image-20230329154356116"></p>
 <p>因为 m &gt; k, 所以一定存在状态 si ，在 si 停留了两次，假设又经过了 j 步能够到达第二次 si</p>
 <p>根据假设，a<sup>ib</sup>i 能够到达终止状态，那么 a<sup>(i+j)b</sup>i 也能到达终止状态，与假设矛盾，证明完毕。</p>
@@ -1186,6 +1215,113 @@ public class SimpleExprTest &#123;
 <p><img data-src="image-20230412154019808.png" alt="image-20230412154019808"></p>
 <p>每个状态有三个分量：第一个是状态名，第二个是选择的备选分支，第三个分量表示递归调用完当前 DFA 后到达的状态。状态是怎么定的：注意通过 ε 能到达的节点是分不开的。（求每个节点的 ε 闭包）</p>
 <p>看到 d 和 c 后就能发现第二个分量分离了，即能确定用哪条分支展开了。</p>
+<h2 id="lr0-语法分析器"><a class="anchor" href="#lr0-语法分析器">#</a> LR (0) 语法分析器</h2>
+<p>LL (k) 的弱点：</p>
+<p>​	在仅看到右部的前 k 个词法单元时就必须预测要使用哪条产生式</p>
+<p>LR (k) 的优点：</p>
+<p>​	看到与正在考虑的这个产生式的整个右部对应的词法单元之后再决定</p>
+<p><img data-src="image-20230524141208555.png" alt="image-20230524141208555"></p>
+<p><img data-src="image-20230524141434136.png" alt="image-20230524141434136"></p>
+<p><img data-src="image-20230524141809217.png" alt="image-20230524141809217"></p>
+<p>rm： right most 最右推导</p>
+<p>为什么是最右推导：</p>
+<p>​		因为规约的顺序实际上是一个反向最右推导的过程，为了我们要从左往右扫描输入相匹配</p>
+<p><img data-src="image-20230524142410243.png" alt="image-20230524142410243"></p>
+<p><img data-src="image-20230524142507347.png" alt="image-20230524142507347"></p>
+<p><img data-src="image-20230524143658693.png" alt="image-20230524143658693"></p>
+<p>在栈中，交替进行移入和规约操作</p>
+<p>问题转化为：</p>
+<p><img data-src="image-20230524143738090.png" alt="image-20230524143738090"></p>
+<p><img data-src="image-20230524143946746.png" alt="image-20230524143946746"></p>
+<p>利用 LR 分析表指导语法分析过程：</p>
+<p><img data-src="image-20230524144146911.png" alt="image-20230524144146911"></p>
+<p>一开始处于 0 号状态，看到当前词法单元为 id，进行 s5 操作。</p>
+<p>s5 操作含义：</p>
+<p>​	s： shift 移入， 将 id 移入栈中</p>
+<p>​	5： 调整当前语法分析器状态为 5</p>
+<p>​	然后要右移指向当前词法单元的指针（小点）</p>
+<p><img data-src="image-20230524144356599.png" alt="image-20230524144356599"></p>
+<p>右边 “GOTO” 的小表中的数字前应该有一个 g</p>
+<p>比如 0 号状态下压入一个 F ，查表发现应该实现 g3，即将 F 压入栈，转向 3 号状态。</p>
+<h3 id="栈上操作"><a class="anchor" href="#栈上操作">#</a> “栈” 上操作</h3>
+<p><img data-src="image-20230623163900518.png" alt="image-20230623163900518"></p>
+<p>一开始栈中不为空，要压入一个 s0，表示起始处于 0 号状态，s 表示开始。</p>
+<ol>
+<li>遇到 id 查表发现 0 号状态遇到 id 是 s5，则将 id 压入栈中，并在右边加上数字 5 表示当前处于 5 号状态。即压入 id5。指针右移指向 * 号。</li>
+<li>查表，5 号状态遇到 * 号，做 r6 操作。用 6 号产生式规约，将栈顶的 id5 弹出，此时底下剩一个 s0，处于 0 号状态，然后要压入 F，查表，0 号状态移入 F 要 g3，压入 F3，转向 3 号状态。<strong>指针不变</strong>。</li>
+<li>。。。</li>
+</ol>
+<h3 id="lr分析表如何生成"><a class="anchor" href="#lr分析表如何生成">#</a> LR 分析表如何生成</h3>
+<p><img data-src="image-20230524151050006.png" alt="image-20230524151050006"></p>
+<p>什么是句柄：</p>
+<p><img data-src="image-20230524151111643.png" alt="image-20230524151111643"></p>
+<h3 id="一个永远正确的定理"><a class="anchor" href="#一个永远正确的定理">#</a> 一个永远正确的定理</h3>
+<p><strong>这个定理的推导不需掌握，但是这个定理是正确的</strong></p>
+<p><img data-src="image-20230524151625361.png" alt="image-20230524151625361"></p>
+<p><img data-src="image-20230524152213719.png" alt="image-20230524152213719"></p>
+<p>LR 自动机在追踪所有产生式的状态</p>
+<p>小点表示当前追踪到了哪一个位置</p>
+<p><img data-src="image-20230623170950451.png" alt="image-20230623170950451"></p>
+<h3 id="增广文法"><a class="anchor" href="#增广文法">#</a> 增广文法</h3>
+<p><img data-src="image-20230524152728413.png" alt="image-20230524152728413"></p>
+<p>S 是开始符号，仅仅是技术上的一些处理。</p>
+<h3 id="lr0状态机的构造"><a class="anchor" href="#lr0状态机的构造">#</a> LR (0) 状态机的构造</h3>
+<p><img data-src="image-20230524153005769.png" alt="image-20230524153005769"></p>
+<p><strong>如果要期望看到的文法符号串开头是一个非终结符，要做闭包！</strong></p>
+<p>比如 0 号状态一开始只有 E'-&gt; . E</p>
+<p>下面想要看到一个 E，但是 E 是一个非终结符，它可以展开为 1 号和 2 号产生式，2 号产生式又可以做闭包，直到所有产生式都包含进来了。</p>
+<p>LR (0) 语法分析器在做句柄识别的时候，依赖的是一个 LR (0) 句柄识别有穷状态机</p>
+<p>eg：</p>
+<p><strong>I1 状态是怎么构造的？</strong></p>
+<p>I0 看到一个 E，发现满足第一行和第二行的需求，于是将第一行与第二行移入 I1，并将小点右移。</p>
+<p><strong>I4 状态是怎么构造的？</strong></p>
+<p>I0 状态看到（ ，发现倒数第二行满足，于是将倒数第二行移入 I4，并将小点右移，然后发现接下来期望看到的 E 是一个非终结符，于是对 E 进行闭包展开。</p>
+<p><img data-src="image-20230623173005062.png" alt="image-20230623173005062"></p>
+<p>哪些是接受状态？ 图中红框圈出来的是，因为其中包含了一些项，小点已经走到了末尾，表示发现了一个完整的句柄。而至于要不要规约，是接下来的事。</p>
+<h3 id="根据lr0自动机怎么构建分析表"><a class="anchor" href="#根据lr0自动机怎么构建分析表">#</a> 根据 LR (0) 自动机怎么构建分析表</h3>
+<p><img data-src="image-20230524154927521.png" alt="image-20230524154927521"></p>
+<p>可以看到，这张表与之前的那张表不太一样。之前的表是在构造了 LR (0) 语法分析器后，<strong>利用 SLR</strong> 的语法规范构造的表。而上图的表是利用 LR (0) 的规范构造的。</p>
+<p>如何填写右边的表？</p>
+<p>先填所有的 s 和 g。比如 0 号状态碰到 id 变到 5 号状态，则在 action 对应位置填入 s5。0 号状态碰到 E 进入 1 号状态，则在 goto 表中填入 g1。这是前两条规则。</p>
+<p>填 r 的规则如下图的规则 3，在 LR (0) 中，如果碰到了可以做规约的第 k 个表达式，并且表达式的左部不是增广文法中的开始条件，则在 action 表对应位置填入 rk。</p>
+<p>比如下图中的 I2 状态有一个可以规约的 E-&gt;T. 其中 E—&gt;T 对应 2 号产生式，则在 2 号状态下遇到所有的符号都做规约，即 2 号产生式对应的行都填入 r2。同理 10 号产生式对应的行都填入 r3</p>
+<p><img data-src="image-20230531140938844.png" alt="image-20230531140938844"></p>
+<p>之前规定了 A 不能是开始符号，如果是开始符号，采用规则 4。</p>
+<p><img data-src="image-20230531141121981.png" alt="image-20230531141121981"></p>
+<p>四条规则总结：</p>
+<p><img data-src="/image-20230531141214903.png" alt="image-20230531141214903"></p>
+<p>要求 A 不是增广文法中扩展的 S'</p>
+<p><img data-src="/image-20230531141304037.png" alt="image-20230531141304037"></p>
+<p>上表中 s7,s2 s7,s1 有移入规约冲突，所以不是 LR (0) 文法</p>
+<p>以 2 号产生式 E-&gt;T 为例，可以求出 FOLLOW (E) = {+,),$} 如果在二号状态遇到了 * 号，如果进行 r2 操作，即将栈里的 T 变成 E，则现在 E 的后边就跟着一个 * 号了 这是错误的。</p>
+<h2 id="lr1语法分析器"><a class="anchor" href="#lr1语法分析器">#</a> LR (1) 语法分析器</h2>
+<h3 id="slr1语法分析器"><a class="anchor" href="#slr1语法分析器">#</a> SLR (1) 语法分析器</h3>
+<p>S 的含义：simple</p>
+<p><img data-src="image-20230531141739236.png" alt="image-20230531141739236"><br>
+<img data-src="image-20230531142412456.png" alt="image-20230531142412456"></p>
+<p><img data-src="image-20230531143303240.png" alt="image-20230531143303240"></p>
+<p><img data-src="image-20230531144019374.png" alt="image-20230531144019374"></p>
+<p>为什么优于 SLR (1)， 因为 FIRST (gamma) 包含于 FOLLOW (A)</p>
+<p><img data-src="image-20230531150929602.png" alt="image-20230531150929602"></p>
+<p>为什么 β 后面跟着 a，因为 β 可能是空串</p>
+<p><img data-src="image-20230531152400747.png" alt="image-20230531152400747"></p>
+<p><img data-src="image-20230531153030143.png" alt="image-20230531153030143"></p>
+<p>LR(0) &lt; LALR(1) &lt; LR(1)</p>
+<p>问题：合并后会不会影响到关联的其它状态？</p>
+<p>不会，LR (0) 项相同，出边和对应的到达状态也是可以合并的</p>
+<p>但是合并还是可能引起冲突的</p>
+<p><img data-src="image-20230531154243826.png" alt="image-20230531154243826"></p>
+<p><img data-src="image-20230531154844166.png" alt="image-20230531154844166"></p>
+<h2 id="lr算法的特点"><a class="anchor" href="#lr算法的特点">#</a> LR 算法的特点</h2>
+<p><img data-src="image-20230602141654975.png" alt="image-20230602141654975"></p>
+<p>为什么？ 因为一个 L 语言可以用 G1 文法和 G2 文法表示，这时 G1 可能刚好满足 SLR（1），G2 刚好满足 LR（1）</p>
+<p>要区分 <strong>文法</strong> 和 <strong>语言</strong></p>
+<p>也就是一个语言能写出 LR (1) 的文法，就一定能写出 SLR (1) 的文法</p>
+<p><img data-src="image-20230602142434949.png" alt="image-20230602142434949"></p>
+<p><img data-src="image-20230602142715980.png" alt="image-20230602142715980"></p>
+<p>{+,*} 属于 FOLLOW (E)</p>
+<p>譬如这里的 I7 状态： + 号即属于 Follow (E) 也是当前看到的下一个符号，因此看到＋号既可以规约也可以移入，产生冲突。</p>
+<p>这里根据实际地考量（优先级与结合性），即如果碰到 E+E+E 应该先算出左边两个 E 相加的结果，因此 E+E . 碰到＋号应该选择规约</p>
 <h2 id="lab2"><a class="anchor" href="#lab2">#</a> lab2</h2>
 <h3 id="实验内容"><a class="anchor" href="#实验内容">#</a> 实验内容</h3>
 <ul>
@@ -1286,6 +1422,183 @@ public class SimpleExprTest &#123;
 <h2 id="总结"><a class="anchor" href="#总结">#</a> 总结</h2>
 <p><img data-src="image-20230426152847006.png" alt="image-20230426152847006"></p>
 <p>两种语义分析方法，各有优势。Offline 简单，Online 性能更高。</p>
+]]></content>
+      <categories>
+        <category>编译原理</category>
+      </categories>
+      <tags>
+        <tag>编译原理</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>编译原理05-目标代码生成</title>
+    <url>/2023/06/02/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8605-%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/</url>
+    <content><![CDATA[<h1 id="编译原理05-目标代码生成"><a class="anchor" href="#编译原理05-目标代码生成">#</a> 编译原理 05 - 目标代码生成</h1>
+<h2 id="risc-v指令集"><a class="anchor" href="#risc-v指令集">#</a> RISC-V 指令集</h2>
+<p><img data-src="image-20230602144012905.png" alt="image-20230602144012905"></p>
+<p>精简指令集，精简的含义就是一条指令要么做运算，要么存，取内存。</p>
+<h3 id="寄存器"><a class="anchor" href="#寄存器">#</a> 寄存器</h3>
+<p>RISC-V 有 32 个寄存器，名称分别为 X0,X1...X31</p>
+<p>但实际上不会按这些名称来使用，而是按照约定来使用，一些寄存器有专门的用途</p>
+<p><img data-src="image-20230602150421869.png" alt="image-20230602150421869"></p>
+<p>X0： zero 寄存器，专门存放数字 0</p>
+<p>ra： 存放 return address</p>
+<p>pc(X31): program counter</p>
+<h3 id="指令"><a class="anchor" href="#指令">#</a> 指令</h3>
+<p>li ： 加载立即数	li t0,0</p>
+<p>add: 加法，有三个操作数： add t5,t3,t4 , t5 = t3+t4</p>
+<p>addi： 加法，但有一个操作数是立即数</p>
+<p>risc-v 里没有 mov 指令，或者说 mov 指令是一个伪指令，实际上是用 add， target, source, zero 来实现的</p>
+<p>在.data 段声明全局变量：</p>
+<p>.data:</p>
+<p>g:  .word 0	想.word 这样的是给汇编器看的，表示占用 4B</p>
+<p>数组：</p>
+<p>g: .word 0,1,2</p>
+<p>字符串：</p>
+<p>msg: .string &quot;The result is :&quot; #后面会自动加上 '\0' 不想加就用.ascii</p>
+<p>使用全局变量：</p>
+<p>la t0, g  	#la; load address</p>
+<p>lw t0, 0 (t0)	#lw: load word 这里 0 表示偏移量 并且以字节为单位</p>
+]]></content>
+      <categories>
+        <category>编译原理</category>
+      </categories>
+      <tags>
+        <tag>编译原理</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>编译原理04-中间代码生成</title>
+    <url>/2023/05/05/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8604-%E4%B8%AD%E9%97%B4%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/</url>
+    <content><![CDATA[<h1 id="编译原理04-中间代码生成"><a class="anchor" href="#编译原理04-中间代码生成">#</a> 编译原理 04 - 中间代码生成</h1>
+<h2 id="llvm-ir简介"><a class="anchor" href="#llvm-ir简介">#</a> LLVM IR 简介</h2>
+<p><img data-src="image-20230505140807839.png" alt="image-20230505140807839"></p>
+<p>LLVM 这个项目与最初的名字含义已经完全不同了，可以将 LLVM 理解为全称。目前 LLVM 是开发新的编译器的<strong>基础</strong>。</p>
+<p><img data-src="image-20230505141735207.png" alt="image-20230505141735207"></p>
+<p>前端经过语法分析，词法分析，生成 IR</p>
+<p><strong>“IR 设计的优秀与否决定着整个编译器的好坏”</strong></p>
+<p><img data-src="image-20230505141928962.png" alt="image-20230505141928962"></p>
+<p>一个.c 文件对应生成一个.ll 文件。Module 实际上就是一个文件 file, Module 里有多个函数，一个函数具有多个<strong>基本块 (Basic Block)</strong>, 每一个基本块都由多个指令构成。</p>
+<p>使用 clang <strong>-S -emit-llvm</strong> factorial0.c -o f0-opt0.ll 表示用 clang 生成到 llvm 中间代码阶段停止。</p>
+<p>中间代码示例：<br>
+<img data-src="image-20230505143323681.png" alt="image-20230505143323681"></p>
+<p>像 %3 %4 这样的是分配一个虚拟寄存器， alloca 表示内存分配， align 表示内存对齐</p>
+<p><code>store i32 0, i32* %3</code>  表示把 0 存到 %3 寄存器中</p>
+<p>call 一行表示函数调用</p>
+<p>下一行表示结果与 7 相乘， nsw 表示 no signed wrap</p>
+<p>zext: zero - extension 将一 bit 的 %8 扩展为 32 位</p>
+<p>%2 哪去了？ 被分配为 entry 基本块的名称</p>
+<p>限制：任何一个变量都只能一次赋值， 好处是使用变量时明确知道在什么时候定义过的。</p>
+<h2 id="控制流图"><a class="anchor" href="#控制流图">#</a> 控制流图</h2>
+<p><img data-src="image-20230505150416543.png" alt="image-20230505150416543"></p>
+<p>控制流图的定义：<br>
+<img data-src="image-20230505150719324.png" alt="image-20230505150719324"></p>
+<p>例子：<br>
+<img data-src="image-20230505151157414.png" alt="image-20230505151157414"></p>
+<p>中间代码的数据流图：</p>
+<p><img data-src="image-20230505151318630.png" alt="image-20230505151318630"></p>
+<p>问题：%6 和 %7 基本块中要约定好把想 ret 的结果放在某一个寄存器中</p>
+<p>开了 o1 优化后：</p>
+<p><img data-src="image-20230505152003795.png" alt="image-20230505152003795"></p>
+<p>o1 优化会去掉所有的内存分配，store load 指令。</p>
+<p>phi 指令 根据从哪个块跳转出来决定赋值给 %8 寄存器的值</p>
+<p>然而 phi 指令只是为了简化中间代码的大小产生的，是一个虚拟指令，实际上仍然可能会使用基本方案。</p>
+<h2 id="llvm-java-api"><a class="anchor" href="#llvm-java-api">#</a> LLVM JAVA API</h2>
+<p><img data-src="image-20230506141752865.png" alt="image-20230506141752865"></p>
+<p>在配置文件中加依赖</p>
+<p><img data-src="image-20230506142227366.png" alt="image-20230506142227366"></p>
+<p>可以参照 LLVM 官方的教程，c++ 语言如何翻译为中间代码。</p>
+<h2 id="中间代码翻译"><a class="anchor" href="#中间代码翻译">#</a> 中间代码翻译</h2>
+<p><img data-src="image-20230506143047512.png" alt="image-20230506143047512"></p>
+<p>这里的 || 符号是 then 的意思，不是或者。</p>
+<p><img data-src="image-20230506144459580.png" alt="image-20230506144459580"></p>
+<p><img data-src="image-20230506144737646.png" alt="image-20230506144737646"></p>
+<p><img data-src="image-20230506145121379.png" alt="image-20230506145121379"></p>
+<p>例子： int a [2] [3]; c + a [i] [j];</p>
+<p><img data-src="image-20230506150834033.png" alt="image-20230506150834033"></p>
+<p>在 llvm IR 中：会用 getelementptr（GEP）指令处理数组引用</p>
+<p><img data-src="image-20230506151202417.png" alt="image-20230506151202417"></p>
+<p>GEP 指令有四个参数，其中第四个参数不限个数，可以有多个 index。</p>
+<p>第一个 index 比较特殊，表示 base-type 的一个元素的大小，用于 a++ 这样的操作，后面的 index 才用于进入数组获取元素，即没多一个 index 脱掉一层中括号。</p>
+<p><img data-src="image-20230506151901102.png" alt="image-20230506151901102"></p>
+<p>GEP provides a way to access arrays and manipulate pointers.</p>
+<p>GEP abstract away details like size of types.</p>
+<p>有了 GEP 指令后就不用像上面那样递归的计算偏移量了。</p>
+<p><img data-src="image-20230506154154393.png" alt="image-20230506154154393"></p>
+<h3 id="控制流语句的翻译"><a class="anchor" href="#控制流语句的翻译">#</a> 控制流语句的翻译</h3>
+<p>简单的思路会带来冗余的代码</p>
+<p>要生成简短高效的代码，就需要<strong>创造困难</strong></p>
+<p><strong>简单 mode：</strong></p>
+<p><img data-src="image-20230510141125754.png" alt="image-20230510141125754"></p>
+<p>将 B 的值保存到临时变量 t1 中，翻译 if 语句时用 br 语句测试 t1 的值并根据情况跳转到两个基本块中。</p>
+<p>以 Control 语言为例：</p>
+<p><img data-src="image-20230510142838861.png" alt="image-20230510142838861"></p>
+<p>选择实现方式的范围： Listeners, Visitors, Attributed Grammar</p>
+<p>前两种方法能做到的 属性方法都能做到，但是属性文法本身比较困难，所以在前两种中方法中选择。</p>
+<p>Listener 模式有一个问题： 比如 B -&gt; B1 || B2 的翻译：</p>
+<p>要在 exitB () 方法拼接 B1.code 和 B2.code 。但是考虑出现了短路求值的问题时，由于在 exitB 的时候 B1 和 B2 的代码都生成好了，因此要在拼接 B1.code 和 B2.code 中间插入判断短路求值的代码，不能及时输出生成的中间代码，不能避免频繁的字符串拼接操作。简要来说，访问完 B1，将中间代码保存下来，才能进行接下来的操作，不能在访问 B1 和访问 B2 中间插入一些操作，这是 Listener 模式的缺陷。</p>
+<p>具体代码见代码仓库<em> 2023-compilers-coding-0/src/main/java/codegen/CodeGenVisitor.java</em></p>
+<p>true 和 false 的翻译：</p>
+<p><img data-src="image-20230510144428568.png" alt="image-20230510144428568"></p>
+<p>AND 语句：</p>
+<p>有一个小错误 String temp = getNewTemp () 要放在 emitLabel (trueLabel) 之上。</p>
+<p><img data-src="image-20230510151933288.png" alt="image-20230510151933288"></p>
+<p>if 语句：</p>
+<p><img data-src="image-20230510151955477.png" alt="image-20230510151955477"></p>
+<p>while 语句：</p>
+<p><img data-src="image-20230510152502018.png" alt="image-20230510152502018"></p>
+<p>一个问题：break 语句怎么翻译，多层嵌套的循环语句怎么办</p>
+<p>解决方法：使用一个栈，保存 break 语句要跳转到的地方。，参照 while 语句中的压栈出栈语句。</p>
+<p>短路求值问题： 参照 And 中的实现</p>
+<p><strong>复杂 mode</strong>：</p>
+<p><img data-src="image-20230510154721641.png" alt="image-20230510154721641"></p>
+<p>为什么让事情变得更复杂：</p>
+<p>eg：</p>
+<p><img data-src="image-20230517140632912.png" alt="image-20230517140632912"></p>
+<p>如果使用简单方案，将会生成 12 行中间代码，然而实际上这是一个死循环</p>
+<p>解决方案：利用继承属性让布尔表达式知道要跳转到哪</p>
+<p><img data-src="image-20230517141735294.png" alt="image-20230517141735294"></p>
+<h3 id="需要的继承属性"><a class="anchor" href="#需要的继承属性">#</a> 需要的继承属性</h3>
+<p><img data-src="image-20230517142425226.png" alt="image-20230517142425226"></p>
+<h3 id="if语句"><a class="anchor" href="#if语句">#</a> if 语句</h3>
+<p><img data-src="image-20230517142712190.png" alt="image-20230517142712190"></p>
+<p>S.next 是之前准备好的</p>
+<p><img data-src="image-20230517143447956.png" alt="image-20230517143447956"></p>
+<p>bool 表达式直接翻译成 goto 语句</p>
+<h3 id="if-else-语句"><a class="anchor" href="#if-else-语句">#</a> if else 语句</h3>
+<p><img data-src="image-20230517144609460.png" alt="image-20230517144609460"></p>
+<p>eg：<img data-src="image-20230517144946527.png" alt="image-20230517144946527"></p>
+<h3 id="while语句"><a class="anchor" href="#while语句">#</a> while 语句</h3>
+<p><img data-src="image-20230517150821390.png" alt="image-20230517150821390"></p>
+<h3 id="顺序语句"><a class="anchor" href="#顺序语句">#</a> 顺序语句：</h3>
+<p><img data-src="image-20230517152329272.png" alt="image-20230517152329272"></p>
+<h3 id="短路求值"><a class="anchor" href="#短路求值">#</a> 短路求值</h3>
+<p><img data-src="image-20230517153441075.png" alt="image-20230517153441075"></p>
+<p><img data-src="image-20230517153732513.png" alt="image-20230517153732513"></p>
+<h2 id="地址回填技术"><a class="anchor" href="#地址回填技术">#</a> 地址回填技术</h2>
+<p><img data-src="image-20230519140559966.png" alt="image-20230519140559966"></p>
+<p>java 字节码中不使用符号化的标签作为跳转目标，而采用直接的地址值作为跳转目标。</p>
+<p>问题：往回跳简单，往前跳不知道跳转的地址，如何一趟扫描中就知道跳转目标的真实地址？</p>
+<p><img data-src="image-20230519141028791.png" alt="image-20230519141028791"></p>
+<p><img data-src="image-20230519141358466.png" alt="image-20230519141358466"></p>
+<p>解决方案： B 在 goto 语句后面空着，交给父节点 S 来回填。</p>
+<p><img data-src="image-20230519141905148.png" alt="image-20230519141905148"></p>
+<p>从底向上看怎么使用地址回填技术：(每幅图的下半部分是之前的翻译方案)</p>
+<p><img data-src="image-20230519143110842.png" alt="image-20230519143110842"></p>
+<p><img data-src="image-20230519143543907.png" alt="image-20230519143543907"></p>
+<p><img data-src="image-20230519143840206.png" alt="image-20230519143840206"></p>
+<p>到这里已经可以确定一些跳转的地址了：</p>
+<p>M 是一个辅助的符号，用来确定 B2 第一个指令的地址的值是多少</p>
+<p><img data-src="image-20230519144434026.png" alt="image-20230519144434026"></p>
+<p><img data-src="image-20230519150121225.png" alt="image-20230519150121225"></p>
+<p>布尔表达式结束 到达更高层：</p>
+<p><img data-src="/image-20230519151840965.png" alt="image-20230519151840965"></p>
+<p><img data-src="image-20230519152628678.png" alt="image-20230519152628678"></p>
+<p><img data-src="image-20230519153118656.png" alt="image-20230519153118656"></p>
+<p>顺序语句：</p>
+<p><img data-src="image-20230519153706714.png" alt="image-20230519153706714"></p>
+<p>总结：</p>
+<p><img data-src="image-20230519154323985.png" alt="image-20230519154323985"></p>
 ]]></content>
       <categories>
         <category>编译原理</category>

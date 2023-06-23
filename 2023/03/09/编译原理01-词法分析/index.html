@@ -103,12 +103,12 @@ Yume Shoka = MikeMao's blog = 风烟俱净，天山共色 从流飘荡，任意�
       </div>
       <div id="imgs" class="pjax">
         <ul>
-          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1gicm07ih54j20zk0m84qp.jpg"></li>
-          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1giclj61ylzj20zk0m8b29.jpg"></li>
+          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1gicitzannuj20zk0m8b29.jpg"></li>
+          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1giciszlczyj20zk0m816d.jpg"></li>
           <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1giclflwv2aj20zk0m84qp.jpg"></li>
-          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1gicm0n457cj20zk0m8e81.jpg"></li>
-          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1giclgrvbd6j20zk0m8qv5.jpg"></li>
-          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1giclhfehz7j20zk0m8u0x.jpg"></li>
+          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1gipeuibk9fj20zk0m8ay2.jpg"></li>
+          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1gipev1x5e4j20zk0m8b29.jpg"></li>
+          <li class="item" data-background-image="https://lz.sinaimg.cn/large/6833939bly1giclx6phq6j20zk0m8e36.jpg"></li>
         </ul>
       </div>
     </header>
@@ -269,7 +269,7 @@ public class SimpleExprTest &#123;
 <h2 id="正则表达式"><a class="anchor" href="#正则表达式">#</a> 正则表达式</h2>
 <p>基本的知识就不记录了 记录一些重要的</p>
 <ul>
-<li>非贪婪匹配  <code>,*?</code></li>
+<li>非贪婪匹配  <code>.*?</code></li>
 <li>反向引用 要引用的用（）括起来，后面引用通过子表达式下标访问，如 \1，下标从 1 开始</li>
 <li>look ahead ?&lt;= 符号，表示前面字符要满足 xxx，但不匹配 xxx</li>
 <li>look back  ?= 符号，表示后面字符要满足 xxx，但不匹配 xxx</li>
@@ -294,17 +294,42 @@ public class SimpleExprTest &#123;
 <p><img data-src="image-20230320203542881.png" alt="image-20230320203542881"></p>
 <p><img data-src="image-20230320203600728.png" alt="image-20230320203600728"></p>
 <p><img data-src="image-20230320203629409.png" alt="image-20230320203629409"></p>
+<p>这里是 “一边做构造 一边做证明”，只要保证从最基本的情况开始，每一步 NFA 的构造都保证只会有唯一的开始状态和接受状态即可。综合所有情况下的构造方法，可以看到这一点是正确的。</p>
 <p><img data-src="image-20230320203705399.png" alt="image-20230320203705399"></p>
 <p><img data-src="image-20230320203721076.png" alt="image-20230320203721076"></p>
 <p><img data-src="image-20230315142444609.png" alt="image-20230315142444609"></p>
+<p>关于第三点中的运算符合运算分量 gpt 的解释：</p>
+<p>正则表达式语言 r 的运算符和运算分量：</p>
+<p>常见运算符：</p>
+<ul>
+<li>|：或运算符，用于匹配两种情况中的一种。</li>
+<li>()：分组运算符，用于将多个运算分量组合起来形成一个单元，进行整体匹配或量词修饰。</li>
+<li>[]：字符类运算符，用于匹配方括号内任意一个字符。</li>
+<li>{}：重复运算符，用于指定运算分量重复出现的次数。</li>
+</ul>
+<p>运算分量：</p>
+<ul>
+<li>字符：指定具体的字符，例如 a、b、c 等。</li>
+<li>元字符：具有特殊意义的字符，例如 *、?、+ 等。</li>
+<li>点号：匹配除换行符以外的任意字符。</li>
+</ul>
+<p>这些运算符和运算分量可以组合在一起形成复杂的正则表达式，用于模式匹配和字符串搜索。</p>
+<p><strong>在每一步构造的时候，最多加一个起始状态，一个终止状态，总共进行了 | r | 次，所以第三点正确</strong></p>
 <p>举个例子：(a|b)*abb 的构造（考试会考）</p>
 <p><img data-src="image-20230315142551213.png" alt="image-20230315142551213"></p>
-<h2 id="从nfa到dfa的转换"><a class="anchor" href="#从nfa到dfa的转换">#</a> 从 NFA 到 DFA 的转换：</h2>
+<h2 id="子集构造法从nfa到dfa的转换"><a class="anchor" href="#子集构造法从nfa到dfa的转换">#</a> 子集构造法 (从 NFA 到 DFA 的转换)：</h2>
 <p><img data-src="image-20230315142711571.png" alt="image-20230315142711571"></p>
-<p>规则如下 其中 s 是单个状态 T 是一个状态子集</p>
+<p>举个例子： 可以看出简化了很多，并且遇到某一词法单元改走到那一步更加明确了</p>
+<p><img data-src="image-20230610165958021.png" alt="image-20230610165958021"></p>
+<p>从 0 号状态开始，通过 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi></mrow><annotation encoding="application/x-tex">\epsilon</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">ϵ</span></span></span></span> 转移可以到达 1,2,4,7 因此这 5 个状态合为一个状态 A，然后看 A 状态下可以通过 a 字符和 b 字符转移到哪些状态，即下图的规则三，然后利用规则二和规则一求可到达状态的<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi></mrow><annotation encoding="application/x-tex">\epsilon</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">ϵ</span></span></span></span> 闭包，这个过程循环下去直到结束。</p>
+<p><strong>什么时候算结束？</strong></p>
+<p>只要 DFA 的某个状态所对应的 NFA 中的状态集合中含有接受状态，则 DFA 的这个状态是接受状态</p>
+<p><img data-src="image-20230610174226627.png" alt="image-20230610174226627"></p>
+<p>这里 E 对应的 NFA 状态中有 10 号状态，而 10 号状态是 NFA 的接受状态，所以 E 也是接受状态</p>
+<p>三个基本规则如下 其中 s 是单个状态 T 是一个状态子集</p>
 <p>这个过程一定会有一个终点</p>
 <p><img data-src="image-20230315143847385.png" alt="image-20230315143847385"></p>
-<p>符号化的表示：</p>
+<p>原理如下：</p>
 <p><img data-src="image-20230315143949988.png" alt="image-20230315143949988"></p>
 <p><strong>复杂度：NFA 有 n 个状态 DFA 最多有 2 的 n 次方个状态 指数爆炸</strong></p>
 <h2 id="dfa最小化算法"><a class="anchor" href="#dfa最小化算法">#</a> DFA 最小化算法</h2>
@@ -315,8 +340,12 @@ public class SimpleExprTest &#123;
 <p>但是这个定义是错误的 课件上有反例</p>
 <p>反过来是正确做法：</p>
 <p>核心思想<strong>做划分而非合并</strong></p>
-<p>接受状态与非接受状态必定不等价 ，然后接着划分，知道不能再分为止。每一步做迭代 对一个状态集合的任意两个状态，如果在字符 a 的驱动下跑到了不同的组，则这两个状态一定不等价。</p>
-<p>做之前要补齐死状态。</p>
+<p>接受状态与非接受状态必定不等价 ，然后接着划分，直到不能再分为止。每一步做迭代 对一个状态集合的任意两个状态，如果在字符 a 的驱动下跑到了不同的组，则这两个状态一定不等价。</p>
+<p><strong>做之前要补齐死状态。</strong></p>
+<p>因为这是所谓的 DFA 最小化算法 首先得保证最小化的是一个 DFA。比如下图中如果一开始只有红字部分，需要加上黄字部分补成一个 DFA。</p>
+<p><img data-src="image-20230622220426917.png" alt="image-20230622220426917"></p>
+<p>如果某个等价类包含初始状态，那么合并后这个等价类就是初始状态，如果某个等价类包含结束状态，那么合并后这个等价类就是合并状态。</p>
+<p><img data-src="image-20230610182322478.png" alt="image-20230610182322478"></p>
 <h3 id="复杂度"><a class="anchor" href="#复杂度">#</a> 复杂度</h3>
 <p>太复杂了</p>
 <h2 id="从dfa得到词法分析器"><a class="anchor" href="#从dfa得到词法分析器">#</a> 从 DFA 得到词法分析器</h2>
@@ -326,7 +355,6 @@ public class SimpleExprTest &#123;
 <h2 id="根据dfa得到re非重点"><a class="anchor" href="#根据dfa得到re非重点">#</a> 根据 DFA 得到 RE (非重点)</h2>
 <h2 id="lab-1"><a class="anchor" href="#lab-1">#</a> lab 1</h2>
 <p>编程一小时 配置环境一天的典型代表。</p>
-<p>从 lab1 知道了以后应该恶补 ssh 远程连接 linux 命令行 makefile .gitignore 导入依赖 java 基本语法 IDEA 的使用......</p>
 <h3 id="实验输入"><a class="anchor" href="#实验输入">#</a> 实验输入</h3>
 <p>本次实验的输入是一个包含了 <code>SysY</code>  源代码的文件，你的程序需要接受一个文件名作为参数</p>
 <h3 id="实验内容"><a class="anchor" href="#实验内容">#</a> 实验内容</h3>
@@ -374,10 +402,10 @@ public class SimpleExprTest &#123;
 <p>第一个难题就是怎么在 windows 里的 IDEA 编程，但是运行和调试环境是虚拟机中的 ubuntu20.04+lab0 配置好的环境 想法就是用 IDEA 的 remote deployment 功能，在网上搜索教程后发现我的 IDEA 竟然没有这个功能，原因是我的是 community 版本，所以卸载了之前的 IDEA 装了专业版。然后 remote deployment 原理应该是使用 ssh 连接，虽然虚拟机是装在电脑里，但其实和与远程服务器相连原理是一样的。</p>
 </li>
 <li>
-<p>然后编写.g4 文件比较顺利，生成了 SysYlexer.java 文件，但是在 main 函数中使用 SysYlexer 类也遇见了困难，首先是导入 antlr，IDEA 一直报错无法解析 symbol antlr，但是 lab0 中我应该是配好了 antlr 环境的，不知道为什么，所以还是用 IDEA 的 libraries 中导入了 antlr 才好</p>
+<p>然后编写.g4 文件比较顺利，生成了 SysYlexer.java 文件，但是在 main 函数中使用 SysYlexer 类也遇见了困难，首先是导入 antlr，IDEA 一直报错无法解析 symbol antlr，但是 lab0 中我应该是配好了 antlr 环境的，不知道为什么，所以还是用 IDEA 的 libraries 中导入了 antlr 才好   (回来再看，IDEA 是可以导入本地的 jar 包的)</p>
 </li>
 <li>
-<p>第三个难题就是删除 SysYLexer 中自带的 ErrorListeners, 使用自己编写的 errorlisteners，这里老师上课应该是没有讲的，所以也是无从下手。后面借助搜索引擎和 ChatGPT 学了很久才会。原理很简单，先放上自己实现的 myErrorListener 如下：</p>
+<p>第三个难题就是删除 SysYLexer 中自带的 ErrorListeners, 使用自己编写的 errorlisteners，这里蚂蚁老师上课应该是没有讲的，所以也是无从下手。后面借助搜索引擎和 ChatGPT 学了很久才会。原理很简单，先放上自己实现的 myErrorListener 如下：</p>
 <figure class="highlight java"><figcaption data-lang="java"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">class</span> myErrorListener <span class="token keyword">extends</span> <span class="token class-name">BaseErrorListener</span><span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="2"></td><td><pre>		<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">syntaxError</span><span class="token punctuation">(</span><span class="token class-name">Recognizer</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span><span class="token punctuation">,</span> <span class="token operator">?</span><span class="token punctuation">></span></span> recognizer<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="3"></td><td><pre>								<span class="token class-name">Object</span> offendingSymbol<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="4"></td><td><pre>								<span class="token keyword">int</span> line<span class="token punctuation">,</span> <span class="token keyword">int</span> charPositionInLine<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="5"></td><td><pre>								<span class="token class-name">String</span> msg<span class="token punctuation">,</span></pre></td></tr><tr><td data-num="6"></td><td><pre>								<span class="token class-name">RecognitionException</span> e<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="7"></td><td><pre>		<span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="8"></td><td><pre>			<span class="token class-name">System</span><span class="token punctuation">.</span>err<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"Error type A at Line "</span><span class="token operator">+</span>line<span class="token operator">+</span><span class="token string">": "</span><span class="token operator">+</span>msg<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="9"></td><td><pre>			error <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="10"></td><td><pre>		<span class="token punctuation">&#125;</span></pre></td></tr></table></figure><p>主要是重写了 syntaxError 这个函数，他里面的参数应该是报错相关的信息，这里只用到了 line（出错的行）和 msg（具体的报错信息），其它的是什么意思忘记了。应该是每出现一个错误就会调用一次 syntaxError 函数。</p>
 </li>
 <li>
@@ -402,7 +430,7 @@ public class SimpleExprTest &#123;
       <i class="ic i-calendar-check"></i>
     </span>
     <span class="text">更新于</span>
-    <time title="修改时间：2023-04-02 16:59:47" itemprop="dateModified" datetime="2023-04-02T16:59:47+08:00">2023-04-02</time>
+    <time title="修改时间：2023-06-22 22:05:31" itemprop="dateModified" datetime="2023-06-22T22:05:31+08:00">2023-06-22</time>
   </span>
 </div>
 
@@ -457,7 +485,7 @@ public class SimpleExprTest &#123;
     <div class="item left">
       
 
-  <a href="/2023/02/28/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%BC%96%E8%AF%91%E5%99%A8TVM-UserTutorial/" itemprop="url" rel="prev" data-background-image="https:&#x2F;&#x2F;lz.sinaimg.cn&#x2F;mw690&#x2F;6833939bly1gipevgoki5j20zk0m84qp.jpg" title="深度学习编译器TVM-UserTutorial">
+  <a href="/2023/02/28/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%BC%96%E8%AF%91%E5%99%A8TVM-UserTutorial/" itemprop="url" rel="prev" data-background-image="https:&#x2F;&#x2F;lz.sinaimg.cn&#x2F;mw690&#x2F;6833939bly1gipeudstjqj20zk0m8k3r.jpg" title="深度学习编译器TVM-UserTutorial">
   <span class="type">上一篇</span>
   <span class="category"><i class="ic i-flag"></i> TVM</span>
   <h3>深度学习编译器TVM-UserTutorial</h3>
@@ -467,7 +495,7 @@ public class SimpleExprTest &#123;
     <div class="item right">
       
 
-  <a href="/2023/03/16/nova%E2%80%94%E2%80%94%E9%AB%98%E8%80%83%E7%BD%91%E7%AB%99%E5%AD%A6%E6%A0%A1%E5%90%8D%E7%A7%B0%E7%88%AC%E5%8F%96/" itemprop="url" rel="next" data-background-image="https:&#x2F;&#x2F;lz.sinaimg.cn&#x2F;mw690&#x2F;6833939bly1gipeubcbajj20zk0m8h1h.jpg" title="nova——高考网站学校名称爬取">
+  <a href="/2023/03/16/nova%E2%80%94%E2%80%94%E9%AB%98%E8%80%83%E7%BD%91%E7%AB%99%E5%AD%A6%E6%A0%A1%E5%90%8D%E7%A7%B0%E7%88%AC%E5%8F%96/" itemprop="url" rel="next" data-background-image="https:&#x2F;&#x2F;lz.sinaimg.cn&#x2F;mw690&#x2F;6833939bly1gipeu7txpzj20zk0m81kx.jpg" title="nova——高考网站学校名称爬取">
   <span class="type">下一篇</span>
   <span class="category"><i class="ic i-flag"></i> python</span>
   <h3>nova——高考网站学校名称爬取</h3>
@@ -489,11 +517,11 @@ public class SimpleExprTest &#123;
   <div class="panels">
     <div class="inner">
       <div class="contents panel pjax" data-title="文章目录">
-          <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8601-%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90"><span class="toc-number">1.</span> <span class="toc-text"> 编译原理 01 - 词法分析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90%E5%99%A8%E7%9A%84%E4%B8%89%E7%A7%8D%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%B3%95%E7%94%B1%E6%98%93%E5%88%B0%E9%9A%BE"><span class="toc-number">1.1.</span> <span class="toc-text"> 词法分析器的三种设计方法（由易到难）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#antrl%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">1.2.</span> <span class="toc-text"> antrl 的使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#g4%E6%96%87%E4%BB%B6%E7%9A%84%E7%BB%93%E6%9E%84"><span class="toc-number">1.3.</span> <span class="toc-text"> .g4 文件的结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E7%BC%96%E7%A8%8B%E6%96%B9%E5%BC%8F%E4%BD%BF%E7%94%A8antlr-4-%E7%94%9F%E6%88%90%E7%9A%84xxxlexerjava"><span class="toc-number">1.4.</span> <span class="toc-text"> 用编程方式使用 ANTLR 4 生成的 xxxlexer.java</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="toc-number">1.5.</span> <span class="toc-text"> 正则表达式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#nfa%E4%B8%8Edfa"><span class="toc-number">1.6.</span> <span class="toc-text"> NFA 与 DFA</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#thompson%E6%9E%84%E9%80%A0%E6%B3%95%E4%BB%8Ere-%E5%88%B0-nfa"><span class="toc-number">1.7.</span> <span class="toc-text"> Thompson 构造法（从 RE 到 NFA）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8Enfa%E5%88%B0dfa%E7%9A%84%E8%BD%AC%E6%8D%A2"><span class="toc-number">1.8.</span> <span class="toc-text"> 从 NFA 到 DFA 的转换：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dfa%E6%9C%80%E5%B0%8F%E5%8C%96%E7%AE%97%E6%B3%95"><span class="toc-number">1.9.</span> <span class="toc-text"> DFA 最小化算法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="toc-number">1.9.1.</span> <span class="toc-text"> 复杂度</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8Edfa%E5%BE%97%E5%88%B0%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90%E5%99%A8"><span class="toc-number">1.10.</span> <span class="toc-text"> 从 DFA 得到词法分析器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B9%E6%8D%AEdfa%E5%BE%97%E5%88%B0re%E9%9D%9E%E9%87%8D%E7%82%B9"><span class="toc-number">1.11.</span> <span class="toc-text"> 根据 DFA 得到 RE (非重点)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lab-1"><span class="toc-number">1.12.</span> <span class="toc-text"> lab 1</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E8%BE%93%E5%85%A5"><span class="toc-number">1.12.1.</span> <span class="toc-text"> 实验输入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E5%86%85%E5%AE%B9"><span class="toc-number">1.12.2.</span> <span class="toc-text"> 实验内容</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#part1-%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90"><span class="toc-number">1.12.3.</span> <span class="toc-text"> Part1 词法分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B7%E4%BE%8B"><span class="toc-number">1.12.4.</span> <span class="toc-text"> 样例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B7%E4%BE%8B%E4%BA%8C"><span class="toc-number">1.12.5.</span> <span class="toc-text"> 样例二</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E8%BF%87%E7%A8%8B"><span class="toc-number">1.13.</span> <span class="toc-text"> 实验过程</span></a></li></ol></li></ol>
+          <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8601-%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90"><span class="toc-number">1.</span> <span class="toc-text"> 编译原理 01 - 词法分析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90%E5%99%A8%E7%9A%84%E4%B8%89%E7%A7%8D%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%B3%95%E7%94%B1%E6%98%93%E5%88%B0%E9%9A%BE"><span class="toc-number">1.1.</span> <span class="toc-text"> 词法分析器的三种设计方法（由易到难）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#antrl%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">1.2.</span> <span class="toc-text"> antrl 的使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#g4%E6%96%87%E4%BB%B6%E7%9A%84%E7%BB%93%E6%9E%84"><span class="toc-number">1.3.</span> <span class="toc-text"> .g4 文件的结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E7%BC%96%E7%A8%8B%E6%96%B9%E5%BC%8F%E4%BD%BF%E7%94%A8antlr-4-%E7%94%9F%E6%88%90%E7%9A%84xxxlexerjava"><span class="toc-number">1.4.</span> <span class="toc-text"> 用编程方式使用 ANTLR 4 生成的 xxxlexer.java</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="toc-number">1.5.</span> <span class="toc-text"> 正则表达式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#nfa%E4%B8%8Edfa"><span class="toc-number">1.6.</span> <span class="toc-text"> NFA 与 DFA</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#thompson%E6%9E%84%E9%80%A0%E6%B3%95%E4%BB%8Ere-%E5%88%B0-nfa"><span class="toc-number">1.7.</span> <span class="toc-text"> Thompson 构造法（从 RE 到 NFA）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%90%E9%9B%86%E6%9E%84%E9%80%A0%E6%B3%95%E4%BB%8Enfa%E5%88%B0dfa%E7%9A%84%E8%BD%AC%E6%8D%A2"><span class="toc-number">1.8.</span> <span class="toc-text"> 子集构造法 (从 NFA 到 DFA 的转换)：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dfa%E6%9C%80%E5%B0%8F%E5%8C%96%E7%AE%97%E6%B3%95"><span class="toc-number">1.9.</span> <span class="toc-text"> DFA 最小化算法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="toc-number">1.9.1.</span> <span class="toc-text"> 复杂度</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8Edfa%E5%BE%97%E5%88%B0%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90%E5%99%A8"><span class="toc-number">1.10.</span> <span class="toc-text"> 从 DFA 得到词法分析器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B9%E6%8D%AEdfa%E5%BE%97%E5%88%B0re%E9%9D%9E%E9%87%8D%E7%82%B9"><span class="toc-number">1.11.</span> <span class="toc-text"> 根据 DFA 得到 RE (非重点)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#lab-1"><span class="toc-number">1.12.</span> <span class="toc-text"> lab 1</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E8%BE%93%E5%85%A5"><span class="toc-number">1.12.1.</span> <span class="toc-text"> 实验输入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E5%86%85%E5%AE%B9"><span class="toc-number">1.12.2.</span> <span class="toc-text"> 实验内容</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#part1-%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90"><span class="toc-number">1.12.3.</span> <span class="toc-text"> Part1 词法分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B7%E4%BE%8B"><span class="toc-number">1.12.4.</span> <span class="toc-text"> 样例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B7%E4%BE%8B%E4%BA%8C"><span class="toc-number">1.12.5.</span> <span class="toc-text"> 样例二</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E8%BF%87%E7%A8%8B"><span class="toc-number">1.13.</span> <span class="toc-text"> 实验过程</span></a></li></ol></li></ol>
       </div>
       <div class="related panel pjax" data-title="系列文章">
         <ul>
-          <li class="active"><a href="/2023/03/09/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8601-%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90/" rel="bookmark" title="编译原理01-词法分析">编译原理01-词法分析</a></li><li><a href="/2023/03/24/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8602-%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90/" rel="bookmark" title="编译原理02-语法分析">编译原理02-语法分析</a></li><li><a href="/2023/04/12/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8603-%E8%AF%AD%E4%B9%89%E5%88%86%E6%9E%90/" rel="bookmark" title="编译原理03-语义分析">编译原理03-语义分析</a></li>
+          <li class="active"><a href="/2023/03/09/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8601-%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90/" rel="bookmark" title="编译原理01-词法分析">编译原理01-词法分析</a></li><li><a href="/2023/03/24/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8602-%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90/" rel="bookmark" title="编译原理02-语法分析">编译原理02-语法分析</a></li><li><a href="/2023/04/12/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8603-%E8%AF%AD%E4%B9%89%E5%88%86%E6%9E%90/" rel="bookmark" title="编译原理03-语义分析">编译原理03-语义分析</a></li><li><a href="/2023/05/05/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8604-%E4%B8%AD%E9%97%B4%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/" rel="bookmark" title="编译原理04-中间代码生成">编译原理04-中间代码生成</a></li><li><a href="/2023/06/02/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8605-%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/" rel="bookmark" title="编译原理05-目标代码生成">编译原理05-目标代码生成</a></li>
         </ul>
       </div>
       <div class="overview panel" data-title="站点概览">
@@ -507,7 +535,7 @@ public class SimpleExprTest &#123;
 <nav class="state">
     <div class="item posts">
       <a href="/archives/">
-        <span class="count">13</span>
+        <span class="count">15</span>
         <span class="name">文章</span>
       </a>
     </div>
@@ -574,37 +602,7 @@ public class SimpleExprTest &#123;
 <a href="/categories/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/" title="分类于 编译原理">编译原理</a>
 </div>
 
-    <span><a href="/2023/03/09/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8601-%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90/" title="编译原理01-词法分析">编译原理01-词法分析</a></span>
-  </li>
-
-      
-  <li class="item">
-    
-<div class="breadcrumb">
-<a href="/categories/python/" title="分类于 python">python</a>
-</div>
-
-    <span><a href="/2023/01/25/python%E7%88%AC%E8%99%AB%E5%AD%A6%E4%B9%A0/" title="python爬虫学习">python爬虫学习</a></span>
-  </li>
-
-      
-  <li class="item">
-    
-<div class="breadcrumb">
-<a href="/categories/C/" title="分类于 C++">C++</a>
-</div>
-
-    <span><a href="/2022/10/05/STL%E5%AD%A6%E4%B9%A0-01-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E4%B8%8Evector/" title="STL学习-01-智能指针与vector">STL学习-01-智能指针与vector</a></span>
-  </li>
-
-      
-  <li class="item">
-    
-<div class="breadcrumb">
-<a href="/categories/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/" title="分类于 编译原理">编译原理</a>
-</div>
-
-    <span><a href="/2023/03/24/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8602-%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90/" title="编译原理02-语法分析">编译原理02-语法分析</a></span>
+    <span><a href="/2023/05/05/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8604-%E4%B8%AD%E9%97%B4%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/" title="编译原理04-中间代码生成">编译原理04-中间代码生成</a></span>
   </li>
 
       
@@ -621,10 +619,10 @@ public class SimpleExprTest &#123;
   <li class="item">
     
 <div class="breadcrumb">
-<a href="/categories/git/" title="分类于 git">git</a>
+<a href="/categories/Maven/" title="分类于 Maven">Maven</a>
 </div>
 
-    <span><a href="/2022/10/01/Git%E5%AD%A6%E4%B9%A001-%20%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/" title="git操作">git操作</a></span>
+    <span><a href="/2022/10/23/Maven-%E5%AD%A6%E4%B9%A0/" title="Maven 学习">Maven 学习</a></span>
   </li>
 
       
@@ -641,19 +639,40 @@ public class SimpleExprTest &#123;
   <li class="item">
     
 <div class="breadcrumb">
-<a href="/categories/TVM/" title="分类于 TVM">TVM</a>
+<a href="/categories/C/" title="分类于 C++">C++</a>
 </div>
 
-    <span><a href="/2023/02/28/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%BC%96%E8%AF%91%E5%99%A8TVM-UserTutorial/" title="深度学习编译器TVM-UserTutorial">深度学习编译器TVM-UserTutorial</a></span>
+    <span><a href="/2022/11/14/C-%EF%BC%9A%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89%E4%B8%8E%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8/" title="C++：移动语义与右值引用">C++：移动语义与右值引用</a></span>
   </li>
 
       
   <li class="item">
     
 <div class="breadcrumb">
+<a href="/categories/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/" title="分类于 编译原理">编译原理</a>
 </div>
 
-    <span><a href="/2023/02/15/python%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%80%89%E8%AF%BE/" title="python实现自动选课">python实现自动选课</a></span>
+    <span><a href="/2023/03/24/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8602-%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90/" title="编译原理02-语法分析">编译原理02-语法分析</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/git/" title="分类于 git">git</a>
+</div>
+
+    <span><a href="/2022/10/01/Git%E5%AD%A6%E4%B9%A001-%20%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/" title="git操作">git操作</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/C/" title="分类于 C++">C++</a>
+</div>
+
+    <span><a href="/2022/10/05/STL%E5%AD%A6%E4%B9%A0-01-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E4%B8%8Evector/" title="STL学习-01-智能指针与vector">STL学习-01-智能指针与vector</a></span>
   </li>
 
       
@@ -664,6 +683,16 @@ public class SimpleExprTest &#123;
 </div>
 
     <span><a href="/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/" title="Linux—01-Linux安装常识">Linux—01-Linux安装常识</a></span>
+  </li>
+
+      
+  <li class="item">
+    
+<div class="breadcrumb">
+<a href="/categories/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/" title="分类于 编译原理">编译原理</a>
+</div>
+
+    <span><a href="/2023/03/09/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8601-%E8%AF%8D%E6%B3%95%E5%88%86%E6%9E%90/" title="编译原理01-词法分析">编译原理01-词法分析</a></span>
   </li>
 
   </ul>
