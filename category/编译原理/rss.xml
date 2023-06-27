@@ -18,6 +18,7 @@
         <category>爬虫</category>
         <category>TVM 深度学习 机器学习 编译</category>
         <category>编译原理</category>
+        <category>docker</category>
         <item>
             <guid isPermalink="true">http://example.com/2023/06/02/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8605-%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/</guid>
             <title>编译原理05-目标代码生成</title>
@@ -211,7 +212,7 @@
 &lt;p&gt;浅绿框起来的是接口。&lt;/p&gt;
 &lt;h2 id=&#34;属性文法&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#属性文法&#34;&gt;#&lt;/a&gt; 属性文法&lt;/h2&gt;
 &lt;h3 id=&#34;为什么要引入属性文法&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#为什么要引入属性文法&#34;&gt;#&lt;/a&gt; 为什么要引入属性文法&lt;/h3&gt;
-&lt;p&gt;之前引入上下文无关文法的时候，是因为正则表达式无法表达 a&lt;sup&gt;nb&lt;/sup&gt;n 这样的表达式，但是上下文无关文法也有局限，&lt;strong&gt;无法帮助我们进行语义相关的检查&lt;/strong&gt;。于是引入 Knuth 发明的上下文无关文法。&lt;/p&gt;
+&lt;p&gt;之前引入上下文无关文法的时候，是因为正则表达式无法表达 a&lt;sup&gt;nb&lt;/sup&gt;n 这样的表达式，但是上下文无关文法也有局限，&lt;strong&gt;无法帮助我们进行语义相关的检查&lt;/strong&gt;。于是引入 Knuth 发明的属性文法。&lt;/p&gt;
 &lt;p&gt;&lt;img data-src=&#34;image-20230421140916771.png&#34; alt=&#34;image-20230421140916771&#34;&gt;&lt;/p&gt;
 &lt;p&gt;接下来以实现一个&lt;strong&gt;交互式&lt;/strong&gt;的简易计算器为例&lt;/p&gt;
 &lt;p&gt;前几节课写的简易计算器采用的是 offline 的方法：&lt;br&gt;
@@ -551,14 +552,16 @@
 &lt;p&gt;之前规定了 A 不能是开始符号，如果是开始符号，采用规则 4。&lt;/p&gt;
 &lt;p&gt;&lt;img data-src=&#34;image-20230531141121981.png&#34; alt=&#34;image-20230531141121981&#34;&gt;&lt;/p&gt;
 &lt;p&gt;四条规则总结：&lt;/p&gt;
-&lt;p&gt;&lt;img data-src=&#34;/image-20230531141214903.png&#34; alt=&#34;image-20230531141214903&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230531141214903.png&#34; alt=&#34;image-20230531141214903&#34;&gt;&lt;/p&gt;
 &lt;p&gt;要求 A 不是增广文法中扩展的 S&#39;&lt;/p&gt;
-&lt;p&gt;&lt;img data-src=&#34;/image-20230531141304037.png&#34; alt=&#34;image-20230531141304037&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230531141304037.png&#34; alt=&#34;image-20230531141304037&#34;&gt;&lt;/p&gt;
 &lt;p&gt;上表中 s7,s2 s7,s1 有移入规约冲突，所以不是 LR (0) 文法&lt;/p&gt;
 &lt;p&gt;以 2 号产生式 E-&amp;gt;T 为例，可以求出 FOLLOW (E) = {+,),$} 如果在二号状态遇到了 * 号，如果进行 r2 操作，即将栈里的 T 变成 E，则现在 E 的后边就跟着一个 * 号了 这是错误的。&lt;/p&gt;
 &lt;h2 id=&#34;lr1语法分析器&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#lr1语法分析器&#34;&gt;#&lt;/a&gt; LR (1) 语法分析器&lt;/h2&gt;
 &lt;h3 id=&#34;slr1语法分析器&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#slr1语法分析器&#34;&gt;#&lt;/a&gt; SLR (1) 语法分析器&lt;/h3&gt;
 &lt;p&gt;S 的含义：simple&lt;/p&gt;
+&lt;p&gt;把 L (0) 语法分析表构建的第三条规则修改后，就可以得到 SLR (1) 分析表&lt;/p&gt;
+&lt;p +，),$&gt;可算出 FOLLOW (E)=&lt;/p&gt;
 &lt;p&gt;&lt;img data-src=&#34;image-20230531141739236.png&#34; alt=&#34;image-20230531141739236&#34;&gt;&lt;br&gt;
 &lt;img data-src=&#34;image-20230531142412456.png&#34; alt=&#34;image-20230531142412456&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img data-src=&#34;image-20230531143303240.png&#34; alt=&#34;image-20230531143303240&#34;&gt;&lt;/p&gt;

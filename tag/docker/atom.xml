@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>http://example.com</id>
+    <title>MikeMao&#39;s blog • Posts by &#34;docker&#34; tag</title>
+    <link href="http://example.com" />
+    <updated>2023-06-27T09:54:04.000Z</updated>
+    <category term="C++" />
+    <category term="git" />
+    <category term="Linux" />
+    <category term="Maven" />
+    <category term="STL C++" />
+    <category term="python 爬虫 计算机网络" />
+    <category term="python 爬虫" />
+    <category term="python" />
+    <category term="爬虫" />
+    <category term="TVM 深度学习 机器学习 编译" />
+    <category term="编译原理" />
+    <category term="docker" />
+    <entry>
+        <id>http://example.com/2023/06/27/%E4%BA%91%E5%8E%9F%E7%94%9F-docker%E5%85%A5%E9%97%A8/</id>
+        <title>云原生-docker入门</title>
+        <link rel="alternate" href="http://example.com/2023/06/27/%E4%BA%91%E5%8E%9F%E7%94%9F-docker%E5%85%A5%E9%97%A8/"/>
+        <content type="html">&lt;h1 id=&#34;云原生-docker-入门&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#云原生-docker-入门&#34;&gt;#&lt;/a&gt; 云原生 docker 入门&lt;/h1&gt;
+&lt;h2 id=&#34;什么是docker&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#什么是docker&#34;&gt;#&lt;/a&gt; 什么是 Docker&lt;/h2&gt;
+&lt;p&gt;Docker 是 Docker 公司开源的一种最流行的容器实现方案，极大方便了应用服务部署。&lt;/p&gt;
+&lt;p&gt;Docker 可以将应用、配置、和环境打包，形成了一个独立的类似于 iOS APP 形式的 &lt;strong&gt;应用&lt;/strong&gt;，此应用可以直接分发到任意一个支持 Docker 的环境中，通过简单的命令即可运行。&lt;/p&gt;
+&lt;p&gt;Docker 使得容器化技术使用非常方便，极大地推进了容器行业的发展与容器技术标准化。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;docker 口号： build once, run anywhere&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;docker的优势&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#docker的优势&#34;&gt;#&lt;/a&gt; Docker 的优势&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;环境一致性&lt;/li&gt;
+&lt;li&gt;资源独立与隔离&lt;/li&gt;
+&lt;li&gt;轻量化&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;通过docker容器配置nginx静态网页&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#通过docker容器配置nginx静态网页&#34;&gt;#&lt;/a&gt; 通过 docker 容器配置 Nginx 静态网页&lt;/h2&gt;
+&lt;p&gt;从 docker 仓库下载具有默认 Nginx 配置的容器：&lt;/p&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;docker&lt;/span&gt; pull nginx&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;现在有了镜像，但是镜像和容器的关系就像类和实例，要真正运行还要创建一个容器：&lt;/p&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;docker&lt;/span&gt; run &lt;span class=&#34;token parameter variable&#34;&gt;--name&lt;/span&gt; docker-nginx &lt;span class=&#34;token parameter variable&#34;&gt;-p&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;80&lt;/span&gt;:80 nginx&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;参数说明：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;run 是创建新容器的命令&lt;/li&gt;
+&lt;li&gt;--name 标志是指定容器名称的方式。如果为空，将分配一个生成的名称。&lt;/li&gt;
+&lt;li&gt;-p 以 - p local-machine-port:internal-container-port 的格式指定公开的端口，比如这里将容器中的端口：80 映射到宿主机的端口：80&lt;/li&gt;
+&lt;li&gt;nginx 是镜像名称，也就是刚刚 pull 下来的镜像，没有 tag 表示用最新 (latest)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;此时在浏览器输入本地 ip 可看到 nginx 默认登录界面：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230627181050252.png&#34; alt=&#34;image-20230627181050252&#34;&gt;&lt;/p&gt;
+&lt;p&gt;此时必须用 CTRL+c 在命令行中停止容器运行。可以使用 docker ps -a 查看此时的容器状态。&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230627181625674.png&#34; alt=&#34;image-20230627181625674&#34;&gt;&lt;/p&gt;
+&lt;p&gt;可以使用&lt;/p&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;docker&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;rm&lt;/span&gt; &lt;span class=&#34;token parameter variable&#34;&gt;-vf&lt;/span&gt; docker-nginx&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;删除现有的 dorker-nginx 容器。&lt;/p&gt;
+&lt;h2 id=&#34;daemon模式下运行&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#daemon模式下运行&#34;&gt;#&lt;/a&gt; Daemon 模式下运行&lt;/h2&gt;
+&lt;p&gt;上面启动的容器还未与 terminal 分离，必须手动 CTRL+c 停止运行 才能输入后续指令，而在 daemon 模式下我们可以将容器交给 Daemon 进程，即一个守护进程托管，让其在后台运行。&lt;/p&gt;
+&lt;p&gt;创建一个保存网页内容的文件夹：&lt;/p&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;mkdir&lt;/span&gt; &lt;span class=&#34;token parameter variable&#34;&gt;-p&lt;/span&gt; ~/docker-nginx/html&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token builtin class-name&#34;&gt;cd&lt;/span&gt; ~/docker-nginx/html&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;vim&lt;/span&gt; index.html&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;编写网页内容：&lt;/p&gt;
+&lt;figure class=&#34;highlight html&#34;&gt;&lt;figcaption data-lang=&#34;HTML&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;&lt;/span&gt;html&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;&lt;/span&gt;head&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;&lt;/span&gt;title&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt;Docker nginx Tutorial&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;/&lt;/span&gt;title&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;/&lt;/span&gt;head&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;6&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;&lt;/span&gt;body&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;7&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt; &lt;span class=&#34;token attr-name&#34;&gt;class&lt;/span&gt;&lt;span class=&#34;token attr-value&#34;&gt;&lt;span class=&#34;token punctuation attr-equals&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&#34;&lt;/span&gt;container&lt;span class=&#34;token punctuation&#34;&gt;&#34;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;8&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;      &lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;&lt;/span&gt;h1&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt;Hello World&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;/&lt;/span&gt;h1&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;9&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;&lt;/span&gt;p&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt;this page is provided by nginx&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;/&lt;/span&gt;p&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;10&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;    &lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;11&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;/&lt;/span&gt;body&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;12&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token tag&#34;&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;lt;/&lt;/span&gt;html&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;然后使用命令：&lt;/p&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;docker&lt;/span&gt; run &lt;span class=&#34;token parameter variable&#34;&gt;--name&lt;/span&gt; docker-nginx &lt;span class=&#34;token parameter variable&#34;&gt;-p&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;80&lt;/span&gt;:80 &lt;span class=&#34;token parameter variable&#34;&gt;-d&lt;/span&gt; &lt;span class=&#34;token parameter variable&#34;&gt;-v&lt;/span&gt; ~/docker-nginx/html:/usr/share/nginx/html nginx&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;参数说明：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;-v 标志开启挂载功能，: 的左侧是服务器（宿主机）上的位置：右侧是链接到的容器内的位置&lt;/li&gt;
+&lt;li&gt;-d 采用 daemon 模式&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;/usr/share/nginx/html&lt;/code&gt;  是 nginx 服务器默认用于存储静态 HTML 网页和其他资源的位置，通常情况下会在这个目录中存放可由 Web 浏览器访问的 HTML 文件、CSS 文件、JavaScript 文件和图像文件等。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;结果：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230627183153353.png&#34; alt=&#34;image-20230627183153353&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;使用dockerfile创建本地镜像&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#使用dockerfile创建本地镜像&#34;&gt;#&lt;/a&gt; 使用 Dockerfile 创建本地镜像&lt;/h2&gt;
+&lt;h3 id=&#34;什么是dockerfile&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#什么是dockerfile&#34;&gt;#&lt;/a&gt; 什么是 Dockerfile&lt;/h3&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230627190343246.png&#34; alt=&#34;image-20230627190343246&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;使用dockerfile创建2048镜像并运行&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#使用dockerfile创建2048镜像并运行&#34;&gt;#&lt;/a&gt; 使用 Dockerfile 创建 2048 镜像并运行&lt;/h3&gt;
+&lt;p&gt;Dockerfile 的内容如下：&lt;/p&gt;
+&lt;figure class=&#34;highlight dockerfile&#34;&gt;&lt;figcaption data-lang=&#34;Docker&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token comment&#34;&gt;# Pull base image.&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token instruction&#34;&gt;&lt;span class=&#34;token keyword&#34;&gt;FROM&lt;/span&gt; nginx:latest&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token instruction&#34;&gt;&lt;span class=&#34;token keyword&#34;&gt;COPY&lt;/span&gt; 2048-master /usr/share/nginx/html&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;在 Dockerfile 的同级目录下存放了 2048-master 文件夹，其中包含了 2048 网页版的资源&lt;/p&gt;
+&lt;p&gt;使用命令&lt;/p&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;docker&lt;/span&gt; build &lt;span class=&#34;token parameter variable&#34;&gt;-t&lt;/span&gt; my-2048 &lt;span class=&#34;token builtin class-name&#34;&gt;.&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;创建一个名为 my-2048 的镜像 最后的。表示 Dockerfile 在当前目录下。&lt;/p&gt;
+&lt;p&gt;-t 指定镜像的名字&lt;/p&gt;
+&lt;p&gt;然后使用&lt;/p&gt;
+&lt;figure class=&#34;highlight bash&#34;&gt;&lt;figcaption data-lang=&#34;bash&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;docker&lt;/span&gt; run &lt;span class=&#34;token parameter variable&#34;&gt;--name&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;2048&lt;/span&gt; &lt;span class=&#34;token parameter variable&#34;&gt;-d&lt;/span&gt; &lt;span class=&#34;token parameter variable&#34;&gt;-p&lt;/span&gt; &lt;span class=&#34;token number&#34;&gt;80&lt;/span&gt;:80 my-2048&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;创建并启动一个容器&lt;/p&gt;
+&lt;p&gt;此时打开 localhost：&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230627191156151.png&#34; alt=&#34;image-20230627191156151&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;docker镜像管理&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#docker镜像管理&#34;&gt;#&lt;/a&gt; Docker 镜像管理&lt;/h2&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230627192134665.png&#34; alt=&#34;image-20230627192134665&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;docker容器管理&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#docker容器管理&#34;&gt;#&lt;/a&gt; Docker 容器管理&lt;/h2&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230627192437509.png&#34; alt=&#34;image-20230627192437509&#34;&gt;&lt;/p&gt;
+</content>
+        <category term="docker" />
+        <updated>2023-06-27T09:54:04.000Z</updated>
+    </entry>
+</feed>
