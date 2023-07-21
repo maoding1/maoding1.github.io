@@ -12,13 +12,14 @@
         <category>Linux</category>
         <category>Maven</category>
         <category>STL C++</category>
+        <category>go语言</category>
         <category>python 爬虫 计算机网络</category>
         <category>python 爬虫</category>
         <category>python</category>
         <category>爬虫</category>
+        <category>docker</category>
         <category>TVM 深度学习 机器学习 编译</category>
         <category>编译原理</category>
-        <category>docker</category>
         <item>
             <guid isPermalink="true">http://example.com/2023/03/16/nova%E2%80%94%E2%80%94%E9%AB%98%E8%80%83%E7%BD%91%E7%AB%99%E5%AD%A6%E6%A0%A1%E5%90%8D%E7%A7%B0%E7%88%AC%E5%8F%96/</guid>
             <title>nova——高考网站学校名称爬取</title>

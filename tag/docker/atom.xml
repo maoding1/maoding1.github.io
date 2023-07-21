@@ -9,18 +9,21 @@
     <category term="Linux" />
     <category term="Maven" />
     <category term="STL C++" />
+    <category term="go语言" />
     <category term="python 爬虫 计算机网络" />
     <category term="python 爬虫" />
     <category term="python" />
     <category term="爬虫" />
+    <category term="docker" />
     <category term="TVM 深度学习 机器学习 编译" />
     <category term="编译原理" />
-    <category term="docker" />
     <entry>
         <id>http://example.com/2023/06/27/%E4%BA%91%E5%8E%9F%E7%94%9F-docker%E5%85%A5%E9%97%A8/</id>
         <title>云原生-docker入门</title>
         <link rel="alternate" href="http://example.com/2023/06/27/%E4%BA%91%E5%8E%9F%E7%94%9F-docker%E5%85%A5%E9%97%A8/"/>
-        <content type="html">&lt;h1 id=&#34;云原生-docker-入门&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#云原生-docker-入门&#34;&gt;#&lt;/a&gt; 云原生 docker 入门&lt;/h1&gt;
+        <content type="html">&lt;h1 id=&#34;云原生-docker-k8s-springboot&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#云原生-docker-k8s-springboot&#34;&gt;#&lt;/a&gt; 云原生 docker + k8s + springboot&lt;/h1&gt;
+&lt;h2 id=&#34;云原生的本质&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#云原生的本质&#34;&gt;#&lt;/a&gt; 云原生的本质&lt;/h2&gt;
+&lt;p&gt;根据微服务将应用进行细分，将每一部分打包放入对应的容器，动态统筹管理容器，实现资源利用最大化。&lt;/p&gt;
 &lt;h2 id=&#34;什么是docker&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#什么是docker&#34;&gt;#&lt;/a&gt; 什么是 Docker&lt;/h2&gt;
 &lt;p&gt;Docker 是 Docker 公司开源的一种最流行的容器实现方案，极大方便了应用服务部署。&lt;/p&gt;
 &lt;p&gt;Docker 可以将应用、配置、和环境打包，形成了一个独立的类似于 iOS APP 形式的 &lt;strong&gt;应用&lt;/strong&gt;，此应用可以直接分发到任意一个支持 Docker 的环境中，通过简单的命令即可运行。&lt;/p&gt;
@@ -80,6 +83,102 @@
 &lt;p&gt;&lt;img data-src=&#34;image-20230627192134665.png&#34; alt=&#34;image-20230627192134665&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;docker容器管理&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#docker容器管理&#34;&gt;#&lt;/a&gt; Docker 容器管理&lt;/h2&gt;
 &lt;p&gt;&lt;img data-src=&#34;image-20230627192437509.png&#34; alt=&#34;image-20230627192437509&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;docker原理&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#docker原理&#34;&gt;#&lt;/a&gt; Docker 原理&lt;/h2&gt;
+&lt;h3 id=&#34;docker组成架构&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#docker组成架构&#34;&gt;#&lt;/a&gt; Docker 组成架构&lt;/h3&gt;
+&lt;p&gt;Docker 采用 C/S 架构，client 通过接口与 Server 进程通信实现容器的构建，运行和发布。&lt;/p&gt;
+&lt;p&gt;Docker 由五个部分组成&lt;/p&gt;
+&lt;p&gt;－&lt;strong&gt;Docker Client&lt;/strong&gt; &lt;strong&gt;客户端&lt;/strong&gt;，负责向服务端（Docker Daemon 守护进程）发起请求&lt;/p&gt;
+&lt;p&gt;－&lt;strong&gt;Docker Daemon&lt;/strong&gt; &lt;strong&gt;守护进程&lt;/strong&gt;，负责 从 Docker Registry 下载 Docker 镜像和通过 Docker 镜像 启动 Docker 容器&lt;/p&gt;
+&lt;p&gt;－&lt;strong&gt;Docker Registry&lt;/strong&gt; &lt;strong&gt;仓库&lt;/strong&gt;，负责存储 Docker 镜像&lt;/p&gt;
+&lt;p&gt;－&lt;strong&gt;Docker Container&lt;/strong&gt; &lt;strong&gt;容器&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;－&lt;strong&gt;Docker Image&lt;/strong&gt; &lt;strong&gt;镜像&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230628141358473.png&#34; alt=&#34;image-20230628141358473&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;docker运行容器流程&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#docker运行容器流程&#34;&gt;#&lt;/a&gt; Docker 运行容器流程&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Docker Client 执行 docker run，Docker Daemon 收到来自 client 的请求；&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Docker Daemon 优先查找本地镜像，如果本地没有，Docker daemon 会从远端镜像仓库拉取所需镜像；&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;启动 Linux Namespace 配置，设置指定的 Cgroups 参数，挂载 rootfs（容器镜像），切换进程的根目录；&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;容器运行。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230628141534884.png&#34; alt=&#34;image-20230628141534884&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;docker容器文件系统&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#docker容器文件系统&#34;&gt;#&lt;/a&gt; Docker 容器文件系统&lt;/h2&gt;
+&lt;p&gt;Docker 容器的 rootfs 使用的是 UnionFS（联合文件系统）。&lt;/p&gt;
+&lt;p&gt;UnionFS 是通过联合挂载多个文件目录得到的一个完整的文件系统。容器 rootfs 看起来是一个可读、可写的具备完整功能的独立文件系统，但实际上由多层只读层和一个专属于该容器的读写层联合挂载而成。&lt;/p&gt;
+&lt;p&gt;Linux 中支持的 UnionFS 实现有 overlay2、aufs、btrfs，其中最常用的就是 overlay2。&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230628145756899.png&#34; alt=&#34;image-20230628145756899&#34;&gt;&lt;/p&gt;
+&lt;p&gt;在准备容器 rootfs 时联合挂载用到的多层目录是哪来的呢？&lt;/p&gt;
+&lt;p&gt;－&lt;strong&gt;读写层&lt;/strong&gt;，每个容器都有自己专属的读写层，该层由 docker 在创建此容器时创建的。&lt;/p&gt;
+&lt;p&gt;－&lt;strong&gt;只读层&lt;/strong&gt;，每个容器的 rootfs 都会包含好几层只读层，该层由 docker 在拉取镜像时将镜像中的各层解压到 docker 的数据目录得到的。&lt;/p&gt;
+&lt;p&gt;总结&lt;/p&gt;
+&lt;p&gt;－容器镜像与容器 rootfs 的关联&lt;/p&gt;
+&lt;p&gt;Docker 拉取镜像解压到 docker 数据目录后得到只读层；&lt;/p&gt;
+&lt;p&gt;Docker 创建容器时使用数据目录中的读写层联合挂载得到容器 rootfs&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;image-20230628145830246.png&#34; alt=&#34;image-20230628145830246&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;kubernetes&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#kubernetes&#34;&gt;#&lt;/a&gt; kubernetes&lt;/h1&gt;
+&lt;h2 id=&#34;什么是kubernetes&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#什么是kubernetes&#34;&gt;#&lt;/a&gt; 什么是 kubernetes&lt;/h2&gt;
+&lt;p&gt;kubernetes 是开源的容器集群管理项目，诞生于 2014 年，有 Google 公司发起，试图为基于容器的应用部署和管理打造一个强大引擎。使用 go 语言构造。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;一个基于容器技术的分布式架构领先方案&lt;/li&gt;
+&lt;li&gt;一个生产级容器编排工具&lt;/li&gt;
+&lt;li&gt;一个完备的分布式学习通支撑平台&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;竞品： Mesos， Docker Swarm&lt;/p&gt;
+&lt;p&gt;我们在应用容器化的过程中会涉及到封装、调度单容器，也会涉及到解决各个容器间的类型关系，比如 web 容器会涉及到与 DB 容器的交互，可以通过建立 “link” 来将 DB 容器中的信息注入到 web 容器中。但这样做的缺陷在于缺少普适性，随着系统的扩大，容器间的 “link” 会越来越复杂。&lt;/p&gt;
+&lt;p&gt;Kubernetes 的优势就在于：从设计之初就&lt;strong&gt;以统一的方式定义任务之间的各种关系&lt;/strong&gt;， 并且为将来支持更多种类的关系留有余地，能够按照用户的意愿和整个系统的规则，完全自动化地处理好容器之间的各种关系，这个过程也就是&lt;strong&gt;编排&lt;/strong&gt;。而其他很多集群管理项目（比如 Yarn、Mesos，以及 Swarm）擅长的，把一个容器按规则，放置在某个最佳节点上运行的功能则称为&lt;strong&gt;调度&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;容器本质是进程，那 Kubernetes 作为具有普遍意义的容器编排工具，就是云操作系统。&lt;/p&gt;
+&lt;p&gt;理解 Kubernetes 设计理念是学习 Kubernetes 的前提。我们需要聚焦在两个问题：&lt;/p&gt;
+&lt;p&gt;l &lt;strong&gt;如何处理应用与应用之间的关系？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;l &lt;strong&gt;如何恰当的容器化一个应用？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;第一个问题，应用与应用之间的关系可以细化为容器间的关系，具体来说是两类：一类关系是 “紧密交互” 的，即：这些应用之间需要频繁交互、访问，或者会直接通过本地文件进行信息交换。Kubernetes 把这类关系涉及到的一组容器划分为一个 &lt;strong&gt;“ Pod ”&lt;/strong&gt;（ Kuberntes 最小调度单位），在这里面可以进行高效信息交换。&lt;/p&gt;
+&lt;p&gt;另一类关系则是常见的应用间的普通访问，Kuberntes 通过定义 “&lt;strong&gt;服务对象&lt;/strong&gt;” 来描述。比如 web 应用和数据库应用的交互，涉及到固定 IP 地址和端口以负载均衡的方式访问，就产生了 Service 对象来处理；加密授权的关系需求，则可由 Secret 对象解决等等。&lt;/p&gt;
+&lt;p&gt;第二个问题，以 Pod 为基础为解决不同的场景需求衍生出了不同的解决方案，也就是&lt;strong&gt;基于 Pod 改进后的对象资源，称为 “编排对象”&lt;/strong&gt;。比如被称为 DaemonSet 的对象资源，它可以像守护进程一样在每个宿主机上有且只能有一个 pod 副本；再比如 CronJob ，它专门用来描述定时任务等等。&lt;/p&gt;
+&lt;p&gt;如下图所示，由 “Pod” 产生各类 “&lt;strong&gt;编排对象&lt;/strong&gt;”，再为解决各种关系问题产生了类似 Service、Ingress 等 “&lt;strong&gt;服务对象&lt;/strong&gt; ”。&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;/image-20230629231456801.png&#34; alt=&#34;image-20230629231456801&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;k8s优势&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#k8s优势&#34;&gt;#&lt;/a&gt; k8s 优势&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;强大的容器编排能力&lt;/li&gt;
+&lt;li&gt;轻量级&lt;/li&gt;
+&lt;li&gt;开放开源&lt;/li&gt;
+&lt;li&gt;优秀的 API 设计&lt;/li&gt;
+&lt;li&gt;基于微服务模式的多层资源抽象模型&lt;/li&gt;
+&lt;li&gt;可扩展性好&lt;/li&gt;
+&lt;li&gt;自动化程度高&lt;/li&gt;
+&lt;li&gt;部署支持多种环境&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;k8s常用命令&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#k8s常用命令&#34;&gt;#&lt;/a&gt; k8s 常用命令&lt;/h2&gt;
+&lt;h3 id=&#34;createapply&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#createapply&#34;&gt;#&lt;/a&gt; create/apply&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;kubectl apply/create -f [FILE NAME]&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;kubectl create 属于&lt;/p&gt;
+&lt;h3 id=&#34;get&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#get&#34;&gt;#&lt;/a&gt; get&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;kubectl get pods|replicationcontrollers|services|namespaces|nodes|...|events [options]&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&#34;describe&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#describe&#34;&gt;#&lt;/a&gt; describe&lt;/h3&gt;
+&lt;p&gt;查看资源详细信息&lt;/p&gt;
+&lt;h3 id=&#34;logs&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#logs&#34;&gt;#&lt;/a&gt; logs&lt;/h3&gt;
+&lt;p&gt;查看 pod 内容器日志&lt;/p&gt;
+&lt;h3 id=&#34;exec&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#exec&#34;&gt;#&lt;/a&gt; exec&lt;/h3&gt;
+&lt;p&gt;在 pod 容器中执行命令&lt;/p&gt;
+&lt;h3 id=&#34;edit&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#edit&#34;&gt;#&lt;/a&gt; edit&lt;/h3&gt;
+&lt;p&gt;编辑资源&lt;/p&gt;
+&lt;h3 id=&#34;delete&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#delete&#34;&gt;#&lt;/a&gt; delete&lt;/h3&gt;
+&lt;p&gt;删除资源&lt;/p&gt;
+&lt;h1 id=&#34;springboot-入门&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#springboot-入门&#34;&gt;#&lt;/a&gt; Springboot 入门&lt;/h1&gt;
+&lt;h2 id=&#34;特点&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#特点&#34;&gt;#&lt;/a&gt; 特点&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;独立运行的 spring 项目     spring boot 可以以 jar 包的形式独立运行&lt;/li&gt;
+&lt;li&gt;内嵌 servlet 容器，应用无需打成 WAR 包。&lt;/li&gt;
+&lt;li&gt;提供 starter 简化 Maven 配置&lt;/li&gt;
+&lt;li&gt;提供了大量的自动配置&lt;/li&gt;
+&lt;li&gt;自带应用监控&lt;/li&gt;
+&lt;li&gt;无代码生成和 XML 配置&lt;/li&gt;
+&lt;/ul&gt;
 </content>
         <category term="docker" />
         <updated>2023-06-27T09:54:04.000Z</updated>

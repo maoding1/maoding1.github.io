@@ -51,47 +51,6 @@ vector&lt;string&gt; vstr_copy2(allcaps(vstr)); //#2
       </tags>
   </entry>
   <entry>
-    <title>Git学习02-分支管理</title>
-    <url>/2022/10/02/Git%E5%AD%A6%E4%B9%A002-%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86/</url>
-    <content><![CDATA[<h1 id="git学习02-分支管理"><a class="anchor" href="#git学习02-分支管理">#</a> Git 学习 02 - 分支管理</h1>
-<p><span id="more"></span></p>
-<p><img data-src="%E8%BD%BB%E9%9F%B3%E5%B0%91%E5%A5%B3.jpg" alt="轻音少女"></p>
-<h2 id="创建与合并分支"><a class="anchor" href="#创建与合并分支">#</a> 创建与合并分支</h2>
-<p>查看分支 ：  <code>git branch</code></p>
-<p>创建分支：  <code>git branch &lt;name&gt;</code></p>
-<p>切换分支：  <code>git switch &lt;name&gt;</code></p>
-<p>创建 + 切换分支:  <code>git switch -c &lt;name&gt;</code></p>
-<p>合并某分支到当前分支 ：  <code>git merge &lt;name&gt;</code>  这里的 name 使某分支的 name</p>
-<p>删除分支：  <code>git branch -d &lt;name&gt;</code></p>
-<h2 id="解决冲突"><a class="anchor" href="#解决冲突">#</a> 解决冲突</h2>
-<p>eg：当你创建了一个 feature1 分支 其在 master 分支上添加了一些内容并进行提交，此时切换会 master 分支并使用  <code>git merge feature1</code>  合并分支是不会有问题的（Git 会在底层移动 master 的指针到 feature1 上）。但如果你在 feature1 上修改了某个文件并提交，在切换会 master 分支后修改了同一份文件并提交，那么此时 git merge 就会报错了。</p>
-<p>此时可以：</p>
-<ol>
-<li>使用 <code>git status</code>  查看冲突的文件（如果你改了很多，分不清哪里冲突了）</li>
-<li>手动解决冲突</li>
-<li>再提交</li>
-<li>最后删除分支（如删除 feature1)</li>
-</ol>
-<p>使用</p>
-<pre><code>$ git log --graph --pretty=oneline --abbrev-commit
-</code></pre>
-<p>可以形象地查看分支的合并情况（Git 会生成一副图）</p>
-<h2 id="分支管理策略"><a class="anchor" href="#分支管理策略">#</a> 分支管理策略</h2>
-<p><code>git merge --no-ff -m &quot;commit message&quot; &lt;branch name&gt;</code></p>
-<p>通常 ，合并分支时，Git 会用 Fast forward 模式（移动指针） ，这种模式下，删除分支后，会丢掉分支信息</p>
-<p>如果要强制禁用 Fast forward 模式， Git 就会再 merge 时生成一个新的 commit，这样，从分支历史上就可以看出分支信息。</p>
-<p>--no--ff 参数表示禁用 Fast forward</p>
-<h2 id="git的更多操作"><a class="anchor" href="#git的更多操作">#</a> git 的更多操作</h2>
-<p>Git 还有许多高级功能。如暂时储存当前工作、多人协作、标签管理等。考虑到目前还接触不到 ，上述功能等需要使用了再来学习更新吧。</p>
-]]></content>
-      <categories>
-        <category>git</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>git操作</title>
     <url>/2022/10/01/Git%E5%AD%A6%E4%B9%A001-%20%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/</url>
     <content><![CDATA[<h1 id="git学习01-基本操作"><a class="anchor" href="#git学习01-基本操作">#</a> Git 学习 01- 基本操作</h1>
@@ -177,6 +136,47 @@ $ git commit -m &quot;remove test.txt&quot;
 <p>tips：要删除远程库 可以用 <code>git remote rm &lt;name&gt;</code>  命令，但这只是解除了本地与远程的绑定关系，要真正删除远程库，需要登陆 github 手动删除。</p>
 <h2 id="克隆远程仓库"><a class="anchor" href="#克隆远程仓库">#</a> 克隆远程仓库</h2>
 <p>知道仓库的 SSH 后，通过 <code>git clone SSH</code>  命令克隆到本地</p>
+]]></content>
+      <categories>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Git学习02-分支管理</title>
+    <url>/2022/10/02/Git%E5%AD%A6%E4%B9%A002-%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86/</url>
+    <content><![CDATA[<h1 id="git学习02-分支管理"><a class="anchor" href="#git学习02-分支管理">#</a> Git 学习 02 - 分支管理</h1>
+<p><span id="more"></span></p>
+<p><img data-src="%E8%BD%BB%E9%9F%B3%E5%B0%91%E5%A5%B3.jpg" alt="轻音少女"></p>
+<h2 id="创建与合并分支"><a class="anchor" href="#创建与合并分支">#</a> 创建与合并分支</h2>
+<p>查看分支 ：  <code>git branch</code></p>
+<p>创建分支：  <code>git branch &lt;name&gt;</code></p>
+<p>切换分支：  <code>git switch &lt;name&gt;</code></p>
+<p>创建 + 切换分支:  <code>git switch -c &lt;name&gt;</code></p>
+<p>合并某分支到当前分支 ：  <code>git merge &lt;name&gt;</code>  这里的 name 使某分支的 name</p>
+<p>删除分支：  <code>git branch -d &lt;name&gt;</code></p>
+<h2 id="解决冲突"><a class="anchor" href="#解决冲突">#</a> 解决冲突</h2>
+<p>eg：当你创建了一个 feature1 分支 其在 master 分支上添加了一些内容并进行提交，此时切换会 master 分支并使用  <code>git merge feature1</code>  合并分支是不会有问题的（Git 会在底层移动 master 的指针到 feature1 上）。但如果你在 feature1 上修改了某个文件并提交，在切换会 master 分支后修改了同一份文件并提交，那么此时 git merge 就会报错了。</p>
+<p>此时可以：</p>
+<ol>
+<li>使用 <code>git status</code>  查看冲突的文件（如果你改了很多，分不清哪里冲突了）</li>
+<li>手动解决冲突</li>
+<li>再提交</li>
+<li>最后删除分支（如删除 feature1)</li>
+</ol>
+<p>使用</p>
+<pre><code>$ git log --graph --pretty=oneline --abbrev-commit
+</code></pre>
+<p>可以形象地查看分支的合并情况（Git 会生成一副图）</p>
+<h2 id="分支管理策略"><a class="anchor" href="#分支管理策略">#</a> 分支管理策略</h2>
+<p><code>git merge --no-ff -m &quot;commit message&quot; &lt;branch name&gt;</code></p>
+<p>通常 ，合并分支时，Git 会用 Fast forward 模式（移动指针） ，这种模式下，删除分支后，会丢掉分支信息</p>
+<p>如果要强制禁用 Fast forward 模式， Git 就会再 merge 时生成一个新的 commit，这样，从分支历史上就可以看出分支信息。</p>
+<p>--no--ff 参数表示禁用 Fast forward</p>
+<h2 id="git的更多操作"><a class="anchor" href="#git的更多操作">#</a> git 的更多操作</h2>
+<p>Git 还有许多高级功能。如暂时储存当前工作、多人协作、标签管理等。考虑到目前还接触不到 ，上述功能等需要使用了再来学习更新吧。</p>
 ]]></content>
       <categories>
         <category>git</category>
@@ -335,6 +335,34 @@ $ git commit -m &quot;remove test.txt&quot;
       </categories>
       <tags>
         <tag>STL C++</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>golang-命令行词典</title>
+    <url>/2023/07/21/golang-%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AF%8D%E5%85%B8/</url>
+    <content><![CDATA[<h1 id="golang-入门-命令行词典"><a class="anchor" href="#golang-入门-命令行词典">#</a> golang - 入门 命令行词典</h1>
+<h2 id="golang相关知识点"><a class="anchor" href="#golang相关知识点">#</a> golang 相关知识点</h2>
+<p>尝试了 goland 的基础语法，结构体使用，错误处理，基本的输入输出，命令行参数等。</p>
+<p>体验了 go 自带的间结强大的 net 库，http 库等，可以非常轻松的进行 go 语言 struct 与 json 格式的序列化和反序列化。</p>
+<h2 id="效果"><a class="anchor" href="#效果">#</a> 效果</h2>
+<p><img data-src="image-20230721114017207.png" alt="image-20230721114017207"></p>
+<h2 id="过程"><a class="anchor" href="#过程">#</a> 过程</h2>
+<p>首先对某翻译网站翻译的请求进行抓包，得到请求发出时的请求头。然后可以使用检查工具中的 copy as cURL 复制为 curl 命令</p>
+<p><img data-src="image-20230721114338333.png" alt="image-20230721114338333"></p>
+<p>​	然后可搜索在线工具比如 curlconverter 将 curl 命令转化为 go 语言中发送 http 请求的代码。</p>
+<p>​	还需要使用一个 go 语言自带的结构体保存返回的信息，由于返回的 json 字段很多，并且有嵌套，所以也可使用在线的 json 转 go 结构体工具。</p>
+<p><img data-src="image-20230721115238319.png" alt="image-20230721115238319"></p>
+<p>然后主体部分就完成了，将其封装为 query 函数，接受一个需要查询的字符串 word，在 main 函数中调用。</p>
+<p>然后使用 go build 直接编译成可执行文件，将其路径放入环境变量即可。</p>
+<h2 id="可改进之处"><a class="anchor" href="#可改进之处">#</a> 可改进之处</h2>
+<p>请求头里的 cookie 和其余信息都是硬编码的，但是翻译网站的反爬和鉴权措施一般不会很严格，但仍有可能需要定时修改代码。</p>
+<h2 id="代码"><a class="anchor" href="#代码">#</a> 代码</h2>
+<figure class="highlight go"><figcaption data-lang="go"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">package</span> main</pre></td></tr><tr><td data-num="2"></td><td><pre></pre></td></tr><tr><td data-num="3"></td><td><pre><span class="token keyword">import</span> <span class="token punctuation">(</span></pre></td></tr><tr><td data-num="4"></td><td><pre>	<span class="token string">"bytes"</span></pre></td></tr><tr><td data-num="5"></td><td><pre>	<span class="token string">"encoding/json"</span></pre></td></tr><tr><td data-num="6"></td><td><pre>	<span class="token string">"fmt"</span></pre></td></tr><tr><td data-num="7"></td><td><pre>	<span class="token string">"io"</span></pre></td></tr><tr><td data-num="8"></td><td><pre>	<span class="token string">"log"</span></pre></td></tr><tr><td data-num="9"></td><td><pre>	<span class="token string">"net/http"</span></pre></td></tr><tr><td data-num="10"></td><td><pre>	<span class="token string">"os"</span></pre></td></tr><tr><td data-num="11"></td><td><pre><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="12"></td><td><pre></pre></td></tr><tr><td data-num="13"></td><td><pre><span class="token keyword">type</span> DictRequest <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="14"></td><td><pre>	TransType <span class="token builtin">string</span> <span class="token string">`json:"trans_type"`</span></pre></td></tr><tr><td data-num="15"></td><td><pre>	Source    <span class="token builtin">string</span> <span class="token string">`json:"source"`</span></pre></td></tr><tr><td data-num="16"></td><td><pre>	UserID    <span class="token builtin">string</span> <span class="token string">`json:"user_id"`</span></pre></td></tr><tr><td data-num="17"></td><td><pre><span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="18"></td><td><pre></pre></td></tr><tr><td data-num="19"></td><td><pre><span class="token keyword">type</span> DictResponse <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="20"></td><td><pre>	Rc   <span class="token builtin">int</span> <span class="token string">`json:"rc"`</span></pre></td></tr><tr><td data-num="21"></td><td><pre>	Wiki <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="22"></td><td><pre>	<span class="token punctuation">&#125;</span> <span class="token string">`json:"wiki"`</span></pre></td></tr><tr><td data-num="23"></td><td><pre>	Dictionary <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="24"></td><td><pre>		Prons <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="25"></td><td><pre>			EnUs <span class="token builtin">string</span> <span class="token string">`json:"en-us"`</span></pre></td></tr><tr><td data-num="26"></td><td><pre>			En   <span class="token builtin">string</span> <span class="token string">`json:"en"`</span></pre></td></tr><tr><td data-num="27"></td><td><pre>		<span class="token punctuation">&#125;</span> <span class="token string">`json:"prons"`</span></pre></td></tr><tr><td data-num="28"></td><td><pre>		Explanations <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span>      <span class="token string">`json:"explanations"`</span></pre></td></tr><tr><td data-num="29"></td><td><pre>		Synonym      <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span>      <span class="token string">`json:"synonym"`</span></pre></td></tr><tr><td data-num="30"></td><td><pre>		Antonym      <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span>      <span class="token string">`json:"antonym"`</span></pre></td></tr><tr><td data-num="31"></td><td><pre>		WqxExample   <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span>    <span class="token string">`json:"wqx_example"`</span></pre></td></tr><tr><td data-num="32"></td><td><pre>		Entry        <span class="token builtin">string</span>        <span class="token string">`json:"entry"`</span></pre></td></tr><tr><td data-num="33"></td><td><pre>		Type         <span class="token builtin">string</span>        <span class="token string">`json:"type"`</span></pre></td></tr><tr><td data-num="34"></td><td><pre>		Related      <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span> <span class="token string">`json:"related"`</span></pre></td></tr><tr><td data-num="35"></td><td><pre>		Source       <span class="token builtin">string</span>        <span class="token string">`json:"source"`</span></pre></td></tr><tr><td data-num="36"></td><td><pre>	<span class="token punctuation">&#125;</span> <span class="token string">`json:"dictionary"`</span></pre></td></tr><tr><td data-num="37"></td><td><pre><span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="38"></td><td><pre></pre></td></tr><tr><td data-num="39"></td><td><pre><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="40"></td><td><pre>	<span class="token keyword">if</span> <span class="token function">len</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Args<span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">2</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="41"></td><td><pre>		fmt<span class="token punctuation">.</span><span class="token function">Fprintf</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stderr<span class="token punctuation">,</span> <span class="token string">`usage: onlineDict WORD</span></pre></td></tr><tr><td data-num="42"></td><td><pre>eaxmple: onlineDict hello</pre></td></tr><tr><td data-num="43"></td><td><pre>`<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="44"></td><td><pre>		os<span class="token punctuation">.</span><span class="token function">Exit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="45"></td><td><pre>	<span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="46"></td><td><pre>	word <span class="token operator">:=</span> os<span class="token punctuation">.</span>Args<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span></pre></td></tr><tr><td data-num="47"></td><td><pre>	<span class="token function">query</span><span class="token punctuation">(</span>word<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="48"></td><td><pre><span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="49"></td><td><pre></pre></td></tr><tr><td data-num="50"></td><td><pre><span class="token keyword">func</span> <span class="token function">query</span><span class="token punctuation">(</span>word <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="51"></td><td><pre>	client <span class="token operator">:=</span> <span class="token operator">&amp;</span>http<span class="token punctuation">.</span>Client<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="52"></td><td><pre>	<span class="token comment">//var data = strings.NewReader(`&#123;"trans_type":"en2zh","source":"good"&#125;`)</span></pre></td></tr><tr><td data-num="53"></td><td><pre>	request <span class="token operator">:=</span> DictRequest<span class="token punctuation">&#123;</span>TransType<span class="token punctuation">:</span> <span class="token string">"en2zh"</span><span class="token punctuation">,</span> Source<span class="token punctuation">:</span> word<span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="54"></td><td><pre>	buf<span class="token punctuation">,</span> err <span class="token operator">:=</span> json<span class="token punctuation">.</span><span class="token function">Marshal</span><span class="token punctuation">(</span>request<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="55"></td><td><pre>	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="56"></td><td><pre>		log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="57"></td><td><pre>	<span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="58"></td><td><pre>	<span class="token keyword">var</span> data <span class="token operator">=</span> bytes<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span>buf<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="59"></td><td><pre>	req<span class="token punctuation">,</span> err <span class="token operator">:=</span> http<span class="token punctuation">.</span><span class="token function">NewRequest</span><span class="token punctuation">(</span><span class="token string">"POST"</span><span class="token punctuation">,</span> <span class="token string">"xxxx"</span><span class="token punctuation">,</span> data<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="60"></td><td><pre>	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="61"></td><td><pre>		log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="62"></td><td><pre>	<span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="63"></td><td><pre>	req<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"authority"</span><span class="token punctuation">,</span> <span class="token string">"xxxx"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="64"></td><td><pre>	req<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"accept"</span><span class="token punctuation">,</span> <span class="token string">"application/json, text/plain, */*"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="65"></td><td><pre>	req<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"accept-language"</span><span class="token punctuation">,</span> <span class="token string">"zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="66"></td><td><pre>	req<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"app-name"</span><span class="token punctuation">,</span> <span class="token string">"xy"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="67"></td><td><pre>	req<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"content-type"</span><span class="token punctuation">,</span> <span class="token string">"application/json;charset=UTF-8"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="68"></td><td><pre>	req<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"device-id"</span><span class="token punctuation">,</span> <span class="token string">"89b4990d1ee4c5a8e30571cb7ac33c49"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="69"></td><td><pre>	req<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"origin"</span><span class="token punctuation">,</span> <span class="token string">"xxxx"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="70"></td><td><pre>	req<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"os-type"</span><span class="token punctuation">,</span> <span class="token string">"web"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="71"></td><td><pre>	req<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"os-version"</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="72"></td><td><pre>	req<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"referer"</span><span class="token punctuation">,</span> <span class="token string">"https://fanyi.caiyunapp.com/"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="73"></td><td><pre>	req<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"sec-ch-ua"</span><span class="token punctuation">,</span> `<span class="token string">"Not.A/Brand"</span><span class="token punctuation">;</span>v<span class="token operator">=</span><span class="token string">"8"</span><span class="token punctuation">,</span> <span class="token string">"Chromium"</span><span class="token punctuation">;</span>v<span class="token operator">=</span><span class="token string">"114"</span><span class="token punctuation">,</span> <span class="token string">"Microsoft Edge"</span><span class="token punctuation">;</span>v<span class="token operator">=</span><span class="token string">"114"</span><span class="token string">`)</span></pre></td></tr><tr><td data-num="74"></td><td><pre>	req.Header.Set("sec-ch-ua-mobile", "?0")</pre></td></tr><tr><td data-num="75"></td><td><pre>	req.Header.Set("sec-ch-ua-platform", `"Windows"`<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="76"></td><td><pre>	req<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"sec-fetch-dest"</span><span class="token punctuation">,</span> <span class="token string">"empty"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="77"></td><td><pre>	req<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"sec-fetch-mode"</span><span class="token punctuation">,</span> <span class="token string">"cors"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="78"></td><td><pre>	req<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"sec-fetch-site"</span><span class="token punctuation">,</span> <span class="token string">"cross-site"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="79"></td><td><pre>	req<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"user-agent"</span><span class="token punctuation">,</span> <span class="token string">"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.82"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="80"></td><td><pre>	req<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"x-authorization"</span><span class="token punctuation">,</span> <span class="token string">"token:xxxx"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="81"></td><td><pre>	resp<span class="token punctuation">,</span> err <span class="token operator">:=</span> client<span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span>req<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="82"></td><td><pre>	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="83"></td><td><pre>		log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="84"></td><td><pre>	<span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="85"></td><td><pre>	<span class="token keyword">defer</span> resp<span class="token punctuation">.</span>Body<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="86"></td><td><pre>	bodyText<span class="token punctuation">,</span> err <span class="token operator">:=</span> io<span class="token punctuation">.</span><span class="token function">ReadAll</span><span class="token punctuation">(</span>resp<span class="token punctuation">.</span>Body<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="87"></td><td><pre>	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="88"></td><td><pre>		log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="89"></td><td><pre>	<span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="90"></td><td><pre>	<span class="token keyword">if</span> resp<span class="token punctuation">.</span>StatusCode <span class="token operator">!=</span> <span class="token number">200</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="91"></td><td><pre>		log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span><span class="token string">"bad StatusCode"</span><span class="token punctuation">,</span> resp<span class="token punctuation">.</span>StatusCode<span class="token punctuation">,</span> <span class="token string">"body"</span><span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>bodyText<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="92"></td><td><pre>	<span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="93"></td><td><pre>	<span class="token keyword">var</span> dictResponse DictResponse</pre></td></tr><tr><td data-num="94"></td><td><pre>	err <span class="token operator">=</span> json<span class="token punctuation">.</span><span class="token function">Unmarshal</span><span class="token punctuation">(</span>bodyText<span class="token punctuation">,</span> <span class="token operator">&amp;</span>dictResponse<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="95"></td><td><pre>	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="96"></td><td><pre>		log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="97"></td><td><pre>	<span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="98"></td><td><pre>	<span class="token comment">//fmt.Printf("%+v\n", dictResponse)</span></pre></td></tr><tr><td data-num="99"></td><td><pre>	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>word<span class="token punctuation">,</span> <span class="token string">"UK:"</span><span class="token punctuation">,</span> dictResponse<span class="token punctuation">.</span>Dictionary<span class="token punctuation">.</span>Prons<span class="token punctuation">.</span>En<span class="token punctuation">,</span> <span class="token string">"US:"</span><span class="token punctuation">,</span> dictResponse<span class="token punctuation">.</span>Dictionary<span class="token punctuation">.</span>Prons<span class="token punctuation">.</span>EnUs<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="100"></td><td><pre>	<span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> item <span class="token operator">:=</span> <span class="token keyword">range</span> dictResponse<span class="token punctuation">.</span>Dictionary<span class="token punctuation">.</span>Explanations <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="101"></td><td><pre>		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>item<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="102"></td><td><pre>	<span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="103"></td><td><pre>	<span class="token comment">//fmt.Printf("%s\n", bodyText)</span></pre></td></tr><tr><td data-num="104"></td><td><pre><span class="token punctuation">&#125;</span></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>go</category>
+      </categories>
+      <tags>
+        <tag>go语言</tag>
       </tags>
   </entry>
   <entry>
@@ -664,6 +692,175 @@ soup = BeautifulSoup(page_text,'lxml')
       <tags>
         <tag>python</tag>
         <tag>爬虫</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>云原生-docker入门</title>
+    <url>/2023/06/27/%E4%BA%91%E5%8E%9F%E7%94%9F-docker%E5%85%A5%E9%97%A8/</url>
+    <content><![CDATA[<h1 id="云原生-docker-k8s-springboot"><a class="anchor" href="#云原生-docker-k8s-springboot">#</a> 云原生 docker + k8s + springboot</h1>
+<h2 id="云原生的本质"><a class="anchor" href="#云原生的本质">#</a> 云原生的本质</h2>
+<p>根据微服务将应用进行细分，将每一部分打包放入对应的容器，动态统筹管理容器，实现资源利用最大化。</p>
+<h2 id="什么是docker"><a class="anchor" href="#什么是docker">#</a> 什么是 Docker</h2>
+<p>Docker 是 Docker 公司开源的一种最流行的容器实现方案，极大方便了应用服务部署。</p>
+<p>Docker 可以将应用、配置、和环境打包，形成了一个独立的类似于 iOS APP 形式的 <strong>应用</strong>，此应用可以直接分发到任意一个支持 Docker 的环境中，通过简单的命令即可运行。</p>
+<p>Docker 使得容器化技术使用非常方便，极大地推进了容器行业的发展与容器技术标准化。</p>
+<blockquote>
+<p>docker 口号： build once, run anywhere</p>
+</blockquote>
+<h2 id="docker的优势"><a class="anchor" href="#docker的优势">#</a> Docker 的优势</h2>
+<ul>
+<li>环境一致性</li>
+<li>资源独立与隔离</li>
+<li>轻量化</li>
+</ul>
+<h2 id="通过docker容器配置nginx静态网页"><a class="anchor" href="#通过docker容器配置nginx静态网页">#</a> 通过 docker 容器配置 Nginx 静态网页</h2>
+<p>从 docker 仓库下载具有默认 Nginx 配置的容器：</p>
+<figure class="highlight bash"><figcaption data-lang="bash"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token function">docker</span> pull nginx</pre></td></tr></table></figure><p>现在有了镜像，但是镜像和容器的关系就像类和实例，要真正运行还要创建一个容器：</p>
+<figure class="highlight bash"><figcaption data-lang="bash"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token function">docker</span> run <span class="token parameter variable">--name</span> docker-nginx <span class="token parameter variable">-p</span> <span class="token number">80</span>:80 nginx</pre></td></tr></table></figure><p>参数说明：</p>
+<ul>
+<li>run 是创建新容器的命令</li>
+<li>--name 标志是指定容器名称的方式。如果为空，将分配一个生成的名称。</li>
+<li>-p 以 - p local-machine-port:internal-container-port 的格式指定公开的端口，比如这里将容器中的端口：80 映射到宿主机的端口：80</li>
+<li>nginx 是镜像名称，也就是刚刚 pull 下来的镜像，没有 tag 表示用最新 (latest)</li>
+</ul>
+<p>此时在浏览器输入本地 ip 可看到 nginx 默认登录界面：</p>
+<p><img data-src="image-20230627181050252.png" alt="image-20230627181050252"></p>
+<p>此时必须用 CTRL+c 在命令行中停止容器运行。可以使用 docker ps -a 查看此时的容器状态。</p>
+<p><img data-src="image-20230627181625674.png" alt="image-20230627181625674"></p>
+<p>可以使用</p>
+<figure class="highlight bash"><figcaption data-lang="bash"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token function">docker</span> <span class="token function">rm</span> <span class="token parameter variable">-vf</span> docker-nginx</pre></td></tr></table></figure><p>删除现有的 dorker-nginx 容器。</p>
+<h2 id="daemon模式下运行"><a class="anchor" href="#daemon模式下运行">#</a> Daemon 模式下运行</h2>
+<p>上面启动的容器还未与 terminal 分离，必须手动 CTRL+c 停止运行 才能输入后续指令，而在 daemon 模式下我们可以将容器交给 Daemon 进程，即一个守护进程托管，让其在后台运行。</p>
+<p>创建一个保存网页内容的文件夹：</p>
+<figure class="highlight bash"><figcaption data-lang="bash"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token function">mkdir</span> <span class="token parameter variable">-p</span> ~/docker-nginx/html</pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token builtin class-name">cd</span> ~/docker-nginx/html</pre></td></tr><tr><td data-num="3"></td><td><pre><span class="token function">vim</span> index.html</pre></td></tr></table></figure><p>编写网页内容：</p>
+<figure class="highlight html"><figcaption data-lang="HTML"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="2"></td><td><pre>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="3"></td><td><pre>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">></span></span>Docker nginx Tutorial<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="4"></td><td><pre>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="5"></td><td><pre></pre></td></tr><tr><td data-num="6"></td><td><pre>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="7"></td><td><pre>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>container<span class="token punctuation">"</span></span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="8"></td><td><pre>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h1</span><span class="token punctuation">></span></span>Hello World<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h1</span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="9"></td><td><pre><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span>this page is provided by nginx<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="10"></td><td><pre>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="11"></td><td><pre>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="12"></td><td><pre><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span></pre></td></tr></table></figure><p>然后使用命令：</p>
+<figure class="highlight bash"><figcaption data-lang="bash"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token function">docker</span> run <span class="token parameter variable">--name</span> docker-nginx <span class="token parameter variable">-p</span> <span class="token number">80</span>:80 <span class="token parameter variable">-d</span> <span class="token parameter variable">-v</span> ~/docker-nginx/html:/usr/share/nginx/html nginx</pre></td></tr></table></figure><p>参数说明：</p>
+<ul>
+<li>-v 标志开启挂载功能，: 的左侧是服务器（宿主机）上的位置：右侧是链接到的容器内的位置</li>
+<li>-d 采用 daemon 模式</li>
+<li><code>/usr/share/nginx/html</code>  是 nginx 服务器默认用于存储静态 HTML 网页和其他资源的位置，通常情况下会在这个目录中存放可由 Web 浏览器访问的 HTML 文件、CSS 文件、JavaScript 文件和图像文件等。</li>
+</ul>
+<p>结果：</p>
+<p><img data-src="image-20230627183153353.png" alt="image-20230627183153353"></p>
+<h2 id="使用dockerfile创建本地镜像"><a class="anchor" href="#使用dockerfile创建本地镜像">#</a> 使用 Dockerfile 创建本地镜像</h2>
+<h3 id="什么是dockerfile"><a class="anchor" href="#什么是dockerfile">#</a> 什么是 Dockerfile</h3>
+<p><img data-src="image-20230627190343246.png" alt="image-20230627190343246"></p>
+<h3 id="使用dockerfile创建2048镜像并运行"><a class="anchor" href="#使用dockerfile创建2048镜像并运行">#</a> 使用 Dockerfile 创建 2048 镜像并运行</h3>
+<p>Dockerfile 的内容如下：</p>
+<figure class="highlight dockerfile"><figcaption data-lang="Docker"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token comment"># Pull base image.</span></pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token instruction"><span class="token keyword">FROM</span> nginx:latest</span></pre></td></tr><tr><td data-num="3"></td><td><pre></pre></td></tr><tr><td data-num="4"></td><td><pre><span class="token instruction"><span class="token keyword">COPY</span> 2048-master /usr/share/nginx/html</span></pre></td></tr></table></figure><p>在 Dockerfile 的同级目录下存放了 2048-master 文件夹，其中包含了 2048 网页版的资源</p>
+<p>使用命令</p>
+<figure class="highlight bash"><figcaption data-lang="bash"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token function">docker</span> build <span class="token parameter variable">-t</span> my-2048 <span class="token builtin class-name">.</span></pre></td></tr></table></figure><p>创建一个名为 my-2048 的镜像 最后的。表示 Dockerfile 在当前目录下。</p>
+<p>-t 指定镜像的名字</p>
+<p>然后使用</p>
+<figure class="highlight bash"><figcaption data-lang="bash"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token function">docker</span> run <span class="token parameter variable">--name</span> <span class="token number">2048</span> <span class="token parameter variable">-d</span> <span class="token parameter variable">-p</span> <span class="token number">80</span>:80 my-2048</pre></td></tr></table></figure><p>创建并启动一个容器</p>
+<p>此时打开 localhost：</p>
+<p><img data-src="image-20230627191156151.png" alt="image-20230627191156151"></p>
+<h2 id="docker镜像管理"><a class="anchor" href="#docker镜像管理">#</a> Docker 镜像管理</h2>
+<p><img data-src="image-20230627192134665.png" alt="image-20230627192134665"></p>
+<h2 id="docker容器管理"><a class="anchor" href="#docker容器管理">#</a> Docker 容器管理</h2>
+<p><img data-src="image-20230627192437509.png" alt="image-20230627192437509"></p>
+<h2 id="docker原理"><a class="anchor" href="#docker原理">#</a> Docker 原理</h2>
+<h3 id="docker组成架构"><a class="anchor" href="#docker组成架构">#</a> Docker 组成架构</h3>
+<p>Docker 采用 C/S 架构，client 通过接口与 Server 进程通信实现容器的构建，运行和发布。</p>
+<p>Docker 由五个部分组成</p>
+<p>－<strong>Docker Client</strong> <strong>客户端</strong>，负责向服务端（Docker Daemon 守护进程）发起请求</p>
+<p>－<strong>Docker Daemon</strong> <strong>守护进程</strong>，负责 从 Docker Registry 下载 Docker 镜像和通过 Docker 镜像 启动 Docker 容器</p>
+<p>－<strong>Docker Registry</strong> <strong>仓库</strong>，负责存储 Docker 镜像</p>
+<p>－<strong>Docker Container</strong> <strong>容器</strong></p>
+<p>－<strong>Docker Image</strong> <strong>镜像</strong></p>
+<p><img data-src="image-20230628141358473.png" alt="image-20230628141358473"></p>
+<h2 id="docker运行容器流程"><a class="anchor" href="#docker运行容器流程">#</a> Docker 运行容器流程</h2>
+<ol>
+<li>
+<p>Docker Client 执行 docker run，Docker Daemon 收到来自 client 的请求；</p>
+</li>
+<li>
+<p>Docker Daemon 优先查找本地镜像，如果本地没有，Docker daemon 会从远端镜像仓库拉取所需镜像；</p>
+</li>
+<li>
+<p>启动 Linux Namespace 配置，设置指定的 Cgroups 参数，挂载 rootfs（容器镜像），切换进程的根目录；</p>
+</li>
+<li>
+<p>容器运行。</p>
+</li>
+</ol>
+<p><img data-src="image-20230628141534884.png" alt="image-20230628141534884"></p>
+<h2 id="docker容器文件系统"><a class="anchor" href="#docker容器文件系统">#</a> Docker 容器文件系统</h2>
+<p>Docker 容器的 rootfs 使用的是 UnionFS（联合文件系统）。</p>
+<p>UnionFS 是通过联合挂载多个文件目录得到的一个完整的文件系统。容器 rootfs 看起来是一个可读、可写的具备完整功能的独立文件系统，但实际上由多层只读层和一个专属于该容器的读写层联合挂载而成。</p>
+<p>Linux 中支持的 UnionFS 实现有 overlay2、aufs、btrfs，其中最常用的就是 overlay2。</p>
+<p><img data-src="image-20230628145756899.png" alt="image-20230628145756899"></p>
+<p>在准备容器 rootfs 时联合挂载用到的多层目录是哪来的呢？</p>
+<p>－<strong>读写层</strong>，每个容器都有自己专属的读写层，该层由 docker 在创建此容器时创建的。</p>
+<p>－<strong>只读层</strong>，每个容器的 rootfs 都会包含好几层只读层，该层由 docker 在拉取镜像时将镜像中的各层解压到 docker 的数据目录得到的。</p>
+<p>总结</p>
+<p>－容器镜像与容器 rootfs 的关联</p>
+<p>Docker 拉取镜像解压到 docker 数据目录后得到只读层；</p>
+<p>Docker 创建容器时使用数据目录中的读写层联合挂载得到容器 rootfs</p>
+<p><img data-src="image-20230628145830246.png" alt="image-20230628145830246"></p>
+<h1 id="kubernetes"><a class="anchor" href="#kubernetes">#</a> kubernetes</h1>
+<h2 id="什么是kubernetes"><a class="anchor" href="#什么是kubernetes">#</a> 什么是 kubernetes</h2>
+<p>kubernetes 是开源的容器集群管理项目，诞生于 2014 年，有 Google 公司发起，试图为基于容器的应用部署和管理打造一个强大引擎。使用 go 语言构造。</p>
+<ul>
+<li>一个基于容器技术的分布式架构领先方案</li>
+<li>一个生产级容器编排工具</li>
+<li>一个完备的分布式学习通支撑平台</li>
+</ul>
+<p>竞品： Mesos， Docker Swarm</p>
+<p>我们在应用容器化的过程中会涉及到封装、调度单容器，也会涉及到解决各个容器间的类型关系，比如 web 容器会涉及到与 DB 容器的交互，可以通过建立 “link” 来将 DB 容器中的信息注入到 web 容器中。但这样做的缺陷在于缺少普适性，随着系统的扩大，容器间的 “link” 会越来越复杂。</p>
+<p>Kubernetes 的优势就在于：从设计之初就<strong>以统一的方式定义任务之间的各种关系</strong>， 并且为将来支持更多种类的关系留有余地，能够按照用户的意愿和整个系统的规则，完全自动化地处理好容器之间的各种关系，这个过程也就是<strong>编排</strong>。而其他很多集群管理项目（比如 Yarn、Mesos，以及 Swarm）擅长的，把一个容器按规则，放置在某个最佳节点上运行的功能则称为<strong>调度</strong>。</p>
+<p>容器本质是进程，那 Kubernetes 作为具有普遍意义的容器编排工具，就是云操作系统。</p>
+<p>理解 Kubernetes 设计理念是学习 Kubernetes 的前提。我们需要聚焦在两个问题：</p>
+<p>l <strong>如何处理应用与应用之间的关系？</strong></p>
+<p>l <strong>如何恰当的容器化一个应用？</strong></p>
+<p>第一个问题，应用与应用之间的关系可以细化为容器间的关系，具体来说是两类：一类关系是 “紧密交互” 的，即：这些应用之间需要频繁交互、访问，或者会直接通过本地文件进行信息交换。Kubernetes 把这类关系涉及到的一组容器划分为一个 <strong>“ Pod ”</strong>（ Kuberntes 最小调度单位），在这里面可以进行高效信息交换。</p>
+<p>另一类关系则是常见的应用间的普通访问，Kuberntes 通过定义 “<strong>服务对象</strong>” 来描述。比如 web 应用和数据库应用的交互，涉及到固定 IP 地址和端口以负载均衡的方式访问，就产生了 Service 对象来处理；加密授权的关系需求，则可由 Secret 对象解决等等。</p>
+<p>第二个问题，以 Pod 为基础为解决不同的场景需求衍生出了不同的解决方案，也就是<strong>基于 Pod 改进后的对象资源，称为 “编排对象”</strong>。比如被称为 DaemonSet 的对象资源，它可以像守护进程一样在每个宿主机上有且只能有一个 pod 副本；再比如 CronJob ，它专门用来描述定时任务等等。</p>
+<p>如下图所示，由 “Pod” 产生各类 “<strong>编排对象</strong>”，再为解决各种关系问题产生了类似 Service、Ingress 等 “<strong>服务对象</strong> ”。</p>
+<p><img data-src="/image-20230629231456801.png" alt="image-20230629231456801"></p>
+<h2 id="k8s优势"><a class="anchor" href="#k8s优势">#</a> k8s 优势</h2>
+<ul>
+<li>强大的容器编排能力</li>
+<li>轻量级</li>
+<li>开放开源</li>
+<li>优秀的 API 设计</li>
+<li>基于微服务模式的多层资源抽象模型</li>
+<li>可扩展性好</li>
+<li>自动化程度高</li>
+<li>部署支持多种环境</li>
+</ul>
+<h2 id="k8s常用命令"><a class="anchor" href="#k8s常用命令">#</a> k8s 常用命令</h2>
+<h3 id="createapply"><a class="anchor" href="#createapply">#</a> create/apply</h3>
+<p><code>kubectl apply/create -f [FILE NAME]</code></p>
+<p>kubectl create 属于</p>
+<h3 id="get"><a class="anchor" href="#get">#</a> get</h3>
+<p><code>kubectl get pods|replicationcontrollers|services|namespaces|nodes|...|events [options]</code></p>
+<h3 id="describe"><a class="anchor" href="#describe">#</a> describe</h3>
+<p>查看资源详细信息</p>
+<h3 id="logs"><a class="anchor" href="#logs">#</a> logs</h3>
+<p>查看 pod 内容器日志</p>
+<h3 id="exec"><a class="anchor" href="#exec">#</a> exec</h3>
+<p>在 pod 容器中执行命令</p>
+<h3 id="edit"><a class="anchor" href="#edit">#</a> edit</h3>
+<p>编辑资源</p>
+<h3 id="delete"><a class="anchor" href="#delete">#</a> delete</h3>
+<p>删除资源</p>
+<h1 id="springboot-入门"><a class="anchor" href="#springboot-入门">#</a> Springboot 入门</h1>
+<h2 id="特点"><a class="anchor" href="#特点">#</a> 特点</h2>
+<ul>
+<li>独立运行的 spring 项目     spring boot 可以以 jar 包的形式独立运行</li>
+<li>内嵌 servlet 容器，应用无需打成 WAR 包。</li>
+<li>提供 starter 简化 Maven 配置</li>
+<li>提供了大量的自动配置</li>
+<li>自带应用监控</li>
+<li>无代码生成和 XML 配置</li>
+</ul>
+]]></content>
+      <categories>
+        <category>docker</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
       </tags>
   </entry>
   <entry>
@@ -1433,43 +1630,6 @@ public class SimpleExprTest &#123;
       </tags>
   </entry>
   <entry>
-    <title>编译原理05-目标代码生成</title>
-    <url>/2023/06/02/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8605-%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/</url>
-    <content><![CDATA[<h1 id="编译原理05-目标代码生成"><a class="anchor" href="#编译原理05-目标代码生成">#</a> 编译原理 05 - 目标代码生成</h1>
-<h2 id="risc-v指令集"><a class="anchor" href="#risc-v指令集">#</a> RISC-V 指令集</h2>
-<p><img data-src="image-20230602144012905.png" alt="image-20230602144012905"></p>
-<p>精简指令集，精简的含义就是一条指令要么做运算，要么存，取内存。</p>
-<h3 id="寄存器"><a class="anchor" href="#寄存器">#</a> 寄存器</h3>
-<p>RISC-V 有 32 个寄存器，名称分别为 X0,X1...X31</p>
-<p>但实际上不会按这些名称来使用，而是按照约定来使用，一些寄存器有专门的用途</p>
-<p><img data-src="image-20230602150421869.png" alt="image-20230602150421869"></p>
-<p>X0： zero 寄存器，专门存放数字 0</p>
-<p>ra： 存放 return address</p>
-<p>pc(X31): program counter</p>
-<h3 id="指令"><a class="anchor" href="#指令">#</a> 指令</h3>
-<p>li ： 加载立即数	li t0,0</p>
-<p>add: 加法，有三个操作数： add t5,t3,t4 , t5 = t3+t4</p>
-<p>addi： 加法，但有一个操作数是立即数</p>
-<p>risc-v 里没有 mov 指令，或者说 mov 指令是一个伪指令，实际上是用 add， target, source, zero 来实现的</p>
-<p>在.data 段声明全局变量：</p>
-<p>.data:</p>
-<p>g:  .word 0	想.word 这样的是给汇编器看的，表示占用 4B</p>
-<p>数组：</p>
-<p>g: .word 0,1,2</p>
-<p>字符串：</p>
-<p>msg: .string &quot;The result is :&quot; #后面会自动加上 '\0' 不想加就用.ascii</p>
-<p>使用全局变量：</p>
-<p>la t0, g  	#la; load address</p>
-<p>lw t0, 0 (t0)	#lw: load word 这里 0 表示偏移量 并且以字节为单位</p>
-]]></content>
-      <categories>
-        <category>编译原理</category>
-      </categories>
-      <tags>
-        <tag>编译原理</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>编译原理04-中间代码生成</title>
     <url>/2023/05/05/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8604-%E4%B8%AD%E9%97%B4%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/</url>
     <content><![CDATA[<h1 id="编译原理04-中间代码生成"><a class="anchor" href="#编译原理04-中间代码生成">#</a> 编译原理 04 - 中间代码生成</h1>
@@ -1610,74 +1770,40 @@ public class SimpleExprTest &#123;
       </tags>
   </entry>
   <entry>
-    <title>云原生-docker入门</title>
-    <url>/2023/06/27/%E4%BA%91%E5%8E%9F%E7%94%9F-docker%E5%85%A5%E9%97%A8/</url>
-    <content><![CDATA[<h1 id="云原生-docker-入门"><a class="anchor" href="#云原生-docker-入门">#</a> 云原生 docker 入门</h1>
-<h2 id="什么是docker"><a class="anchor" href="#什么是docker">#</a> 什么是 Docker</h2>
-<p>Docker 是 Docker 公司开源的一种最流行的容器实现方案，极大方便了应用服务部署。</p>
-<p>Docker 可以将应用、配置、和环境打包，形成了一个独立的类似于 iOS APP 形式的 <strong>应用</strong>，此应用可以直接分发到任意一个支持 Docker 的环境中，通过简单的命令即可运行。</p>
-<p>Docker 使得容器化技术使用非常方便，极大地推进了容器行业的发展与容器技术标准化。</p>
-<blockquote>
-<p>docker 口号： build once, run anywhere</p>
-</blockquote>
-<h2 id="docker的优势"><a class="anchor" href="#docker的优势">#</a> Docker 的优势</h2>
-<ul>
-<li>环境一致性</li>
-<li>资源独立与隔离</li>
-<li>轻量化</li>
-</ul>
-<h2 id="通过docker容器配置nginx静态网页"><a class="anchor" href="#通过docker容器配置nginx静态网页">#</a> 通过 docker 容器配置 Nginx 静态网页</h2>
-<p>从 docker 仓库下载具有默认 Nginx 配置的容器：</p>
-<figure class="highlight bash"><figcaption data-lang="bash"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token function">docker</span> pull nginx</pre></td></tr></table></figure><p>现在有了镜像，但是镜像和容器的关系就像类和实例，要真正运行还要创建一个容器：</p>
-<figure class="highlight bash"><figcaption data-lang="bash"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token function">docker</span> run <span class="token parameter variable">--name</span> docker-nginx <span class="token parameter variable">-p</span> <span class="token number">80</span>:80 nginx</pre></td></tr></table></figure><p>参数说明：</p>
-<ul>
-<li>run 是创建新容器的命令</li>
-<li>--name 标志是指定容器名称的方式。如果为空，将分配一个生成的名称。</li>
-<li>-p 以 - p local-machine-port:internal-container-port 的格式指定公开的端口，比如这里将容器中的端口：80 映射到宿主机的端口：80</li>
-<li>nginx 是镜像名称，也就是刚刚 pull 下来的镜像，没有 tag 表示用最新 (latest)</li>
-</ul>
-<p>此时在浏览器输入本地 ip 可看到 nginx 默认登录界面：</p>
-<p><img data-src="image-20230627181050252.png" alt="image-20230627181050252"></p>
-<p>此时必须用 CTRL+c 在命令行中停止容器运行。可以使用 docker ps -a 查看此时的容器状态。</p>
-<p><img data-src="image-20230627181625674.png" alt="image-20230627181625674"></p>
-<p>可以使用</p>
-<figure class="highlight bash"><figcaption data-lang="bash"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token function">docker</span> <span class="token function">rm</span> <span class="token parameter variable">-vf</span> docker-nginx</pre></td></tr></table></figure><p>删除现有的 dorker-nginx 容器。</p>
-<h2 id="daemon模式下运行"><a class="anchor" href="#daemon模式下运行">#</a> Daemon 模式下运行</h2>
-<p>上面启动的容器还未与 terminal 分离，必须手动 CTRL+c 停止运行 才能输入后续指令，而在 daemon 模式下我们可以将容器交给 Daemon 进程，即一个守护进程托管，让其在后台运行。</p>
-<p>创建一个保存网页内容的文件夹：</p>
-<figure class="highlight bash"><figcaption data-lang="bash"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token function">mkdir</span> <span class="token parameter variable">-p</span> ~/docker-nginx/html</pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token builtin class-name">cd</span> ~/docker-nginx/html</pre></td></tr><tr><td data-num="3"></td><td><pre><span class="token function">vim</span> index.html</pre></td></tr></table></figure><p>编写网页内容：</p>
-<figure class="highlight html"><figcaption data-lang="HTML"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="2"></td><td><pre>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="3"></td><td><pre>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">></span></span>Docker nginx Tutorial<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="4"></td><td><pre>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="5"></td><td><pre></pre></td></tr><tr><td data-num="6"></td><td><pre>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="7"></td><td><pre>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>container<span class="token punctuation">"</span></span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="8"></td><td><pre>      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h1</span><span class="token punctuation">></span></span>Hello World<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h1</span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="9"></td><td><pre><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span>this page is provided by nginx<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="10"></td><td><pre>    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="11"></td><td><pre>  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="12"></td><td><pre><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span></pre></td></tr></table></figure><p>然后使用命令：</p>
-<figure class="highlight bash"><figcaption data-lang="bash"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token function">docker</span> run <span class="token parameter variable">--name</span> docker-nginx <span class="token parameter variable">-p</span> <span class="token number">80</span>:80 <span class="token parameter variable">-d</span> <span class="token parameter variable">-v</span> ~/docker-nginx/html:/usr/share/nginx/html nginx</pre></td></tr></table></figure><p>参数说明：</p>
-<ul>
-<li>-v 标志开启挂载功能，: 的左侧是服务器（宿主机）上的位置：右侧是链接到的容器内的位置</li>
-<li>-d 采用 daemon 模式</li>
-<li><code>/usr/share/nginx/html</code>  是 nginx 服务器默认用于存储静态 HTML 网页和其他资源的位置，通常情况下会在这个目录中存放可由 Web 浏览器访问的 HTML 文件、CSS 文件、JavaScript 文件和图像文件等。</li>
-</ul>
-<p>结果：</p>
-<p><img data-src="image-20230627183153353.png" alt="image-20230627183153353"></p>
-<h2 id="使用dockerfile创建本地镜像"><a class="anchor" href="#使用dockerfile创建本地镜像">#</a> 使用 Dockerfile 创建本地镜像</h2>
-<h3 id="什么是dockerfile"><a class="anchor" href="#什么是dockerfile">#</a> 什么是 Dockerfile</h3>
-<p><img data-src="image-20230627190343246.png" alt="image-20230627190343246"></p>
-<h3 id="使用dockerfile创建2048镜像并运行"><a class="anchor" href="#使用dockerfile创建2048镜像并运行">#</a> 使用 Dockerfile 创建 2048 镜像并运行</h3>
-<p>Dockerfile 的内容如下：</p>
-<figure class="highlight dockerfile"><figcaption data-lang="Docker"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token comment"># Pull base image.</span></pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token instruction"><span class="token keyword">FROM</span> nginx:latest</span></pre></td></tr><tr><td data-num="3"></td><td><pre></pre></td></tr><tr><td data-num="4"></td><td><pre><span class="token instruction"><span class="token keyword">COPY</span> 2048-master /usr/share/nginx/html</span></pre></td></tr></table></figure><p>在 Dockerfile 的同级目录下存放了 2048-master 文件夹，其中包含了 2048 网页版的资源</p>
-<p>使用命令</p>
-<figure class="highlight bash"><figcaption data-lang="bash"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token function">docker</span> build <span class="token parameter variable">-t</span> my-2048 <span class="token builtin class-name">.</span></pre></td></tr></table></figure><p>创建一个名为 my-2048 的镜像 最后的。表示 Dockerfile 在当前目录下。</p>
-<p>-t 指定镜像的名字</p>
-<p>然后使用</p>
-<figure class="highlight bash"><figcaption data-lang="bash"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token function">docker</span> run <span class="token parameter variable">--name</span> <span class="token number">2048</span> <span class="token parameter variable">-d</span> <span class="token parameter variable">-p</span> <span class="token number">80</span>:80 my-2048</pre></td></tr></table></figure><p>创建并启动一个容器</p>
-<p>此时打开 localhost：</p>
-<p><img data-src="image-20230627191156151.png" alt="image-20230627191156151"></p>
-<h2 id="docker镜像管理"><a class="anchor" href="#docker镜像管理">#</a> Docker 镜像管理</h2>
-<p><img data-src="image-20230627192134665.png" alt="image-20230627192134665"></p>
-<h2 id="docker容器管理"><a class="anchor" href="#docker容器管理">#</a> Docker 容器管理</h2>
-<p><img data-src="image-20230627192437509.png" alt="image-20230627192437509"></p>
+    <title>编译原理05-目标代码生成</title>
+    <url>/2023/06/02/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8605-%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/</url>
+    <content><![CDATA[<h1 id="编译原理05-目标代码生成"><a class="anchor" href="#编译原理05-目标代码生成">#</a> 编译原理 05 - 目标代码生成</h1>
+<h2 id="risc-v指令集"><a class="anchor" href="#risc-v指令集">#</a> RISC-V 指令集</h2>
+<p><img data-src="image-20230602144012905.png" alt="image-20230602144012905"></p>
+<p>精简指令集，精简的含义就是一条指令要么做运算，要么存，取内存。</p>
+<h3 id="寄存器"><a class="anchor" href="#寄存器">#</a> 寄存器</h3>
+<p>RISC-V 有 32 个寄存器，名称分别为 X0,X1...X31</p>
+<p>但实际上不会按这些名称来使用，而是按照约定来使用，一些寄存器有专门的用途</p>
+<p><img data-src="image-20230602150421869.png" alt="image-20230602150421869"></p>
+<p>X0： zero 寄存器，专门存放数字 0</p>
+<p>ra： 存放 return address</p>
+<p>pc(X31): program counter</p>
+<h3 id="指令"><a class="anchor" href="#指令">#</a> 指令</h3>
+<p>li ： 加载立即数	li t0,0</p>
+<p>add: 加法，有三个操作数： add t5,t3,t4 , t5 = t3+t4</p>
+<p>addi： 加法，但有一个操作数是立即数</p>
+<p>risc-v 里没有 mov 指令，或者说 mov 指令是一个伪指令，实际上是用 add， target, source, zero 来实现的</p>
+<p>在.data 段声明全局变量：</p>
+<p>.data:</p>
+<p>g:  .word 0	想.word 这样的是给汇编器看的，表示占用 4B</p>
+<p>数组：</p>
+<p>g: .word 0,1,2</p>
+<p>字符串：</p>
+<p>msg: .string &quot;The result is :&quot; #后面会自动加上 '\0' 不想加就用.ascii</p>
+<p>使用全局变量：</p>
+<p>la t0, g  	#la; load address</p>
+<p>lw t0, 0 (t0)	#lw: load word 这里 0 表示偏移量 并且以字节为单位</p>
 ]]></content>
       <categories>
-        <category>docker</category>
+        <category>编译原理</category>
       </categories>
       <tags>
-        <tag>docker</tag>
+        <tag>编译原理</tag>
       </tags>
   </entry>
 </search>
