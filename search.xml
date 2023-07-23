@@ -818,6 +818,28 @@ soup = BeautifulSoup(page_text,'lxml')
 <p>第二个问题，以 Pod 为基础为解决不同的场景需求衍生出了不同的解决方案，也就是<strong>基于 Pod 改进后的对象资源，称为 “编排对象”</strong>。比如被称为 DaemonSet 的对象资源，它可以像守护进程一样在每个宿主机上有且只能有一个 pod 副本；再比如 CronJob ，它专门用来描述定时任务等等。</p>
 <p>如下图所示，由 “Pod” 产生各类 “<strong>编排对象</strong>”，再为解决各种关系问题产生了类似 Service、Ingress 等 “<strong>服务对象</strong> ”。</p>
 <p><img data-src="/image-20230629231456801.png" alt="image-20230629231456801"></p>
+<h2 id="架构"><a class="anchor" href="#架构">#</a> 架构</h2>
+<p><img data-src="image-20230723114238163.png" alt="image-20230723114238163"></p>
+<p>k8s 有一个 Master 节点负责与用户的通信和管理工作节点等工作，而每一个工作节点 (Node 节点) 对应一个真实的物理机或虚拟机，承担工作负载，Node 负责监控并汇报容器的状态，同时根据 Master 的要求管理容器生命周期。</p>
+<blockquote>
+<p>master 节点组件</p>
+<ul>
+<li><strong>API Server</strong>。<strong>K8S 的请求入口服务</strong>。API Server 负责接收 K8S 所有请求（来自 UI 界面或者 CLI 命令行工具），然后，API Server 根据用户的具体请求，去通知其他组件干活。</li>
+<li><strong>Scheduler</strong>。<strong>K8S 所有 Worker Node 的调度器</strong>。当用户要部署服务时，Scheduler 会选择最合适的 Worker Node（服务器）来部署。</li>
+<li><strong>Controller Manager</strong>。<strong>K8S 所有 Worker Node 的监控器</strong>。Controller Manager 有很多具体的 Controller，在文章 **<span class="exturl" data-url="aHR0cHM6Ly9saW5rLnpoaWh1LmNvbS8/dGFyZ2V0PWh0dHBzJTNBLy9tZWRpdW0uY29tLyU0MGt1bWFyZ2F1cmF2MTI0Ny9jb21wb25lbnRzLW9mLWt1YmVybmV0ZXMtYXJjaGl0ZWN0dXJlLTZmZWVhNGQ1YzcxMg==">Components of Kubernetes Architecture</span>** 中提到的有 Node Controller、Service Controller、Volume Controller 等。Controller 负责监控和调整在 Worker Node 上部署的服务的状态，比如用户要求 A 服务部署 2 个副本，那么当其中一个服务挂了的时候，Controller 会马上调整，让 Scheduler 再选择一个 Worker Node 重新部署服务。</li>
+<li><strong>etcd</strong>。<strong>K8S 的存储服务</strong>。etcd 存储了 K8S 的关键配置和用户配置，K8S 中仅 API Server 才具备读写权限，其他组件必须通过 API Server 的接口才能读写数据（见 **<span class="exturl" data-url="aHR0cHM6Ly9saW5rLnpoaWh1LmNvbS8/dGFyZ2V0PWh0dHBzJTNBLy90aGVuZXdzdGFjay5pby9ob3ctZG9lcy1rdWJlcm5ldGVzLXdvcmsv">Kubernetes Works Like an Operating System</span>**）。				--zhihu</li>
+</ul>
+</blockquote>
+<blockquote>
+<p>node 节点组件</p>
+<ul>
+<li><strong>Kubelet</strong>。<strong>Worker Node 的监视器，以及与 Master Node 的通讯器</strong>。Kubelet 是 Master Node 安插在 Worker Node 上的 “眼线”，它会定期向 Worker Node 汇报自己 Node 上运行的服务的状态，并接受来自 Master Node 的指示采取调整措施。</li>
+<li><strong>Kube-Proxy</strong>。<strong>K8S 的网络代理</strong>。私以为称呼为 Network-Proxy 可能更适合？Kube-Proxy 负责 Node 在 K8S 的网络通讯、以及对外部网络流量的负载均衡。</li>
+<li><strong>Container Runtime</strong>。<strong>Worker Node 的运行环境</strong>。即安装了容器化所需的软件环境确保容器化程序能够跑起来，比如 Docker Engine。大白话就是帮忙装好了 Docker 运行环境。</li>
+<li><strong>Logging Layer</strong>。<strong>K8S 的监控状态收集器</strong>。私以为称呼为 Monitor 可能更合适？Logging Layer 负责采集 Node 上所有服务的 CPU、内存、磁盘、网络等监控项信息。</li>
+<li><strong>Add-Ons</strong>。<strong>K8S 管理运维 Worker Node 的插件组件</strong>。有些文章认为 Worker Node 只有三大组件，不包含 Add-On，但笔者认为 K8S 系统提供了 Add-On 机制，让用户可以扩展更多定制化功能，是很不错的亮点。</li>
+</ul>
+</blockquote>
 <h2 id="k8s优势"><a class="anchor" href="#k8s优势">#</a> k8s 优势</h2>
 <ul>
 <li>强大的容器编排能力</li>
@@ -845,6 +867,9 @@ soup = BeautifulSoup(page_text,'lxml')
 <p>编辑资源</p>
 <h3 id="delete"><a class="anchor" href="#delete">#</a> delete</h3>
 <p>删除资源</p>
+<h3 id="故障检测"><a class="anchor" href="#故障检测">#</a> 故障检测</h3>
+<p>放张图备用</p>
+<p><img data-src="v2-9437b19801b2a08dea506005a4dd2eb2_1440w.webp" alt="img"></p>
 <h1 id="springboot-入门"><a class="anchor" href="#springboot-入门">#</a> Springboot 入门</h1>
 <h2 id="特点"><a class="anchor" href="#特点">#</a> 特点</h2>
 <ul>
