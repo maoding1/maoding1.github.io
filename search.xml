@@ -51,47 +51,6 @@ vector&lt;string&gt; vstr_copy2(allcaps(vstr)); //#2
       </tags>
   </entry>
   <entry>
-    <title>Git学习02-分支管理</title>
-    <url>/2022/10/02/Git%E5%AD%A6%E4%B9%A002-%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86/</url>
-    <content><![CDATA[<h1 id="git学习02-分支管理"><a class="anchor" href="#git学习02-分支管理">#</a> Git 学习 02 - 分支管理</h1>
-<p><span id="more"></span></p>
-<p><img data-src="%E8%BD%BB%E9%9F%B3%E5%B0%91%E5%A5%B3.jpg" alt="轻音少女"></p>
-<h2 id="创建与合并分支"><a class="anchor" href="#创建与合并分支">#</a> 创建与合并分支</h2>
-<p>查看分支 ：  <code>git branch</code></p>
-<p>创建分支：  <code>git branch &lt;name&gt;</code></p>
-<p>切换分支：  <code>git switch &lt;name&gt;</code></p>
-<p>创建 + 切换分支:  <code>git switch -c &lt;name&gt;</code></p>
-<p>合并某分支到当前分支 ：  <code>git merge &lt;name&gt;</code>  这里的 name 使某分支的 name</p>
-<p>删除分支：  <code>git branch -d &lt;name&gt;</code></p>
-<h2 id="解决冲突"><a class="anchor" href="#解决冲突">#</a> 解决冲突</h2>
-<p>eg：当你创建了一个 feature1 分支 其在 master 分支上添加了一些内容并进行提交，此时切换会 master 分支并使用  <code>git merge feature1</code>  合并分支是不会有问题的（Git 会在底层移动 master 的指针到 feature1 上）。但如果你在 feature1 上修改了某个文件并提交，在切换会 master 分支后修改了同一份文件并提交，那么此时 git merge 就会报错了。</p>
-<p>此时可以：</p>
-<ol>
-<li>使用 <code>git status</code>  查看冲突的文件（如果你改了很多，分不清哪里冲突了）</li>
-<li>手动解决冲突</li>
-<li>再提交</li>
-<li>最后删除分支（如删除 feature1)</li>
-</ol>
-<p>使用</p>
-<pre><code>$ git log --graph --pretty=oneline --abbrev-commit
-</code></pre>
-<p>可以形象地查看分支的合并情况（Git 会生成一副图）</p>
-<h2 id="分支管理策略"><a class="anchor" href="#分支管理策略">#</a> 分支管理策略</h2>
-<p><code>git merge --no-ff -m &quot;commit message&quot; &lt;branch name&gt;</code></p>
-<p>通常 ，合并分支时，Git 会用 Fast forward 模式（移动指针） ，这种模式下，删除分支后，会丢掉分支信息</p>
-<p>如果要强制禁用 Fast forward 模式， Git 就会再 merge 时生成一个新的 commit，这样，从分支历史上就可以看出分支信息。</p>
-<p>--no--ff 参数表示禁用 Fast forward</p>
-<h2 id="git的更多操作"><a class="anchor" href="#git的更多操作">#</a> git 的更多操作</h2>
-<p>Git 还有许多高级功能。如暂时储存当前工作、多人协作、标签管理等。考虑到目前还接触不到 ，上述功能等需要使用了再来学习更新吧。</p>
-]]></content>
-      <categories>
-        <category>git</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>git操作</title>
     <url>/2022/10/01/Git%E5%AD%A6%E4%B9%A001-%20%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/</url>
     <content><![CDATA[<h1 id="git学习01-基本操作"><a class="anchor" href="#git学习01-基本操作">#</a> Git 学习 01- 基本操作</h1>
@@ -177,6 +136,47 @@ $ git commit -m &quot;remove test.txt&quot;
 <p>tips：要删除远程库 可以用 <code>git remote rm &lt;name&gt;</code>  命令，但这只是解除了本地与远程的绑定关系，要真正删除远程库，需要登陆 github 手动删除。</p>
 <h2 id="克隆远程仓库"><a class="anchor" href="#克隆远程仓库">#</a> 克隆远程仓库</h2>
 <p>知道仓库的 SSH 后，通过 <code>git clone SSH</code>  命令克隆到本地</p>
+]]></content>
+      <categories>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Git学习02-分支管理</title>
+    <url>/2022/10/02/Git%E5%AD%A6%E4%B9%A002-%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86/</url>
+    <content><![CDATA[<h1 id="git学习02-分支管理"><a class="anchor" href="#git学习02-分支管理">#</a> Git 学习 02 - 分支管理</h1>
+<p><span id="more"></span></p>
+<p><img data-src="%E8%BD%BB%E9%9F%B3%E5%B0%91%E5%A5%B3.jpg" alt="轻音少女"></p>
+<h2 id="创建与合并分支"><a class="anchor" href="#创建与合并分支">#</a> 创建与合并分支</h2>
+<p>查看分支 ：  <code>git branch</code></p>
+<p>创建分支：  <code>git branch &lt;name&gt;</code></p>
+<p>切换分支：  <code>git switch &lt;name&gt;</code></p>
+<p>创建 + 切换分支:  <code>git switch -c &lt;name&gt;</code></p>
+<p>合并某分支到当前分支 ：  <code>git merge &lt;name&gt;</code>  这里的 name 使某分支的 name</p>
+<p>删除分支：  <code>git branch -d &lt;name&gt;</code></p>
+<h2 id="解决冲突"><a class="anchor" href="#解决冲突">#</a> 解决冲突</h2>
+<p>eg：当你创建了一个 feature1 分支 其在 master 分支上添加了一些内容并进行提交，此时切换会 master 分支并使用  <code>git merge feature1</code>  合并分支是不会有问题的（Git 会在底层移动 master 的指针到 feature1 上）。但如果你在 feature1 上修改了某个文件并提交，在切换会 master 分支后修改了同一份文件并提交，那么此时 git merge 就会报错了。</p>
+<p>此时可以：</p>
+<ol>
+<li>使用 <code>git status</code>  查看冲突的文件（如果你改了很多，分不清哪里冲突了）</li>
+<li>手动解决冲突</li>
+<li>再提交</li>
+<li>最后删除分支（如删除 feature1)</li>
+</ol>
+<p>使用</p>
+<pre><code>$ git log --graph --pretty=oneline --abbrev-commit
+</code></pre>
+<p>可以形象地查看分支的合并情况（Git 会生成一副图）</p>
+<h2 id="分支管理策略"><a class="anchor" href="#分支管理策略">#</a> 分支管理策略</h2>
+<p><code>git merge --no-ff -m &quot;commit message&quot; &lt;branch name&gt;</code></p>
+<p>通常 ，合并分支时，Git 会用 Fast forward 模式（移动指针） ，这种模式下，删除分支后，会丢掉分支信息</p>
+<p>如果要强制禁用 Fast forward 模式， Git 就会再 merge 时生成一个新的 commit，这样，从分支历史上就可以看出分支信息。</p>
+<p>--no--ff 参数表示禁用 Fast forward</p>
+<h2 id="git的更多操作"><a class="anchor" href="#git的更多操作">#</a> git 的更多操作</h2>
+<p>Git 还有许多高级功能。如暂时储存当前工作、多人协作、标签管理等。考虑到目前还接触不到 ，上述功能等需要使用了再来学习更新吧。</p>
 ]]></content>
       <categories>
         <category>git</category>
@@ -1574,87 +1574,6 @@ public class SimpleExprTest &#123;
       </tags>
   </entry>
   <entry>
-    <title>编译原理03-语义分析</title>
-    <url>/2023/04/12/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8603-%E8%AF%AD%E4%B9%89%E5%88%86%E6%9E%90/</url>
-    <content><![CDATA[<h1 id="语义分析"><a class="anchor" href="#语义分析">#</a> 语义分析</h1>
-<h2 id="符号表"><a class="anchor" href="#符号表">#</a> 符号表</h2>
-<p><img data-src="image-20230412154717575.png" alt="image-20230412154717575"></p>
-<p>用符号表保存我们已经定义了的变量或者函数以及其相关信息，在遍历语法分析树时，如果发现当前新出现的某些单元与符号表中的信息有冲突，我们就可以发现语义错误。</p>
-<h3 id="实现符号表"><a class="anchor" href="#实现符号表">#</a> 实现符号表</h3>
-<p>首先构建作用域树：</p>
-<p><img data-src="image-20230419140503102.png" alt="image-20230419140503102"></p>
-<p><strong>我们在这里犯了一个小错误</strong>，即把函数参数的作用域单独独立出来了，以便于我们编码，实际上函数参数作用域和函数作用域应该是要合并的。</p>
-<p>作用域的指针指向父作用域，在查找某个变量是在哪个作用域时要循环从当前作用域到父作用域遍历。</p>
-<p>之后可以通过递归遍历等方式进行语义相关的检查。</p>
-<p>某个利用 antlr4 实现符号表的类图：</p>
-<p>scope 是作用域（持有一个 Map (name, symbol) 的符号表数据类型），symbol 是符号 (持有 name 和 type，是符号表的基本单元)，type 是符号所持有的类型（比如基本类型，array), 通过遍历时</p>
-<p><img data-src="image-20230419141503552.png" alt="image-20230419141503552"></p>
-<p>浅绿框起来的是接口。</p>
-<h2 id="属性文法"><a class="anchor" href="#属性文法">#</a> 属性文法</h2>
-<h3 id="为什么要引入属性文法"><a class="anchor" href="#为什么要引入属性文法">#</a> 为什么要引入属性文法</h3>
-<p>之前引入上下文无关文法的时候，是因为正则表达式无法表达 a<sup>nb</sup>n 这样的表达式，但是上下文无关文法也有局限，<strong>无法帮助我们进行语义相关的检查</strong>。于是引入 Knuth 发明的属性文法。</p>
-<p><img data-src="image-20230421140916771.png" alt="image-20230421140916771"></p>
-<p>接下来以实现一个<strong>交互式</strong>的简易计算器为例</p>
-<p>前几节课写的简易计算器采用的是 offline 的方法：<br>
-<img data-src="image-20230421141650214.png" alt="image-20230421141650214"></p>
-<p>本次将采用 online 的方式实现，即在构建语法分析树的过程中加入我们想实现的 action。</p>
-<p><img data-src="image-20230421142018201.png" alt="image-20230421142018201"></p>
-<p>之前实现计算器的时候遇到了一个问题，listener 模式下，访问某个节点的 enterXXX 与 exitXXX 方法没有返回值，而当前节点的 value 依赖于子节点 value 的值，当时采用了标注语法树的方法。</p>
-<p>antlr4 的另一个解决方案：</p>
-<p><img data-src="image-20230421143635663.png" alt="image-20230421143635663"></p>
-<p>在.g4 文件的 expr 定义后 加上 returns [int val] 后，在 antlr4 生成的 expr 对应的节点类中会附带一个 val 属性。</p>
-<p>每一行后大括号裹起来的黑体字是会在语法分析时我们加入的 java 代码，具体可在生成的 parser 类中查看。之后在 @package 中加入需要的头文件并在 @members 中加入 eval，memory 等的 java 实现。(实际上可在 @parser::members 中加入，这样在 lexer 中就不会生成这些无用的代码)</p>
-<p>像 expr 这种从子节点的 expr 值计算得到的属性，叫做综合属性。</p>
-<p>至于 “交互式” 的实现，主要是 main 函数的实现方式，参照代码仓库。</p>
-<p>第二个例子：类型声明文法：</p>
-<p><img data-src="image-20230421145230801.png" alt="image-20230421145230801"></p>
-<p>第一条语义规则的问题：将 L 的类型赋值为 T 的类型，可是在递归调用的时候，L 并不知道 T 返回了一个类型是 float 还是 int。</p>
-<p>解决方法，给 L 一个 inh (inherit) 属性值，这种从左兄弟或者父节点继承来的值，叫做继承属性。</p>
-<p><img data-src="image-20230421151150679.png" alt="image-20230421151150679"></p>
-<p>antlr4 实现的语法：<br>
-<img data-src="image-20230421151912395.png" alt="image-20230421151912395"></p>
-<p>vars [String typeStr] 代表 vars 节点将携带一个属性 TypeStr。</p>
-<h3 id="语法制导定义"><a class="anchor" href="#语法制导定义">#</a> 语法制导定义</h3>
-<p><img data-src="image-20230421152800113.png" alt="image-20230421152800113"></p>
-<p>像上面的 g4 语法定义都属于 SDD，每个节点可以有多个属性</p>
-<p><img data-src="image-20230421153313913.png" alt="image-20230421153313913"></p>
-<p><img data-src="image-20230421153702902.png" alt="image-20230421153702902"></p>
-<p>继承属性用于在表达式中从左向右传递中间计算结果</p>
-<p>比如：累乘的右递归文法</p>
-<p><img data-src="image-20230421154158430.png" alt="image-20230421154158430"></p>
-<p><img data-src="image-20230421154959302.png" alt="image-20230421154959302"></p>
-<p>信息流向：先从左到右利用继承属性传递信息，再利用综合属性从下到上传递信息。</p>
-<p>属性文法的本质：信息的有序流动</p>
-<h3 id="l属性定义"><a class="anchor" href="#l属性定义">#</a> L 属性定义</h3>
-<p><img data-src="image-20230426140830620.png" alt="image-20230426140830620"></p>
-<p>例子 1：</p>
-<p>用属性文法实现得到表达式的后缀表示形式</p>
-<p><img data-src="image-20230426141239902.png" alt="image-20230426141239902"></p>
-<p><img data-src="image-20230426141906728.png" alt="image-20230426141906728"></p>
-<p>例子 2：得到数组的类型表达式</p>
-<p><strong>比如 int [2] [3] -&gt; (2,(3,int))</strong></p>
-<p><img data-src="image-20230504101715454.png" alt="image-20230504101715454"></p>
-<p><img data-src="image-20230426142516412.png" alt="image-20230426142516412"></p>
-<p>antlr4 实现文法：<br>
-<img data-src="image-20230426143619377.png" alt="image-20230426143619377"></p>
-<p>例子 3：判断赋值号左右类型是否相等</p>
-<p><img data-src="image-20230426151226852.png" alt="image-20230426151226852"></p>
-<p>数组声明相关文法已经在例子 2 中完成了。</p>
-<p><img data-src="image-20230504121851839.png" alt="image-20230504121851839"></p>
-<p>具体代码可在 github 代码仓库中查找。</p>
-<p>属性文法缺点：要在 antlr 中编写 java 代码，而且要完成编译器的话会需要很多代码，这些代码与 antlr 的文法混合在一起。</p>
-<h2 id="总结"><a class="anchor" href="#总结">#</a> 总结</h2>
-<p><img data-src="image-20230426152847006.png" alt="image-20230426152847006"></p>
-<p>两种语义分析方法，各有优势。Offline 简单，Online 性能更高。</p>
-]]></content>
-      <categories>
-        <category>编译原理</category>
-      </categories>
-      <tags>
-        <tag>编译原理</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>编译原理04-中间代码生成</title>
     <url>/2023/05/05/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8604-%E4%B8%AD%E9%97%B4%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/</url>
     <content><![CDATA[<h1 id="编译原理04-中间代码生成"><a class="anchor" href="#编译原理04-中间代码生成">#</a> 编译原理 04 - 中间代码生成</h1>
@@ -1786,6 +1705,87 @@ public class SimpleExprTest &#123;
 <p><img data-src="image-20230519153706714.png" alt="image-20230519153706714"></p>
 <p>总结：</p>
 <p><img data-src="image-20230519154323985.png" alt="image-20230519154323985"></p>
+]]></content>
+      <categories>
+        <category>编译原理</category>
+      </categories>
+      <tags>
+        <tag>编译原理</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>编译原理03-语义分析</title>
+    <url>/2023/04/12/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8603-%E8%AF%AD%E4%B9%89%E5%88%86%E6%9E%90/</url>
+    <content><![CDATA[<h1 id="语义分析"><a class="anchor" href="#语义分析">#</a> 语义分析</h1>
+<h2 id="符号表"><a class="anchor" href="#符号表">#</a> 符号表</h2>
+<p><img data-src="image-20230412154717575.png" alt="image-20230412154717575"></p>
+<p>用符号表保存我们已经定义了的变量或者函数以及其相关信息，在遍历语法分析树时，如果发现当前新出现的某些单元与符号表中的信息有冲突，我们就可以发现语义错误。</p>
+<h3 id="实现符号表"><a class="anchor" href="#实现符号表">#</a> 实现符号表</h3>
+<p>首先构建作用域树：</p>
+<p><img data-src="image-20230419140503102.png" alt="image-20230419140503102"></p>
+<p><strong>我们在这里犯了一个小错误</strong>，即把函数参数的作用域单独独立出来了，以便于我们编码，实际上函数参数作用域和函数作用域应该是要合并的。</p>
+<p>作用域的指针指向父作用域，在查找某个变量是在哪个作用域时要循环从当前作用域到父作用域遍历。</p>
+<p>之后可以通过递归遍历等方式进行语义相关的检查。</p>
+<p>某个利用 antlr4 实现符号表的类图：</p>
+<p>scope 是作用域（持有一个 Map (name, symbol) 的符号表数据类型），symbol 是符号 (持有 name 和 type，是符号表的基本单元)，type 是符号所持有的类型（比如基本类型，array), 通过遍历时</p>
+<p><img data-src="image-20230419141503552.png" alt="image-20230419141503552"></p>
+<p>浅绿框起来的是接口。</p>
+<h2 id="属性文法"><a class="anchor" href="#属性文法">#</a> 属性文法</h2>
+<h3 id="为什么要引入属性文法"><a class="anchor" href="#为什么要引入属性文法">#</a> 为什么要引入属性文法</h3>
+<p>之前引入上下文无关文法的时候，是因为正则表达式无法表达 a<sup>nb</sup>n 这样的表达式，但是上下文无关文法也有局限，<strong>无法帮助我们进行语义相关的检查</strong>。于是引入 Knuth 发明的属性文法。</p>
+<p><img data-src="image-20230421140916771.png" alt="image-20230421140916771"></p>
+<p>接下来以实现一个<strong>交互式</strong>的简易计算器为例</p>
+<p>前几节课写的简易计算器采用的是 offline 的方法：<br>
+<img data-src="image-20230421141650214.png" alt="image-20230421141650214"></p>
+<p>本次将采用 online 的方式实现，即在构建语法分析树的过程中加入我们想实现的 action。</p>
+<p><img data-src="image-20230421142018201.png" alt="image-20230421142018201"></p>
+<p>之前实现计算器的时候遇到了一个问题，listener 模式下，访问某个节点的 enterXXX 与 exitXXX 方法没有返回值，而当前节点的 value 依赖于子节点 value 的值，当时采用了标注语法树的方法。</p>
+<p>antlr4 的另一个解决方案：</p>
+<p><img data-src="image-20230421143635663.png" alt="image-20230421143635663"></p>
+<p>在.g4 文件的 expr 定义后 加上 returns [int val] 后，在 antlr4 生成的 expr 对应的节点类中会附带一个 val 属性。</p>
+<p>每一行后大括号裹起来的黑体字是会在语法分析时我们加入的 java 代码，具体可在生成的 parser 类中查看。之后在 @package 中加入需要的头文件并在 @members 中加入 eval，memory 等的 java 实现。(实际上可在 @parser::members 中加入，这样在 lexer 中就不会生成这些无用的代码)</p>
+<p>像 expr 这种从子节点的 expr 值计算得到的属性，叫做综合属性。</p>
+<p>至于 “交互式” 的实现，主要是 main 函数的实现方式，参照代码仓库。</p>
+<p>第二个例子：类型声明文法：</p>
+<p><img data-src="image-20230421145230801.png" alt="image-20230421145230801"></p>
+<p>第一条语义规则的问题：将 L 的类型赋值为 T 的类型，可是在递归调用的时候，L 并不知道 T 返回了一个类型是 float 还是 int。</p>
+<p>解决方法，给 L 一个 inh (inherit) 属性值，这种从左兄弟或者父节点继承来的值，叫做继承属性。</p>
+<p><img data-src="image-20230421151150679.png" alt="image-20230421151150679"></p>
+<p>antlr4 实现的语法：<br>
+<img data-src="image-20230421151912395.png" alt="image-20230421151912395"></p>
+<p>vars [String typeStr] 代表 vars 节点将携带一个属性 TypeStr。</p>
+<h3 id="语法制导定义"><a class="anchor" href="#语法制导定义">#</a> 语法制导定义</h3>
+<p><img data-src="image-20230421152800113.png" alt="image-20230421152800113"></p>
+<p>像上面的 g4 语法定义都属于 SDD，每个节点可以有多个属性</p>
+<p><img data-src="image-20230421153313913.png" alt="image-20230421153313913"></p>
+<p><img data-src="image-20230421153702902.png" alt="image-20230421153702902"></p>
+<p>继承属性用于在表达式中从左向右传递中间计算结果</p>
+<p>比如：累乘的右递归文法</p>
+<p><img data-src="image-20230421154158430.png" alt="image-20230421154158430"></p>
+<p><img data-src="image-20230421154959302.png" alt="image-20230421154959302"></p>
+<p>信息流向：先从左到右利用继承属性传递信息，再利用综合属性从下到上传递信息。</p>
+<p>属性文法的本质：信息的有序流动</p>
+<h3 id="l属性定义"><a class="anchor" href="#l属性定义">#</a> L 属性定义</h3>
+<p><img data-src="image-20230426140830620.png" alt="image-20230426140830620"></p>
+<p>例子 1：</p>
+<p>用属性文法实现得到表达式的后缀表示形式</p>
+<p><img data-src="image-20230426141239902.png" alt="image-20230426141239902"></p>
+<p><img data-src="image-20230426141906728.png" alt="image-20230426141906728"></p>
+<p>例子 2：得到数组的类型表达式</p>
+<p><strong>比如 int [2] [3] -&gt; (2,(3,int))</strong></p>
+<p><img data-src="image-20230504101715454.png" alt="image-20230504101715454"></p>
+<p><img data-src="image-20230426142516412.png" alt="image-20230426142516412"></p>
+<p>antlr4 实现文法：<br>
+<img data-src="image-20230426143619377.png" alt="image-20230426143619377"></p>
+<p>例子 3：判断赋值号左右类型是否相等</p>
+<p><img data-src="image-20230426151226852.png" alt="image-20230426151226852"></p>
+<p>数组声明相关文法已经在例子 2 中完成了。</p>
+<p><img data-src="image-20230504121851839.png" alt="image-20230504121851839"></p>
+<p>具体代码可在 github 代码仓库中查找。</p>
+<p>属性文法缺点：要在 antlr 中编写 java 代码，而且要完成编译器的话会需要很多代码，这些代码与 antlr 的文法混合在一起。</p>
+<h2 id="总结"><a class="anchor" href="#总结">#</a> 总结</h2>
+<p><img data-src="image-20230426152847006.png" alt="image-20230426152847006"></p>
+<p>两种语义分析方法，各有优势。Offline 简单，Online 性能更高。</p>
 ]]></content>
       <categories>
         <category>编译原理</category>
