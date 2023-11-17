@@ -17,6 +17,7 @@
     <category term="docker" />
     <category term="TVM 深度学习 机器学习 编译" />
     <category term="编译原理" />
+    <category term="数理逻辑" />
     <entry>
         <id>http://example.com/2023/02/28/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%BC%96%E8%AF%91%E5%99%A8TVM-UserTutorial/</id>
         <title>深度学习编译器TVM-UserTutorial</title>

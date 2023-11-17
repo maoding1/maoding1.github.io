@@ -17,6 +17,7 @@
     <category term="docker" />
     <category term="TVM 深度学习 机器学习 编译" />
     <category term="编译原理" />
+    <category term="数理逻辑" />
     <entry>
         <id>http://example.com/2022/11/14/C-%EF%BC%9A%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89%E4%B8%8E%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8/</id>
         <title>C++：移动语义与右值引用</title>
