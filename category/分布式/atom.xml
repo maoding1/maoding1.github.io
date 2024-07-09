@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>http://example.com</id>
+    <title>MikeMao&#39;s blog • Posts by &#34;分布式&#34; category</title>
+    <link href="http://example.com" />
+    <updated>2024-07-09T14:48:54.000Z</updated>
+    <category term="C++" />
+    <category term="git" />
+    <category term="Linux" />
+    <category term="Maven" />
+    <category term="STL C++" />
+    <category term="go语言" />
+    <category term="python 爬虫 计算机网络" />
+    <category term="python 爬虫" />
+    <category term="python" />
+    <category term="爬虫" />
+    <category term="docker" />
+    <category term="TVM 深度学习 机器学习 编译" />
+    <category term="编译原理" />
+    <category term="数理逻辑" />
+    <category term="分布式" />
+    <entry>
+        <id>http://example.com/2024/07/09/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95/</id>
+        <title>分布式一致性算法</title>
+        <link rel="alternate" href="http://example.com/2024/07/09/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95/"/>
+        <content type="html">&lt;h2 id=&#34;2pctwo-phase-commit&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#2pctwo-phase-commit&#34;&gt;#&lt;/a&gt; 2PC(two-phase commit)&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;2PC 是强一致，中心化的原子提交协议&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;两个阶段：准备阶段、提交阶段&lt;/p&gt;
+&lt;p&gt;两个角色：协调者 (coordinator), 参与者 (Participant)&lt;/p&gt;
+&lt;p&gt;深度理解：&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xlbmd4aWFvMTk5My9hcnRpY2xlL2RldGFpbHMvODgyOTA1MTQ=&#34;&gt;正确理解二阶段提交（Two-Phase Commit）_2 阶段提交 - CSDN 博客&lt;/span&gt;&lt;/p&gt;
+&lt;h3 id=&#34;第一阶段&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#第一阶段&#34;&gt;#&lt;/a&gt; 第一阶段&lt;/h3&gt;
+&lt;p&gt;&lt;img data-src=&#34;phase-1.png&#34; alt=&#34;image-20240709230522019&#34;&gt;&lt;/p&gt;
+&lt;p&gt;第三点记录的日志有 redo log 和 undo log&lt;/p&gt;
+&lt;p&gt;只有所有的 Participant 都返回 yes 才会进入第二阶段。否则 coordinator 发送 global roolback, 各节点根据记录的 undo log 全局回滚，向 client 返回错误。&lt;/p&gt;
+&lt;h3 id=&#34;第二阶段&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#第二阶段&#34;&gt;#&lt;/a&gt; 第二阶段&lt;/h3&gt;
+&lt;p&gt;&lt;img data-src=&#34;phase-2.png&#34; alt=&#34;image-20240709235508995&#34;&gt;&lt;/p&gt;
+&lt;p&gt;根据第一阶段的 redo log 提交事务&lt;/p&gt;
+&lt;h3 id=&#34;问题&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#问题&#34;&gt;#&lt;/a&gt; 问题&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;同步阻塞：
+&lt;ul&gt;
+&lt;li&gt;协调者需要等待所有参与者的响应&lt;/li&gt;
+&lt;li&gt;每个参与者第二阶段的开始需要等待 coordinator 的 global commit 或 global roolback&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;数据不一致
+&lt;ul&gt;
+&lt;li&gt;只有一部分参与者回滚成功&lt;/li&gt;
+&lt;li&gt;只有一部分参与者提交成功&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;单点问题：太依赖协调者，一旦协调者出故障会很麻烦&lt;/li&gt;
+&lt;li&gt;太保守，为了保证强一致性牺牲性能。&lt;/li&gt;
+&lt;/ol&gt;
+</content>
+        <category term="分布式" />
+        <updated>2024-07-09T14:48:54.000Z</updated>
+    </entry>
+</feed>

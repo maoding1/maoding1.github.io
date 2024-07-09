@@ -1,0 +1,18 @@
+{
+    "version": "https://jsonfeed.org/version/1",
+    "title": "MikeMao's blog • All posts by \"分布式\" tag",
+    "description": "a student of NJU who use this website to record learning experience",
+    "home_page_url": "http://example.com",
+    "items": [
+        {
+            "id": "http://example.com/2024/07/09/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95/",
+            "url": "http://example.com/2024/07/09/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95/",
+            "title": "分布式一致性算法",
+            "date_published": "2024-07-09T14:48:54.000Z",
+            "content_html": "<h2 id=\"2pctwo-phase-commit\"><a class=\"anchor\" href=\"#2pctwo-phase-commit\">#</a> 2PC(two-phase commit)</h2>\n<p><strong>2PC 是强一致，中心化的原子提交协议</strong></p>\n<p>两个阶段：准备阶段、提交阶段</p>\n<p>两个角色：协调者 (coordinator), 参与者 (Participant)</p>\n<p>深度理解：<span class=\"exturl\" data-url=\"aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xlbmd4aWFvMTk5My9hcnRpY2xlL2RldGFpbHMvODgyOTA1MTQ=\">正确理解二阶段提交（Two-Phase Commit）_2 阶段提交 - CSDN 博客</span></p>\n<h3 id=\"第一阶段\"><a class=\"anchor\" href=\"#第一阶段\">#</a> 第一阶段</h3>\n<p><img data-src=\"phase-1.png\" alt=\"image-20240709230522019\"></p>\n<p>第三点记录的日志有 redo log 和 undo log</p>\n<p>只有所有的 Participant 都返回 yes 才会进入第二阶段。否则 coordinator 发送 global roolback, 各节点根据记录的 undo log 全局回滚，向 client 返回错误。</p>\n<h3 id=\"第二阶段\"><a class=\"anchor\" href=\"#第二阶段\">#</a> 第二阶段</h3>\n<p><img data-src=\"phase-2.png\" alt=\"image-20240709235508995\"></p>\n<p>根据第一阶段的 redo log 提交事务</p>\n<h3 id=\"问题\"><a class=\"anchor\" href=\"#问题\">#</a> 问题</h3>\n<ol>\n<li>同步阻塞：\n<ul>\n<li>协调者需要等待所有参与者的响应</li>\n<li>每个参与者第二阶段的开始需要等待 coordinator 的 global commit 或 global roolback</li>\n</ul>\n</li>\n<li>数据不一致\n<ul>\n<li>只有一部分参与者回滚成功</li>\n<li>只有一部分参与者提交成功</li>\n</ul>\n</li>\n<li>单点问题：太依赖协调者，一旦协调者出故障会很麻烦</li>\n<li>太保守，为了保证强一致性牺牲性能。</li>\n</ol>\n",
+            "tags": [
+                "分布式"
+            ]
+        }
+    ]
+}
