@@ -4,10 +4,11 @@
     <title>MikeMao&#39;s blog • Posts by &#34;docker&#34; category</title>
     <link href="http://example.com" />
     <updated>2023-06-27T09:54:04.000Z</updated>
+    <category term="C++ 读书笔记" />
     <category term="C++" />
     <category term="git" />
-    <category term="Linux" />
     <category term="Maven" />
+    <category term="Linux" />
     <category term="STL C++" />
     <category term="go语言" />
     <category term="python 爬虫 计算机网络" />
@@ -15,10 +16,10 @@
     <category term="python" />
     <category term="爬虫" />
     <category term="docker" />
+    <category term="分布式" />
+    <category term="数理逻辑" />
     <category term="TVM 深度学习 机器学习 编译" />
     <category term="编译原理" />
-    <category term="数理逻辑" />
-    <category term="分布式" />
     <entry>
         <id>http://example.com/2023/06/27/%E4%BA%91%E5%8E%9F%E7%94%9F-docker%E5%85%A5%E9%97%A8/</id>
         <title>云原生-docker入门</title>

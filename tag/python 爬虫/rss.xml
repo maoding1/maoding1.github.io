@@ -7,10 +7,11 @@
         <language>zh-CN</language>
         <pubDate>Wed, 15 Feb 2023 14:56:10 +0800</pubDate>
         <lastBuildDate>Wed, 15 Feb 2023 14:56:10 +0800</lastBuildDate>
+        <category>C++ 读书笔记</category>
         <category>C++</category>
         <category>git</category>
-        <category>Linux</category>
         <category>Maven</category>
+        <category>Linux</category>
         <category>STL C++</category>
         <category>go语言</category>
         <category>python 爬虫 计算机网络</category>
@@ -18,10 +19,10 @@
         <category>python</category>
         <category>爬虫</category>
         <category>docker</category>
+        <category>分布式</category>
+        <category>数理逻辑</category>
         <category>TVM 深度学习 机器学习 编译</category>
         <category>编译原理</category>
-        <category>数理逻辑</category>
-        <category>分布式</category>
         <item>
             <guid isPermalink="true">http://example.com/2023/02/15/python%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%80%89%E8%AF%BE/</guid>
             <title>python实现自动选课</title>

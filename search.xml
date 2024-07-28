@@ -1,6 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Effective C++读书笔记</title>
+    <url>/2024/07/28/Effective-C-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</url>
+    <content><![CDATA[<p>C++ 是我最喜欢的一门语言，C++ programer 一直为其拥有的非同寻常的能力范围和表现力而自豪（当然如果能正确使用的话）。正如 Scott Meyers, 本书作者所言：学习一种编程语言的基础是一回事；学习如何用那种语言设计和实现高效率的程序完全是另外一回事。断断续续学习了两年的 C++ programing language, 我的追求从学会语言基础，逐渐变为追求更加高效，并同时具备高可扩展性和可维护性的编程。</p>
+<p>Effetive C++ 是一本主要面向 C++  03 标准及之前的 C++ 编程过程中的一些编程 guidelines 的，自 C++  11 以来，C++ 不断推陈出新，关于一些场景作者提出的解决方案也许有了更好的替代方案。但作为一切的基础，以及一系列书目的开山之作（more Efective C++, Effective Modern C++)，此书仍然被许多人认为是 CPP programer 进阶的必看书目。此读书笔记仅供我自己查阅，提供简单的总结与感想，以从作者引人入胜但对于已经认真体会的读者而言无益的行文中走出 (TLDR)。并对书中的一些问题尝试使用 C++ 11 后的新特性解决。</p>
+<p>我不想成为一个语言学家，阅读之后还需要更多的编程练习来巩固所学习的知识。</p>
+<p><span id="more"></span></p>
+<h3 id="item1-将c视为-federation-of-languages语言联合体"><a class="anchor" href="#item1-将c视为-federation-of-languages语言联合体">#</a> item1 将 C++ 视为 federation of languages (语言联合体)</h3>
+<h4 id="总结"><a class="anchor" href="#总结">#</a> 总结</h4>
+<p>将 C++ 从一门编程语言看作四门互相联系但有各自主体思想的子语言的结合体：</p>
+<ul>
+<li>C: 包括 built-in 数据结构，流程控制语句等，提供语法基础。</li>
+<li>Object-Oriented C++：C++ 的面向对象部分，主要设计封装继承多态这三个方面</li>
+<li>Template C++：泛型编程部分，对多数程序员少用但及其强大的 C++ 语言部分，提供包括 TMP (模板元编程) 这样的黑魔法。</li>
+<li>STL：containers,iterators,algorithms,functions objects... 方便地使用大佬们提供的编程工具，优化编程体验，不用像 C 那样 array simulate everything 了。</li>
+</ul>
+<p>每一种子语言都有一套自己常用的编程理念，在不同的子语言下编程时，可能会要从不同的规则中进行转换（比如传值的方式）。</p>
+<h3 id="item2-用consts-enums和inlines-取代defines"><a class="anchor" href="#item2-用consts-enums和inlines-取代defines">#</a> item2 用 consts, enums, 和 inlines 取代 #defines</h3>
+<h4 id="总结-2"><a class="anchor" href="#总结-2">#</a> 总结</h4>
+<p><strong>#defines 无法提供包括作用域控制，类型检查等功能，因此能避免就避免。一般只在控制编译逻辑的时候配合 #ifdef/#ifndef 使用，比如根据某些宏修改一些 objects 的定义，而不要用在编程的逻辑中。</strong></p>
+<ul>
+<li>想使用 #defines 定义常量时 比如 <code>#define PI 3.1415926</code> ，使用 const 替代，以获取更好的编译器报错体验与类型检查</li>
+<li>想使用 #defines 定义类属常量时，比如在类中定义 <code>static const int a = 5;</code>  这里涉及到了类属常量的初始化问题，简要来说，一些编译器禁止 static integral class constants（静态整型族类属常量）的 in-class specification 而不得不在类外使用 <code>const int MyClass::a = 5;</code>  这样的初始化方式。（ps： 都是很老的编译器了，在作者那个年代都算过时的了，gcc4.0.4 都可以在类中定义整型族常量）。对于静态非整型族类属常量，比如 <code>static const string s = &quot;hello&quot;</code> ，或者 <code>static const string s = nullptr</code>  这样的语句是不允许出现在类的定义中的。你必须要在类外初始化。for example:</li>
+</ul>
+<figure class="highlight cpp"><figcaption data-lang="C++"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">class</span> <span class="token class-name">MyClass</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="2"></td><td><pre>    <span class="token keyword">public</span><span class="token operator">:</span></pre></td></tr><tr><td data-num="3"></td><td><pre>    <span class="token keyword">static</span> <span class="token keyword">const</span> <span class="token keyword">int</span> cst <span class="token operator">=</span> <span class="token number">5</span><span class="token punctuation">;</span> <span class="token comment">// allowed</span></pre></td></tr><tr><td data-num="4"></td><td><pre>    <span class="token keyword">static</span> <span class="token keyword">const</span> string s<span class="token punctuation">;</span> <span class="token comment">// static const string s = "hello"? not allowed</span></pre></td></tr><tr><td data-num="5"></td><td><pre>    <span class="token keyword">static</span> <span class="token keyword">const</span> <span class="token keyword">int</span><span class="token operator">*</span> p <span class="token punctuation">;</span> <span class="token comment">// static const int* p = nullter? not allowed</span></pre></td></tr><tr><td data-num="6"></td><td><pre><span class="token punctuation">&#125;</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="7"></td><td><pre></pre></td></tr><tr><td data-num="8"></td><td><pre><span class="token keyword">const</span> string MyClass<span class="token double-colon punctuation">::</span>s <span class="token operator">=</span> <span class="token string">"hello"</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="9"></td><td><pre><span class="token keyword">const</span> <span class="token keyword">int</span><span class="token operator">*</span> MyClass<span class="token double-colon punctuation">::</span>p <span class="token operator">=</span> <span class="token keyword">nullptr</span><span class="token punctuation">;</span></pre></td></tr></table></figure><p><strong>这个过程体现了 C++ 令人难以忍受的缺陷，对于很多东西，它具有很多的特例，并且你很难理解为什么，没有什么规则是通用的</strong>。一个好消息是，C++ 17 后做出了补救 (又有新东西要记了)：</p>
+<p>according to <span class="exturl" data-url="aHR0cHM6Ly9zdGFja292ZXJmbG93LmNvbS9xdWVzdGlvbnMvMTU2Mzg5Ny9ob3ctY2FuLXlvdS1kZWZpbmUtYS1zdGF0aWMtZGF0YS1tZW1iZXItb2YtdHlwZS1jb25zdC1zdGRzdHJpbmc=">c++ - How can you define a static data member of type const std::string? - Stack Overflow</span></p>
+<figure class="highlight cpp"><figcaption data-lang="C++"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">class</span> <span class="token class-name">MyClass</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="2"></td><td><pre>    <span class="token keyword">public</span><span class="token operator">:</span></pre></td></tr><tr><td data-num="3"></td><td><pre>    <span class="token keyword">static</span> <span class="token keyword">constexpr</span> <span class="token keyword">int</span> cst <span class="token operator">=</span> <span class="token number">5</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="4"></td><td><pre>    <span class="token keyword">static</span> <span class="token keyword">constexpr</span> std<span class="token double-colon punctuation">::</span>string_view STRING <span class="token operator">=</span> <span class="token string">"some useful string constant"</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="5"></td><td><pre>    <span class="token keyword">static</span> <span class="token keyword">constexpr</span> <span class="token keyword">int</span><span class="token operator">*</span> p <span class="token operator">=</span> <span class="token keyword">nullptr</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="6"></td><td><pre><span class="token punctuation">&#125;</span><span class="token punctuation">;</span></pre></td></tr></table></figure><ul>
+<li>想使用 #defines 定义函数时，使用 inline 的模版函数替代，以获取函数参数具有的参数类型检查功能，并且拥有不输于 defines 的性能。还有，在使用 defines 定义函数时，你不得不给参数加括号 😃</li>
+</ul>
+<p>对了 忘了提 enums 了，这里作者使用了一个叫做 the enum hack 的技术，主要来源于一个 enumerated type（枚举类型）的值可以用在一个需要 ints 的地方。for example:</p>
+<figure class="highlight cpp"><figcaption data-lang="C++"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">class</span> <span class="token class-name">GamePlayer</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="2"></td><td><pre></pre></td></tr><tr><td data-num="3"></td><td><pre><span class="token keyword">private</span><span class="token operator">:</span></pre></td></tr><tr><td data-num="4"></td><td><pre></pre></td></tr><tr><td data-num="5"></td><td><pre>  <span class="token keyword">enum</span> <span class="token punctuation">&#123;</span> NumTurns <span class="token operator">=</span> <span class="token number">5</span> <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>             <span class="token comment">// "the enum hack" - makes</span></pre></td></tr><tr><td data-num="6"></td><td><pre>                                     <span class="token comment">// NumTurns a symbolic name for 5</span></pre></td></tr><tr><td data-num="7"></td><td><pre></pre></td></tr><tr><td data-num="8"></td><td><pre>  <span class="token keyword">int</span> scores<span class="token punctuation">[</span>NumTurns<span class="token punctuation">]</span><span class="token punctuation">;</span>              <span class="token comment">// fine</span></pre></td></tr><tr><td data-num="9"></td><td><pre>  <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span></pre></td></tr><tr><td data-num="10"></td><td><pre><span class="token punctuation">&#125;</span><span class="token punctuation">;</span></pre></td></tr></table></figure><p>使用这项技术，你可以禁止对 NumTurns 的取地址行为，第二个理由是，大量的代码在使用它（作为模版元编程的基本技术之一），所以最好还是认识一下。</p>
+]]></content>
+      <categories>
+        <category>C++</category>
+      </categories>
+      <tags>
+        <tag>C++ 读书笔记</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>C++：移动语义与右值引用</title>
     <url>/2022/11/14/C-%EF%BC%9A%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89%E4%B8%8E%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8/</url>
     <content><![CDATA[<h1 id="c的移动语义与右值引用"><a class="anchor" href="#c的移动语义与右值引用">#</a> C++ 的移动语义与右值引用</h1>
@@ -186,41 +225,6 @@ $ git commit -m &quot;remove test.txt&quot;
       </tags>
   </entry>
   <entry>
-    <title>Linux—01-Linux安装常识</title>
-    <url>/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/</url>
-    <content><![CDATA[<h1 id="linux系统的安装"><a class="anchor" href="#linux系统的安装">#</a> Linux 系统的安装</h1>
-<p><span id="more"></span></p>
-<p><img data-src="preview.jpg" alt="芝士辉夜"></p>
-<h2 id="交换分区"><a class="anchor" href="#交换分区">#</a> 交换分区</h2>
-<p>直接从物理内存读写数据比从硬盘读写快的多，然而物理硬盘是有限的，这样就使用到了虚拟内存。虚拟内存是为了满足物理内存的不足而提出的一种策略，他是利用磁盘空间虚拟出的一块逻辑内存，用作虚拟内存的磁盘空间被称为<strong>交换分区（swap 分区）</strong>。</p>
-<p>内核会将暂时不用的内存信息写到交换分区，使物理内存得到释放并用于其它用途，当需要原始内容时，这些信息会被重新从交换分区读入物理内存。</p>
-<p>Linux 的内存管理采用分页存取机制，为了保证物理内存能得到充分利用，内核会在适当时候将物理内存中不经常使用的数据块自动交换到虚拟内存中，而将经常使用的信息保留到物理内存。</p>
-<h2 id="分区命名"><a class="anchor" href="#分区命名">#</a> 分区命名</h2>
-<p>Linux 系统使用字母和数字的组合来指代硬盘分区，该命名方案是基于文件的，文件名的格式为 */dev/xxyN* (比如 /dev/sda1 分区)</p>
-<p>/dev: 这是 Linux 系统中所有设备文件所在的目录名。因为分区位于硬盘上，而硬盘是设备，所以这些文件代表了在 /dev 上所有可能的分区</p>
-<p>xx：分区名的前两个字母表示分区所在设备的类型，通常是 hd（IDE）硬盘或 sd（SCSI 硬盘）</p>
-<p>y: 这个字母表示分区所在的设备。例如，/dev/hda（第一个 IDE 硬盘）或 /dev/sdb (第二个 SCSI 硬盘)</p>
-<p>N：最后的数字 N 代表硬盘上的第几个分区。</p>
-<h2 id="挂载目录"><a class="anchor" href="#挂载目录">#</a> 挂载目录</h2>
-<p>Linux 系统中的每一个分区都是构成支持一组文件和目录 所必需的存储区的一部分。它是通过挂载来实现的，挂载 是将分区关联到某一目录的过程，挂载分区使起始于这个 指定目录（称为挂载目录）的存储区能够被使用。</p>
-<p>例如，如果分区 /dev/sda5 被挂载在目录 /usr 上，这意味着 所有在 /usr 下的文件和目录在物理上位于 /dev/sda5。因此 文件 /usr/bin/cal 被保存在分区 /dev/sda5 上，而文件 /etc/passwd 却不是。</p>
-<p>/usr 目录下的目录还有可能是其它分区的挂载目录。例如， 某个分区（如 /dev/sda7）可以被挂载到 /usr/local 目录下， 这意味着文件 /usr/local/man/whatis 将位于分区 /dev/sda7 上，而不是分区 /dev/sda5 上。</p>
-<h2 id="分区规划"><a class="anchor" href="#分区规划">#</a> 分区规划</h2>
-<p>合理的分区规划 ：</p>
-<p>・swap 分区：实现虚拟内存，建议大小是物理内存 的 1～2 倍；</p>
-<p>・/boot 分区：建议大小最少为 200MB；・/usr 分区：用来存放 Linux 系统中的应用程序， 其相关数据较多，建议大小最少为 8GB；</p>
-<p>・/var 分区：用来存放 Linux 系统中经常变化的数 据以及日志文件，建议大小最少为 1GB；</p>
-<p>・/ 分区：Linux 系统的根目录，所有的目录都挂在 这个目录下面，建议大小最少为 1GB；</p>
-<p>・/home 分区：存放普通用户的数据，是普通用户 的宿主目录，建议大小为剩下的空间。</p>
-]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
-      <tags>
-        <tag>Linux</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Maven 学习</title>
     <url>/2022/10/23/Maven-%E5%AD%A6%E4%B9%A0/</url>
     <content><![CDATA[<h1 id><a class="anchor" href="#">#</a> </h1>
@@ -285,6 +289,41 @@ $ git commit -m &quot;remove test.txt&quot;
       </categories>
       <tags>
         <tag>Maven</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux—01-Linux安装常识</title>
+    <url>/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/</url>
+    <content><![CDATA[<h1 id="linux系统的安装"><a class="anchor" href="#linux系统的安装">#</a> Linux 系统的安装</h1>
+<p><span id="more"></span></p>
+<p><img data-src="preview.jpg" alt="芝士辉夜"></p>
+<h2 id="交换分区"><a class="anchor" href="#交换分区">#</a> 交换分区</h2>
+<p>直接从物理内存读写数据比从硬盘读写快的多，然而物理硬盘是有限的，这样就使用到了虚拟内存。虚拟内存是为了满足物理内存的不足而提出的一种策略，他是利用磁盘空间虚拟出的一块逻辑内存，用作虚拟内存的磁盘空间被称为<strong>交换分区（swap 分区）</strong>。</p>
+<p>内核会将暂时不用的内存信息写到交换分区，使物理内存得到释放并用于其它用途，当需要原始内容时，这些信息会被重新从交换分区读入物理内存。</p>
+<p>Linux 的内存管理采用分页存取机制，为了保证物理内存能得到充分利用，内核会在适当时候将物理内存中不经常使用的数据块自动交换到虚拟内存中，而将经常使用的信息保留到物理内存。</p>
+<h2 id="分区命名"><a class="anchor" href="#分区命名">#</a> 分区命名</h2>
+<p>Linux 系统使用字母和数字的组合来指代硬盘分区，该命名方案是基于文件的，文件名的格式为 */dev/xxyN* (比如 /dev/sda1 分区)</p>
+<p>/dev: 这是 Linux 系统中所有设备文件所在的目录名。因为分区位于硬盘上，而硬盘是设备，所以这些文件代表了在 /dev 上所有可能的分区</p>
+<p>xx：分区名的前两个字母表示分区所在设备的类型，通常是 hd（IDE）硬盘或 sd（SCSI 硬盘）</p>
+<p>y: 这个字母表示分区所在的设备。例如，/dev/hda（第一个 IDE 硬盘）或 /dev/sdb (第二个 SCSI 硬盘)</p>
+<p>N：最后的数字 N 代表硬盘上的第几个分区。</p>
+<h2 id="挂载目录"><a class="anchor" href="#挂载目录">#</a> 挂载目录</h2>
+<p>Linux 系统中的每一个分区都是构成支持一组文件和目录 所必需的存储区的一部分。它是通过挂载来实现的，挂载 是将分区关联到某一目录的过程，挂载分区使起始于这个 指定目录（称为挂载目录）的存储区能够被使用。</p>
+<p>例如，如果分区 /dev/sda5 被挂载在目录 /usr 上，这意味着 所有在 /usr 下的文件和目录在物理上位于 /dev/sda5。因此 文件 /usr/bin/cal 被保存在分区 /dev/sda5 上，而文件 /etc/passwd 却不是。</p>
+<p>/usr 目录下的目录还有可能是其它分区的挂载目录。例如， 某个分区（如 /dev/sda7）可以被挂载到 /usr/local 目录下， 这意味着文件 /usr/local/man/whatis 将位于分区 /dev/sda7 上，而不是分区 /dev/sda5 上。</p>
+<h2 id="分区规划"><a class="anchor" href="#分区规划">#</a> 分区规划</h2>
+<p>合理的分区规划 ：</p>
+<p>・swap 分区：实现虚拟内存，建议大小是物理内存 的 1～2 倍；</p>
+<p>・/boot 分区：建议大小最少为 200MB；・/usr 分区：用来存放 Linux 系统中的应用程序， 其相关数据较多，建议大小最少为 8GB；</p>
+<p>・/var 分区：用来存放 Linux 系统中经常变化的数 据以及日志文件，建议大小最少为 1GB；</p>
+<p>・/ 分区：Linux 系统的根目录，所有的目录都挂在 这个目录下面，建议大小最少为 1GB；</p>
+<p>・/home 分区：存放普通用户的数据，是普通用户 的宿主目录，建议大小为剩下的空间。</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
       </tags>
   </entry>
   <entry>
@@ -889,6 +928,119 @@ soup = BeautifulSoup(page_text,'lxml')
       </tags>
   </entry>
   <entry>
+    <title>分布式一致性算法</title>
+    <url>/2024/07/09/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95/</url>
+    <content><![CDATA[<h2 id="2pctwo-phase-commit"><a class="anchor" href="#2pctwo-phase-commit">#</a> 2PC(two-phase commit)</h2>
+<p><strong>2PC 是强一致，中心化的原子提交协议</strong></p>
+<p>两个阶段：准备阶段、提交阶段</p>
+<p>两个角色：协调者 (coordinator), 参与者 (Participant)</p>
+<p>深度理解：<span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xlbmd4aWFvMTk5My9hcnRpY2xlL2RldGFpbHMvODgyOTA1MTQ=">正确理解二阶段提交（Two-Phase Commit）_2 阶段提交 - CSDN 博客</span></p>
+<h3 id="第一阶段"><a class="anchor" href="#第一阶段">#</a> 第一阶段</h3>
+<p><img data-src="phase-1.png" alt="image-20240709230522019"></p>
+<p>第三点记录的日志有 redo log 和 undo log</p>
+<p>只有所有的 Participant 都返回 yes 才会进入第二阶段。否则 coordinator 发送 global roolback, 各节点根据记录的 undo log 全局回滚，向 client 返回错误。</p>
+<h3 id="第二阶段"><a class="anchor" href="#第二阶段">#</a> 第二阶段</h3>
+<p><img data-src="phase-2.png" alt="image-20240709235508995"></p>
+<p>根据第一阶段的 redo log 提交事务</p>
+<h3 id="问题"><a class="anchor" href="#问题">#</a> 问题</h3>
+<ol>
+<li>同步阻塞：
+<ul>
+<li>协调者需要等待所有参与者的响应</li>
+<li>每个参与者第二阶段的开始需要等待 coordinator 的 global commit 或 global roolback</li>
+</ul>
+</li>
+<li>数据不一致
+<ul>
+<li>只有一部分参与者回滚成功</li>
+<li>只有一部分参与者提交成功</li>
+</ul>
+</li>
+<li>单点问题：太依赖协调者，一旦协调者出故障会很麻烦</li>
+<li>太保守，为了保证强一致性牺牲性能。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>分布式</category>
+      </categories>
+      <tags>
+        <tag>分布式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>从数理逻辑本身到哥德尔不完备定理的一种证明方法</title>
+    <url>/2023/11/17/%E4%BB%8E%E6%95%B0%E7%90%86%E9%80%BB%E8%BE%91%E6%9C%AC%E8%BA%AB%E5%88%B0%E5%93%A5%E5%BE%B7%E5%B0%94%E4%B8%8D%E5%AE%8C%E5%A4%87%E5%AE%9A%E7%90%86%E7%9A%84%E4%B8%80%E7%A7%8D%E8%AF%81%E6%98%8E%E6%96%B9%E6%B3%95/</url>
+    <content><![CDATA[<blockquote>
+<p>音乐能激发或抚慰情怀，绘画使人赏心悦目，诗歌能动人心弦，哲学使人获得智慧，科学可以改善物质生活，但数学能给予以上的一切。</p>
+<p>​																																				-- 克莱因</p>
+</blockquote>
+<p><span id="more"></span></p>
+<h2 id="对于数学和数理逻辑的思考"><a class="anchor" href="#对于数学和数理逻辑的思考">#</a> 对于数学和数理逻辑的思考</h2>
+<p>谈到数学，我不禁想到一个经典的问题：数学是被人发现的，还是被人发明的？这好像已经迈入了哲学的范畴， 我有一个苹果，然后再有了一个苹果，于是共有 1+1=2 个苹果，这好像是想当然的，因为像苹果这类区限分明的自然事物是可以数的，人们发现自然物可以被计数，于是就有了数学中的加法。人们定义了 1 和 2，同时定义了加法的规则，于是有了 1+1=2，这样做是合理的，符合人类直觉的，并且与许多人们公认的规则结合在在一起建立了数学大厦，并且在几千年的人类文明进化史中没有出什么差错。我们今天坐在高楼大厦里，用着精密的手机，电脑，坐着高铁，飞机穿梭于世界各地。我们靠它们生存，但是我们如何保证高楼不会坍塌，坐的飞机不会坠落呢，因为我们有强大的 “武器” 依靠，即数学的证明。这些东西无一不是在图纸上被确定性的定义了材料和尺寸等规则，并经过了数学的验证，设计师拍着胸脯保证，在数学上已经验证过了，才最终被制造出来。高效运转的人类社会离不开数学，而数学大厦又建造在这些所谓的 “公理” 之上，而这些公理的正确性，如果靠的仅仅是我们人类的直觉，这不免让我有些发怵。** 直觉是靠的住的吗？** 在几何上，两个点可以唯一确定一条直线，二维平面内的两条直线不是平行就必定相交，所有的直角都相等。。。 这些都是不证自明的定理，很少有人会怀疑。但是我们知道，有些时候直觉是靠不住的，比如哥伦布环绕了地球一圈并返回到了起点，我们就理所应当的认为地球是圆的，因为排除了地球边缘是深不见底的深渊或者天圆地方等盛行的理论，但是我们很少想过，地球会不会是一个甜甜圈，会不会是一个莫比乌斯环？</p>
+<p>但对于这些貌似是不证自明的定理，如果他们是不对的，那人类社会不可能高度发达，所以我倾向于认为数学是被人发现的，但我们常用的自然数，符号等属于我们发明的 “符号体系”，这些符号体系体现了自然界中某些本质，某些永远正确，客观存在的东西，这些东西就是数学。 有一点我们必须确定，不能对每一个数学结论都凭借直觉来确认，我们可以根据直觉判断自行车的轮子应当是圆的，但对于更复杂的东西好像就不行了，否则很可能会踩雷，导致某天某样东西突然崩塌，造成不可预计的后果，我们需要一些从正确的结论推导出新结论的东西，并且保证这个 “过程” 和这个 “过程” 的出发点是正确的，我觉得这就是数理逻辑研究的领域，数理逻辑研究的是数学本身，即 “数学的数学”。当然数理逻辑也有出发点，一些不需要证明就能被认为正确的东西，否则就会出现 “数学的数学的数学”，无限递归下去，这是很可笑的，但我们需要保障这些出发点尽可能少（减少出错的机会），并且不容置疑的正确。</p>
+<h2 id="哥德尔不完备定理的出现"><a class="anchor" href="#哥德尔不完备定理的出现">#</a> 哥德尔不完备定理的出现</h2>
+<p>在数理逻辑这个领域发展之初，数学家们为数学寻求坚实的基础：一系列基本的数学事实，或者说公理。它们既是一致的，即不会导致矛盾，同时也是完备的，以作为所有数学真理的基础。但是哥德尔发表的不完备定理彻底粉碎了这一梦想，这一定理简短又振聋发聩，大概意思是</p>
+<p>——<strong> 每个无矛盾的数学系统都存在一些语句无法被证明（不完备的）。</strong></p>
+<p>这意味着不存在一个对万事万物皆适用的数学理论，可证明性和正确性也无法统一。数学家可以证明的内容取决于他们的初始假设，而非所有结论所依据的基本事实（这个自然界本身）。这个定理引起了轩然大波，也产生了许多有趣的问题，对于这些问题的讨论，许多又进入到了哲学的领域，比如<strong>不完备定理依赖算术又说算术是不完备的，这不是循环论证吗？物理学需要数学，哥德尔不完备定理是不是意味着我们永远无法理解宇宙等</strong>。</p>
+<h2 id="一个有趣的证明"><a class="anchor" href="#一个有趣的证明">#</a> 一个有趣的证明</h2>
+<p>这个证明是在<span class="exturl" data-url="aHR0cHM6Ly93d3cuemhpaHUuY29tL3F1ZXN0aW9uLzI3NTI4Nzk2"> (如何简单清晰地解释哥德尔不完备定理？ - 知乎 (zhihu.com)</span> 看到的</p>
+<p>哥德尔的主要策略是把<strong>关于</strong>某个公理系统的语句映射到一个特定的系统<strong>内</strong>的语句，即映射到一个关于数字的语句。这个映射使公理系统能够有效地谈论自身。</p>
+<p>这个过程的第一步是将任何可能的数学语句或一系列语句映射到一个被称为哥德尔数的唯一数字。</p>
+<p>这个对哥德尔的方案略微修改后的版本是由欧内斯特・内格尔（Ernest Nagel）和詹姆士・纽曼（James Newman）在他们 1958 年出版的《<span class="exturl" data-url="aHR0cHM6Ly93d3cuemhpaHUuY29tL3NlYXJjaD9xPSVFNSU5MyVBNSVFNSVCRSVCNyVFNSVCMCU5NCVFNyU5QSU4NCVFOCVBRiU4MSVFNiU5OCU4RSZhbXA7c2VhcmNoX3NvdXJjZT1FbnRpdHkmYW1wO2h5YnJpZF9zZWFyY2hfc291cmNlPUVudGl0eSZhbXA7aHlicmlkX3NlYXJjaF9leHRyYT0lN0IlMjJzb3VyY2VUeXBlJTIyJTNBJTIyYW5zd2VyJTIyJTJDJTIyc291cmNlSWQlMjIlM0ExMzQ2MDk3MjQ5JTdE">哥德尔的证明</span>》（《Gödel's Proof》）的书中提出的，始于用 12 个基本符号作为词汇来表达一系列基本公理。例如，用符号 ∃表示存在，用符号 + 表示加法。重要的是，符号 s 表示 “后继”，给出了表示特定数字的方法。例如， ss0 指的是 2 。</p>
+<p>这 12 个符号被分配到了从 1 至 12 的哥德尔数。</p>
+<p><img data-src="picture1.png" alt></p>
+<p>下一步，用字母表示变量，从 xyz 开始，映射到大于 12 的素数（即 13,17,19 ）。</p>
+<p>接下来，这些符号和变量的任意组合，即任何可以被构造的算术公式或公式序列，都将有自己的哥德尔数。</p>
+<p>比如，考虑 0=0 。这个公式的三个符号对应的哥德尔数是 6,5,6 。哥德尔需要将这三个数字的序列改为一个唯一的数字，也就是其他符号序列不会生成的数字。 为此，他采用前三个质数（2,3,5 ），将每个符号的哥德尔数作为这个序列相同位置的指数，并将它们相乘。因此 0=0 变为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>6</mn></msup><mo>×</mo><msup><mn>3</mn><mn>5</mn></msup><mo>×</mo><msup><mn>5</mn><mn>6</mn></msup></mrow><annotation encoding="application/x-tex">2^{6} \times 3^{5} \times 5^{6}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">5</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">5</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span></span></span></span></span>，即 243000000 。</p>
+<p>该映射之所以有效，是因为没有两个公式会有相同的哥德尔数。 哥德尔数是整数，而整数仅以一种方式分解为质数。因此，243000000 的唯一质数分解是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>6</mn></msup><mo>×</mo><msup><mn>3</mn><mn>5</mn></msup><mo>×</mo><msup><mn>5</mn><mn>6</mn></msup></mrow><annotation encoding="application/x-tex">2^{6} \times 3^{5} \times 5^{6}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">5</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">5</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span></span></span></span></span> ，这意味着只有一种可能的方法可以解码这个哥德尔数：公式 0=0。</p>
+<p>哥德尔之后更进一步。数学证明是由一系列的公式组成的。因此，哥德尔也为每个公式序列赋予了唯一的哥德尔编号。在这种情况下，正如前面一样，他从质数列表开始，即 2,3,5 依此类推。 然后，他将公式的哥德尔数作为对应位置素数序列的指数（例如，若先出现 0=0 ，则为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>243000000</mn></msup><mo>×</mo><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">2^{243000000} \times ...</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span><span class="mord mtight">4</span><span class="mord mtight">3</span><span class="mord mtight">0</span><span class="mord mtight">0</span><span class="mord mtight">0</span><span class="mord mtight">0</span><span class="mord mtight">0</span><span class="mord mtight">0</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.10556em;vertical-align:0em;"></span><span class="mord">.</span><span class="mord">.</span><span class="mord">.</span></span></span></span>），然后将所有数相乘。</p>
+<p><strong>算数元数学</strong></p>
+<p>这么做真正的好处是，即使是<strong>关于</strong>算术公式的语句，也被称为元数学语句，也可以转换为以它们自身的哥德尔数所产生的公式。</p>
+<p>首先考虑公式 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∼</mo><mo stretchy="false">(</mo><mn>0</mn><mo>=</mo><mn>0</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\sim (0=0)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">∼</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">0</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">0</span><span class="mclose">)</span></span></span></span>，意思是 “零不等于零”。这个公式显然的错误的。不过它依然有哥德尔数：2 的 1 次幂（符号 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∼</mo></mrow><annotation encoding="application/x-tex">\sim</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">∼</span></span></span></span> 的哥德尔数是 1），乘以 3 的 8 次幂（“左括号” 的哥德尔数是 8），依次类推，得到 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>1</mn></msup><mo>×</mo><msup><mn>3</mn><mn>8</mn></msup><mo>×</mo><msup><mn>5</mn><mn>6</mn></msup><mo>×</mo><msup><mn>7</mn><mn>5</mn></msup><mo>×</mo><mn>1</mn><msup><mn>1</mn><mn>6</mn></msup><mo>×</mo><mn>1</mn><msup><mn>3</mn><mn>9</mn></msup></mrow><annotation encoding="application/x-tex">2^1\times 3^8\times5^6\times7^5\times11^6\times 13^9</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">8</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">5</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">7</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">5</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mord"><span class="mord">1</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">9</span></span></span></span></span></span></span></span></span></span></span> 。</p>
+<p>因为我们可以为所有公式甚至错误的公式生成哥德尔数，所以我们可以通过谈论它们的哥德尔数来明智地谈论这些公式。</p>
+<p>考虑以下语句：“公式<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∼</mo><mo stretchy="false">(</mo><mn>0</mn><mo>=</mo><mn>0</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\sim(0=0)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">∼</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">0</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">0</span><span class="mclose">)</span></span></span></span> 的第一个符号是波浪号”。这个关于 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∼</mo><mo stretchy="false">(</mo><mn>0</mn><mo>=</mo><mn>0</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\sim(0=0)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">∼</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">0</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">0</span><span class="mclose">)</span></span></span></span>) 的正确的元数学语句转化为关于公式的哥德尔数的语句，即其第一个指数为 1，即波浪号的哥德尔数。 换句话说，我们的语句为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>1</mn></msup><mo>×</mo><msup><mn>3</mn><mn>8</mn></msup><mo>×</mo><msup><mn>5</mn><mn>6</mn></msup><mo>×</mo><msup><mn>7</mn><mn>5</mn></msup><mo>×</mo><mn>1</mn><msup><mn>1</mn><mn>6</mn></msup><mo>×</mo><mn>1</mn><msup><mn>3</mn><mn>9</mn></msup></mrow><annotation encoding="application/x-tex">2^1\times 3^8\times5^6\times7^5\times11^6\times 13^9</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">8</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">5</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">7</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">5</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mord"><span class="mord">1</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">9</span></span></span></span></span></span></span></span></span></span></span> 只有一个 2 因子。如果<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∼</mo><mo stretchy="false">(</mo><mn>0</mn><mo>=</mo><mn>0</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\sim(0=0)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">∼</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">0</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">0</span><span class="mclose">)</span></span></span></span> 以除波浪号以外的任何符号开头，那么其哥德尔数至少应该有两个 2 因子。因此，更准确地说， 2 是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>1</mn></msup><mo>×</mo><msup><mn>3</mn><mn>8</mn></msup><mo>×</mo><msup><mn>5</mn><mn>6</mn></msup><mo>×</mo><msup><mn>7</mn><mn>5</mn></msup><mo>×</mo><mn>1</mn><msup><mn>1</mn><mn>6</mn></msup><mo>×</mo><mn>1</mn><msup><mn>3</mn><mn>9</mn></msup></mrow><annotation encoding="application/x-tex">2^1\times 3^8\times5^6\times7^5\times11^6\times 13^9</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">8</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">5</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">7</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">5</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mord"><span class="mord">1</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">9</span></span></span></span></span></span></span></span></span></span></span> 的因子，但 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">2^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span> 不是因子。</p>
+<p>我们可以将最后一个语句转换为精确的算术公式，即我们可以使用基本符号写下。这个公式当然有一个哥德尔数，我们可以通过将其符号映射到素数的幂上来进行计算。</p>
+<blockquote>
+<p>对于好奇的读者，这个语句可以读作 “存在一个整数 x 使得 x 乘以 2 等于<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>1</mn></msup><mo>×</mo><msup><mn>3</mn><mn>8</mn></msup><mo>×</mo><msup><mn>5</mn><mn>6</mn></msup><mo>×</mo><msup><mn>7</mn><mn>5</mn></msup><mo>×</mo><mn>1</mn><msup><mn>1</mn><mn>6</mn></msup><mo>×</mo><mn>1</mn><msup><mn>3</mn><mn>9</mn></msup></mrow><annotation encoding="application/x-tex">2^1\times 3^8\times5^6\times7^5\times11^6\times 13^9</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">8</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">5</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">7</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">5</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mord"><span class="mord">1</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">9</span></span></span></span></span></span></span></span></span></span></span>，且不存在一个整数 x 使得 xx 乘以 4 等于<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>1</mn></msup><mo>×</mo><msup><mn>3</mn><mn>8</mn></msup><mo>×</mo><msup><mn>5</mn><mn>6</mn></msup><mo>×</mo><msup><mn>7</mn><mn>5</mn></msup><mo>×</mo><mn>1</mn><msup><mn>1</mn><mn>6</mn></msup><mo>×</mo><mn>1</mn><msup><mn>3</mn><mn>9</mn></msup></mrow><annotation encoding="application/x-tex">2^1\times 3^8\times5^6\times7^5\times11^6\times 13^9</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">8</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">5</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">7</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">5</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mord"><span class="mord">1</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">9</span></span></span></span></span></span></span></span></span></span></span>。对应的公式为</p>
+<p><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi mathvariant="normal">∃</mi><mi>x</mi><mo stretchy="false">)</mo><mo stretchy="false">(</mo><mi>x</mi><mo>×</mo><mi>s</mi><mi>s</mi><mn>0</mn><mo>=</mo><mi>s</mi><mi>s</mi><mi>s</mi><mo>…</mo><mi>s</mi><mi>s</mi><mi>s</mi><mn>0</mn><mo stretchy="false">)</mo><mo>⋅</mo><mo>∼</mo><mo stretchy="false">(</mo><mi mathvariant="normal">∃</mi><mi>x</mi><mo stretchy="false">)</mo><mo stretchy="false">(</mo><mi>x</mi><mo>×</mo><mi>s</mi><mi>s</mi><mi>s</mi><mi>s</mi><mn>0</mn><mo>=</mo><mi>s</mi><mi>s</mi><mi>s</mi><mo>…</mo><mi>s</mi><mi>s</mi><mi>s</mi><mn>0</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(\exists x)(x \times s s 0=s s s \ldots s s s 0) \cdot \sim(\exists x)(x \times s s s s 0=s s s \ldots s s s 0)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">∃</span><span class="mord mathnormal">x</span><span class="mclose">)</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord">0</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="minner">…</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord">0</span><span class="mclose">)</span><span class="mord">⋅</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">∼</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">∃</span><span class="mord mathnormal">x</span><span class="mclose">)</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord">0</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="minner">…</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord">0</span><span class="mclose">)</span></span></span></span></p>
+<p>其中<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mi>s</mi><mi>s</mi><mo>…</mo><mi>s</mi><mi>s</mi><mi>s</mi><mn>0</mn></mrow><annotation encoding="application/x-tex">s s s \ldots s s s 0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="minner">…</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord">0</span></span></span></span> 表示有 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>1</mn></msup><mo>×</mo><msup><mn>3</mn><mn>8</mn></msup><mo>×</mo><msup><mn>5</mn><mn>6</mn></msup><mo>×</mo><msup><mn>7</mn><mn>5</mn></msup><mo>×</mo><mn>1</mn><msup><mn>1</mn><mn>6</mn></msup><mo>×</mo><mn>1</mn><msup><mn>3</mn><mn>9</mn></msup></mrow><annotation encoding="application/x-tex">2^1\times 3^8\times5^6\times7^5\times11^6\times 13^9</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">8</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">5</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">7</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">5</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mord"><span class="mord">1</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">9</span></span></span></span></span></span></span></span></span></span></span> 个后继符号 s 。符号<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>⋅</mo></mrow><annotation encoding="application/x-tex">\cdot</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.44445em;vertical-align:0em;"></span><span class="mord">⋅</span></span></span></span> 意思是 “且”，是基本词汇中较长表达的简写： <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>⋅</mo><mi>q</mi></mrow><annotation encoding="application/x-tex">p\cdot q</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.63889em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">q</span></span></span></span> 可以用 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∼</mo><mo stretchy="false">(</mo><mo>∼</mo><mi>p</mi><mo>∨</mo><mo>∼</mo><mi>q</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\sim(\sim p\vee \sim q)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">∼</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mrel">∼</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.75em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">p</span><span class="mord">∨</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">∼</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">q</span><span class="mclose">)</span></span></span></span> 代替。</p>
+</blockquote>
+<p>对于这个例子，内格尔和纽曼写道 “这说明了一个非常普遍且深刻的见解，它位于哥德尔发现的核心：长链符号的印刷性质可以间接但完全准确地 被对大整数因式分解性质的讨论替代。</p>
+<p>对于元数学语句，转换为符号依然是可能的：“存在某个哥德尔数为 x 的公式序列，可以证明哥德尔数为 k 的公式”，或者简言之，“哥德尔数为 k 的公式可以被证明”。将此类语句 “算术化” 的能力为解决这个难题奠定了基础。</p>
+<p><strong>G 自身</strong></p>
+<p>哥德尔的独到见解是，他可以用公式本身的哥德尔数代入到公式中，从而导致无穷无尽的麻烦。</p>
+<p>为了看出这个代入是如何起效的，考虑公式 (∃x)(x=sy) （它读作 “存在一个变量 x 使得它是 y 的后继”，或者简言之，“ y 有一个后继”）。像所有公式一样，它有哥德尔数，即某个大整数，我们就叫它 m 。</p>
+<p>现在让我们在公式中用 m 代替符号 y 。 这形成一个新公式 (∃x)(x=sm) ，表示 “ m 有一个后继”。 我们怎么记这个公式的哥德尔数呢？我们需要传达三点信息：我们从哥德尔数为 m 的公式开始。 在其中，我们用 m 代替了符号 y 。根据前面介绍的映射方案，符号 y 的哥德尔数为 17。因此，让我们指定新公式的哥德尔数为 sub (m,m,17) 。</p>
+<blockquote>
+<p>译者注：这段是理解的难点，我们更仔细的再叙述一遍。在这段中，我们定义了一个函数 sub ，这个函数一共有 3 个输入，他们都是正整数，我们记为 sub (a,b,c)) 。其中，第一个参数 a 是一个公式的哥德尔数，我们接收到 a 之后要把它解码成此哥德尔数所对应的公式。最后一个参数 c 指的是一个符号的哥德尔数，我们要找到 a 对应公式的所有哥德尔数为 c 的符号所对应的位置。最后，我们把刚才找到的位置全部替换成数字 b 。现在，我们计算这个修改后的公式的哥德尔数，这个数字就是 sub (a,b,c)。</p>
+</blockquote>
+<p>替换构成了哥德尔证明的关键。</p>
+<p>他考虑下面一个元数学语句 “无法证明哥德尔数为 sub (y,y,17) 的公式”。回想一下我们刚刚学到的符号，哥德尔数为 sub (y,y,17) 的公式是通过取哥德尔数为 y （某个未知量）的公式并将该变量 y 替换掉哥德尔数为 17 的符号（也是任何一个 y 的位置）。</p>
+<p>事情变得令人迷惑，但是不管怎么说，我们的元数学语句 “无法证明哥德尔数为 sub (y,y,17) 的公式” 肯定能转化为某个特定哥德尔数所对应的公式。 我们把这个数称为 n 。</p>
+<p>现在进行最后一轮替换：哥德尔通过将数字 n 替换先前公式中 y 的位置来创建一个新公式。他的新公式声称：“无法证明哥德尔数为 sub (n,n,17) 的公式”。我们将此新公式称为 G 。</p>
+<p>自然， G 也有一个哥德尔数。那么它的值是什么呢？哇哦，它肯定是 sub (n,n,17) ！根据定义， sub (n,n,17) 是下面公式的哥德尔数，它是通过将哥德尔数为 n 的公式中对应哥德尔数为 17 的符号用 n 替代所得到的。而 G 正是这个公式！ 由于素数分解的唯一性，我们现在看到 G 所讨论的公式就是 G 本身。</p>
+<blockquote>
+<p>译者注：这又是一个难点。我们更仔细的叙述如何计算 sub (n,n,17)。回忆我们前面的注，我们的第一步就是要解码 n 所对应的公式。根据前文，我们知道这对应了语句 “无法证明哥德尔数为 sub (y,y,17) 的公式”。第二步，我们要找到 17 所对应的符号，也就是 y 的所有位置，我们将找到的位置加个框：“无法证明哥德尔数为 \mathrm{sub}(\bbox[#EEF, 5px, border: 2px solid red]{y},\bbox[#EEF, 5px, border: 2px solid red]{y},17) 的公式 “。第三步，我们要把框的位置替换成 n ，也就是 “无法证明哥德尔数为 sub (n,n,17) 的公式 “，而这正是公式 G 。</p>
+</blockquote>
+<p>G 断言自己无法被证明。</p>
+<p>但是 G 能被证明吗？如果是的话，则意味着存在某个公式序列，可以证明哥德尔数为 sub (n,n,17) 的公式。但这恰好与 G 相反，即 G 断言不存在这样的证明。相反的语句 G 和 ∼G 在一致的公理体系中不可能同时为真。因此， G 的正确与否必然无法被判定。</p>
+<p>然而，尽管 G 是无法被判定，它显然是对的。 G 意思是 “无法证明哥德尔数为 sub (n,n,17) 的公式”，而这正是我们所发现的事实。既然 G 是正确的，还是在此公理体系内构造的一个无法被判定的语句，说明了这个系统是不完备的。</p>
+<p>你可能认为你可以提出一些额外的公理，使用它们证明 G 并解决悖论。但是你不能。哥德尔说明了对于增强的公理系统将允许构建新的正确的公式 G （根据与之前的方法类似），而该公式无法在新的增强系统中得到证明。在努力建立完备的数学系统时，你永远无法摆脱困境。</p>
+<p><strong>没有一致性的证明</strong></p>
+<p>我们学到了如果公理集是一致的，则它是不完备的。这是哥德尔第一不完备定理。第二定理，即没有一套公理可以证明其自身的一致性，由此易得。</p>
+<p>如果公理集可以证明它永远不会产生矛盾，那意味着什么？这意味着存在根据这些公理构建的一系列公式，证明了这个含义为 “这组公理是一致的” 的元数学公式。由第一定理，这个公理集必然是不完备的。</p>
+<p>但是，“公理集是不完备的” 与 “有一个无法被证明的正确的公式” 含义相同。这个语句等价于我们的公式 G 。我们知道公理不能证明 G 。</p>
+<p>因此，哥德尔创造了一个矛盾的证明：如果公理集可以证明其自身的一致性，那么我们将能够证明 G 。但是我们不能。因此，没有一组公理可以证明其自身的一致性。</p>
+<p>哥德尔的证明扼杀了对一个一致和完备的数学系统的追求。内格尔和纽曼在 1958 年写道，不完备性的含义 “还没有被完全理解”。直到今天仍然如此。</p>
+]]></content>
+      <categories>
+        <category>数理逻辑</category>
+      </categories>
+      <tags>
+        <tag>数理逻辑</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>深度学习编译器TVM-UserTutorial</title>
     <url>/2023/02/28/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%BC%96%E8%AF%91%E5%99%A8TVM-UserTutorial/</url>
     <content><![CDATA[<h1 id="tvm-usertutorial"><a class="anchor" href="#tvm-usertutorial">#</a> TVM-UserTutorial</h1>
@@ -1222,6 +1374,227 @@ public class SimpleExprTest &#123;
 <p>代码写完后上传又有问题，可能是之前 make compile , make clean 太多次了，导致压缩包超过了 10M 的限制，后来参考助教给的<span class="exturl" data-url="aHR0cHM6Ly93d3cuaG9sbGlzY2h1YW5nLmNvbS9hcmNoaXZlcy8xNzA4">记一次删除 Git 记录中的大文件的过程 - HollisChuang's Blog</span> 按里面的步骤一步步做才完成上传，比较幸运的是一次就 AC 了。（至于为什么压缩包会那么大，我的理解是改动了太多次代码 make compile 了太多次，且每次 git 都会保存版本信息以便于回退，所以改动的所有版本其实都还在 git 保存的隐藏文件夹下的，所以整个目录就会变得很大了）</p>
 </li>
 </ul>
+]]></content>
+      <categories>
+        <category>编译原理</category>
+      </categories>
+      <tags>
+        <tag>编译原理</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>编译原理03-语义分析</title>
+    <url>/2023/04/12/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8603-%E8%AF%AD%E4%B9%89%E5%88%86%E6%9E%90/</url>
+    <content><![CDATA[<h1 id="语义分析"><a class="anchor" href="#语义分析">#</a> 语义分析</h1>
+<h2 id="符号表"><a class="anchor" href="#符号表">#</a> 符号表</h2>
+<p><img data-src="image-20230412154717575.png" alt="image-20230412154717575"></p>
+<p>用符号表保存我们已经定义了的变量或者函数以及其相关信息，在遍历语法分析树时，如果发现当前新出现的某些单元与符号表中的信息有冲突，我们就可以发现语义错误。</p>
+<h3 id="实现符号表"><a class="anchor" href="#实现符号表">#</a> 实现符号表</h3>
+<p>首先构建作用域树：</p>
+<p><img data-src="image-20230419140503102.png" alt="image-20230419140503102"></p>
+<p><strong>我们在这里犯了一个小错误</strong>，即把函数参数的作用域单独独立出来了，以便于我们编码，实际上函数参数作用域和函数作用域应该是要合并的。</p>
+<p>作用域的指针指向父作用域，在查找某个变量是在哪个作用域时要循环从当前作用域到父作用域遍历。</p>
+<p>之后可以通过递归遍历等方式进行语义相关的检查。</p>
+<p>某个利用 antlr4 实现符号表的类图：</p>
+<p>scope 是作用域（持有一个 Map (name, symbol) 的符号表数据类型），symbol 是符号 (持有 name 和 type，是符号表的基本单元)，type 是符号所持有的类型（比如基本类型，array), 通过遍历时</p>
+<p><img data-src="image-20230419141503552.png" alt="image-20230419141503552"></p>
+<p>浅绿框起来的是接口。</p>
+<h2 id="属性文法"><a class="anchor" href="#属性文法">#</a> 属性文法</h2>
+<h3 id="为什么要引入属性文法"><a class="anchor" href="#为什么要引入属性文法">#</a> 为什么要引入属性文法</h3>
+<p>之前引入上下文无关文法的时候，是因为正则表达式无法表达 a<sup>nb</sup>n 这样的表达式，但是上下文无关文法也有局限，<strong>无法帮助我们进行语义相关的检查</strong>。于是引入 Knuth 发明的属性文法。</p>
+<p><img data-src="image-20230421140916771.png" alt="image-20230421140916771"></p>
+<p>接下来以实现一个<strong>交互式</strong>的简易计算器为例</p>
+<p>前几节课写的简易计算器采用的是 offline 的方法：<br>
+<img data-src="image-20230421141650214.png" alt="image-20230421141650214"></p>
+<p>本次将采用 online 的方式实现，即在构建语法分析树的过程中加入我们想实现的 action。</p>
+<p><img data-src="image-20230421142018201.png" alt="image-20230421142018201"></p>
+<p>之前实现计算器的时候遇到了一个问题，listener 模式下，访问某个节点的 enterXXX 与 exitXXX 方法没有返回值，而当前节点的 value 依赖于子节点 value 的值，当时采用了标注语法树的方法。</p>
+<p>antlr4 的另一个解决方案：</p>
+<p><img data-src="image-20230421143635663.png" alt="image-20230421143635663"></p>
+<p>在.g4 文件的 expr 定义后 加上 returns [int val] 后，在 antlr4 生成的 expr 对应的节点类中会附带一个 val 属性。</p>
+<p>每一行后大括号裹起来的黑体字是会在语法分析时我们加入的 java 代码，具体可在生成的 parser 类中查看。之后在 @package 中加入需要的头文件并在 @members 中加入 eval，memory 等的 java 实现。(实际上可在 @parser::members 中加入，这样在 lexer 中就不会生成这些无用的代码)</p>
+<p>像 expr 这种从子节点的 expr 值计算得到的属性，叫做综合属性。</p>
+<p>至于 “交互式” 的实现，主要是 main 函数的实现方式，参照代码仓库。</p>
+<p>第二个例子：类型声明文法：</p>
+<p><img data-src="image-20230421145230801.png" alt="image-20230421145230801"></p>
+<p>第一条语义规则的问题：将 L 的类型赋值为 T 的类型，可是在递归调用的时候，L 并不知道 T 返回了一个类型是 float 还是 int。</p>
+<p>解决方法，给 L 一个 inh (inherit) 属性值，这种从左兄弟或者父节点继承来的值，叫做继承属性。</p>
+<p><img data-src="image-20230421151150679.png" alt="image-20230421151150679"></p>
+<p>antlr4 实现的语法：<br>
+<img data-src="image-20230421151912395.png" alt="image-20230421151912395"></p>
+<p>vars [String typeStr] 代表 vars 节点将携带一个属性 TypeStr。</p>
+<h3 id="语法制导定义"><a class="anchor" href="#语法制导定义">#</a> 语法制导定义</h3>
+<p><img data-src="image-20230421152800113.png" alt="image-20230421152800113"></p>
+<p>像上面的 g4 语法定义都属于 SDD，每个节点可以有多个属性</p>
+<p><img data-src="image-20230421153313913.png" alt="image-20230421153313913"></p>
+<p><img data-src="image-20230421153702902.png" alt="image-20230421153702902"></p>
+<p>继承属性用于在表达式中从左向右传递中间计算结果</p>
+<p>比如：累乘的右递归文法</p>
+<p><img data-src="image-20230421154158430.png" alt="image-20230421154158430"></p>
+<p><img data-src="image-20230421154959302.png" alt="image-20230421154959302"></p>
+<p>信息流向：先从左到右利用继承属性传递信息，再利用综合属性从下到上传递信息。</p>
+<p>属性文法的本质：信息的有序流动</p>
+<h3 id="l属性定义"><a class="anchor" href="#l属性定义">#</a> L 属性定义</h3>
+<p><img data-src="image-20230426140830620.png" alt="image-20230426140830620"></p>
+<p>例子 1：</p>
+<p>用属性文法实现得到表达式的后缀表示形式</p>
+<p><img data-src="image-20230426141239902.png" alt="image-20230426141239902"></p>
+<p><img data-src="image-20230426141906728.png" alt="image-20230426141906728"></p>
+<p>例子 2：得到数组的类型表达式</p>
+<p><strong>比如 int [2] [3] -&gt; (2,(3,int))</strong></p>
+<p><img data-src="image-20230504101715454.png" alt="image-20230504101715454"></p>
+<p><img data-src="image-20230426142516412.png" alt="image-20230426142516412"></p>
+<p>antlr4 实现文法：<br>
+<img data-src="image-20230426143619377.png" alt="image-20230426143619377"></p>
+<p>例子 3：判断赋值号左右类型是否相等</p>
+<p><img data-src="image-20230426151226852.png" alt="image-20230426151226852"></p>
+<p>数组声明相关文法已经在例子 2 中完成了。</p>
+<p><img data-src="image-20230504121851839.png" alt="image-20230504121851839"></p>
+<p>具体代码可在 github 代码仓库中查找。</p>
+<p>属性文法缺点：要在 antlr 中编写 java 代码，而且要完成编译器的话会需要很多代码，这些代码与 antlr 的文法混合在一起。</p>
+<h2 id="总结"><a class="anchor" href="#总结">#</a> 总结</h2>
+<p><img data-src="image-20230426152847006.png" alt="image-20230426152847006"></p>
+<p>两种语义分析方法，各有优势。Offline 简单，Online 性能更高。</p>
+]]></content>
+      <categories>
+        <category>编译原理</category>
+      </categories>
+      <tags>
+        <tag>编译原理</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>编译原理04-中间代码生成</title>
+    <url>/2023/05/05/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8604-%E4%B8%AD%E9%97%B4%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/</url>
+    <content><![CDATA[<h1 id="编译原理04-中间代码生成"><a class="anchor" href="#编译原理04-中间代码生成">#</a> 编译原理 04 - 中间代码生成</h1>
+<h2 id="llvm-ir简介"><a class="anchor" href="#llvm-ir简介">#</a> LLVM IR 简介</h2>
+<p><img data-src="image-20230505140807839.png" alt="image-20230505140807839"></p>
+<p>LLVM 这个项目与最初的名字含义已经完全不同了，可以将 LLVM 理解为全称。目前 LLVM 是开发新的编译器的<strong>基础</strong>。</p>
+<p><img data-src="image-20230505141735207.png" alt="image-20230505141735207"></p>
+<p>前端经过语法分析，词法分析，生成 IR</p>
+<p><strong>“IR 设计的优秀与否决定着整个编译器的好坏”</strong></p>
+<p><img data-src="image-20230505141928962.png" alt="image-20230505141928962"></p>
+<p>一个.c 文件对应生成一个.ll 文件。Module 实际上就是一个文件 file, Module 里有多个函数，一个函数具有多个<strong>基本块 (Basic Block)</strong>, 每一个基本块都由多个指令构成。</p>
+<p>使用 clang <strong>-S -emit-llvm</strong> factorial0.c -o f0-opt0.ll 表示用 clang 生成到 llvm 中间代码阶段停止。</p>
+<p>中间代码示例：<br>
+<img data-src="image-20230505143323681.png" alt="image-20230505143323681"></p>
+<p>像 %3 %4 这样的是分配一个虚拟寄存器， alloca 表示内存分配， align 表示内存对齐</p>
+<p><code>store i32 0, i32* %3</code>  表示把 0 存到 %3 寄存器中</p>
+<p>call 一行表示函数调用</p>
+<p>下一行表示结果与 7 相乘， nsw 表示 no signed wrap</p>
+<p>zext: zero - extension 将一 bit 的 %8 扩展为 32 位</p>
+<p>%2 哪去了？ 被分配为 entry 基本块的名称</p>
+<p>限制：任何一个变量都只能一次赋值， 好处是使用变量时明确知道在什么时候定义过的。</p>
+<h2 id="控制流图"><a class="anchor" href="#控制流图">#</a> 控制流图</h2>
+<p><img data-src="image-20230505150416543.png" alt="image-20230505150416543"></p>
+<p>控制流图的定义：<br>
+<img data-src="image-20230505150719324.png" alt="image-20230505150719324"></p>
+<p>例子：<br>
+<img data-src="image-20230505151157414.png" alt="image-20230505151157414"></p>
+<p>中间代码的数据流图：</p>
+<p><img data-src="image-20230505151318630.png" alt="image-20230505151318630"></p>
+<p>问题：%6 和 %7 基本块中要约定好把想 ret 的结果放在某一个寄存器中</p>
+<p>开了 o1 优化后：</p>
+<p><img data-src="image-20230505152003795.png" alt="image-20230505152003795"></p>
+<p>o1 优化会去掉所有的内存分配，store load 指令。</p>
+<p>phi 指令 根据从哪个块跳转出来决定赋值给 %8 寄存器的值</p>
+<p>然而 phi 指令只是为了简化中间代码的大小产生的，是一个虚拟指令，实际上仍然可能会使用基本方案。</p>
+<h2 id="llvm-java-api"><a class="anchor" href="#llvm-java-api">#</a> LLVM JAVA API</h2>
+<p><img data-src="image-20230506141752865.png" alt="image-20230506141752865"></p>
+<p>在配置文件中加依赖</p>
+<p><img data-src="image-20230506142227366.png" alt="image-20230506142227366"></p>
+<p>可以参照 LLVM 官方的教程，c++ 语言如何翻译为中间代码。</p>
+<h2 id="中间代码翻译"><a class="anchor" href="#中间代码翻译">#</a> 中间代码翻译</h2>
+<p><img data-src="image-20230506143047512.png" alt="image-20230506143047512"></p>
+<p>这里的 || 符号是 then 的意思，不是或者。</p>
+<p><img data-src="image-20230506144459580.png" alt="image-20230506144459580"></p>
+<p><img data-src="image-20230506144737646.png" alt="image-20230506144737646"></p>
+<p><img data-src="image-20230506145121379.png" alt="image-20230506145121379"></p>
+<p>例子： int a [2] [3]; c + a [i] [j];</p>
+<p><img data-src="image-20230506150834033.png" alt="image-20230506150834033"></p>
+<p>在 llvm IR 中：会用 getelementptr（GEP）指令处理数组引用</p>
+<p><img data-src="image-20230506151202417.png" alt="image-20230506151202417"></p>
+<p>GEP 指令有四个参数，其中第四个参数不限个数，可以有多个 index。</p>
+<p>第一个 index 比较特殊，表示 base-type 的一个元素的大小，用于 a++ 这样的操作，后面的 index 才用于进入数组获取元素，即没多一个 index 脱掉一层中括号。</p>
+<p><img data-src="image-20230506151901102.png" alt="image-20230506151901102"></p>
+<p>GEP provides a way to access arrays and manipulate pointers.</p>
+<p>GEP abstract away details like size of types.</p>
+<p>有了 GEP 指令后就不用像上面那样递归的计算偏移量了。</p>
+<p><img data-src="image-20230506154154393.png" alt="image-20230506154154393"></p>
+<h3 id="控制流语句的翻译"><a class="anchor" href="#控制流语句的翻译">#</a> 控制流语句的翻译</h3>
+<p>简单的思路会带来冗余的代码</p>
+<p>要生成简短高效的代码，就需要<strong>创造困难</strong></p>
+<p><strong>简单 mode：</strong></p>
+<p><img data-src="image-20230510141125754.png" alt="image-20230510141125754"></p>
+<p>将 B 的值保存到临时变量 t1 中，翻译 if 语句时用 br 语句测试 t1 的值并根据情况跳转到两个基本块中。</p>
+<p>以 Control 语言为例：</p>
+<p><img data-src="image-20230510142838861.png" alt="image-20230510142838861"></p>
+<p>选择实现方式的范围： Listeners, Visitors, Attributed Grammar</p>
+<p>前两种方法能做到的 属性方法都能做到，但是属性文法本身比较困难，所以在前两种中方法中选择。</p>
+<p>Listener 模式有一个问题： 比如 B -&gt; B1 || B2 的翻译：</p>
+<p>要在 exitB () 方法拼接 B1.code 和 B2.code 。但是考虑出现了短路求值的问题时，由于在 exitB 的时候 B1 和 B2 的代码都生成好了，因此要在拼接 B1.code 和 B2.code 中间插入判断短路求值的代码，不能及时输出生成的中间代码，不能避免频繁的字符串拼接操作。简要来说，访问完 B1，将中间代码保存下来，才能进行接下来的操作，不能在访问 B1 和访问 B2 中间插入一些操作，这是 Listener 模式的缺陷。</p>
+<p>具体代码见代码仓库<em> 2023-compilers-coding-0/src/main/java/codegen/CodeGenVisitor.java</em></p>
+<p>true 和 false 的翻译：</p>
+<p><img data-src="image-20230510144428568.png" alt="image-20230510144428568"></p>
+<p>AND 语句：</p>
+<p>有一个小错误 String temp = getNewTemp () 要放在 emitLabel (trueLabel) 之上。</p>
+<p><img data-src="image-20230510151933288.png" alt="image-20230510151933288"></p>
+<p>if 语句：</p>
+<p><img data-src="image-20230510151955477.png" alt="image-20230510151955477"></p>
+<p>while 语句：</p>
+<p><img data-src="image-20230510152502018.png" alt="image-20230510152502018"></p>
+<p>一个问题：break 语句怎么翻译，多层嵌套的循环语句怎么办</p>
+<p>解决方法：使用一个栈，保存 break 语句要跳转到的地方。，参照 while 语句中的压栈出栈语句。</p>
+<p>短路求值问题： 参照 And 中的实现</p>
+<p><strong>复杂 mode</strong>：</p>
+<p><img data-src="image-20230510154721641.png" alt="image-20230510154721641"></p>
+<p>为什么让事情变得更复杂：</p>
+<p>eg：</p>
+<p><img data-src="image-20230517140632912.png" alt="image-20230517140632912"></p>
+<p>如果使用简单方案，将会生成 12 行中间代码，然而实际上这是一个死循环</p>
+<p>解决方案：利用继承属性让布尔表达式知道要跳转到哪</p>
+<p><img data-src="image-20230517141735294.png" alt="image-20230517141735294"></p>
+<h3 id="需要的继承属性"><a class="anchor" href="#需要的继承属性">#</a> 需要的继承属性</h3>
+<p><img data-src="image-20230517142425226.png" alt="image-20230517142425226"></p>
+<h3 id="if语句"><a class="anchor" href="#if语句">#</a> if 语句</h3>
+<p><img data-src="image-20230517142712190.png" alt="image-20230517142712190"></p>
+<p>S.next 是之前准备好的</p>
+<p><img data-src="image-20230517143447956.png" alt="image-20230517143447956"></p>
+<p>bool 表达式直接翻译成 goto 语句</p>
+<h3 id="if-else-语句"><a class="anchor" href="#if-else-语句">#</a> if else 语句</h3>
+<p><img data-src="image-20230517144609460.png" alt="image-20230517144609460"></p>
+<p>eg：<img data-src="image-20230517144946527.png" alt="image-20230517144946527"></p>
+<h3 id="while语句"><a class="anchor" href="#while语句">#</a> while 语句</h3>
+<p><img data-src="image-20230517150821390.png" alt="image-20230517150821390"></p>
+<h3 id="顺序语句"><a class="anchor" href="#顺序语句">#</a> 顺序语句：</h3>
+<p><img data-src="image-20230517152329272.png" alt="image-20230517152329272"></p>
+<h3 id="短路求值"><a class="anchor" href="#短路求值">#</a> 短路求值</h3>
+<p><img data-src="image-20230517153441075.png" alt="image-20230517153441075"></p>
+<p><img data-src="image-20230517153732513.png" alt="image-20230517153732513"></p>
+<h2 id="地址回填技术"><a class="anchor" href="#地址回填技术">#</a> 地址回填技术</h2>
+<p><img data-src="image-20230519140559966.png" alt="image-20230519140559966"></p>
+<p>java 字节码中不使用符号化的标签作为跳转目标，而采用直接的地址值作为跳转目标。</p>
+<p>问题：往回跳简单，往前跳不知道跳转的地址，如何一趟扫描中就知道跳转目标的真实地址？</p>
+<p><img data-src="image-20230519141028791.png" alt="image-20230519141028791"></p>
+<p><img data-src="image-20230519141358466.png" alt="image-20230519141358466"></p>
+<p>解决方案： B 在 goto 语句后面空着，交给父节点 S 来回填。</p>
+<p><img data-src="image-20230519141905148.png" alt="image-20230519141905148"></p>
+<p>从底向上看怎么使用地址回填技术：(每幅图的下半部分是之前的翻译方案)</p>
+<p><img data-src="image-20230519143110842.png" alt="image-20230519143110842"></p>
+<p><img data-src="image-20230519143543907.png" alt="image-20230519143543907"></p>
+<p><img data-src="image-20230519143840206.png" alt="image-20230519143840206"></p>
+<p>到这里已经可以确定一些跳转的地址了：</p>
+<p>M 是一个辅助的符号，用来确定 B2 第一个指令的地址的值是多少</p>
+<p><img data-src="image-20230519144434026.png" alt="image-20230519144434026"></p>
+<p><img data-src="image-20230519150121225.png" alt="image-20230519150121225"></p>
+<p>布尔表达式结束 到达更高层：</p>
+<p><img data-src="/image-20230519151840965.png" alt="image-20230519151840965"></p>
+<p><img data-src="image-20230519152628678.png" alt="image-20230519152628678"></p>
+<p><img data-src="image-20230519153118656.png" alt="image-20230519153118656"></p>
+<p>顺序语句：</p>
+<p><img data-src="image-20230519153706714.png" alt="image-20230519153706714"></p>
+<p>总结：</p>
+<p><img data-src="image-20230519154323985.png" alt="image-20230519154323985"></p>
 ]]></content>
       <categories>
         <category>编译原理</category>
@@ -1574,227 +1947,6 @@ public class SimpleExprTest &#123;
       </tags>
   </entry>
   <entry>
-    <title>编译原理04-中间代码生成</title>
-    <url>/2023/05/05/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8604-%E4%B8%AD%E9%97%B4%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/</url>
-    <content><![CDATA[<h1 id="编译原理04-中间代码生成"><a class="anchor" href="#编译原理04-中间代码生成">#</a> 编译原理 04 - 中间代码生成</h1>
-<h2 id="llvm-ir简介"><a class="anchor" href="#llvm-ir简介">#</a> LLVM IR 简介</h2>
-<p><img data-src="image-20230505140807839.png" alt="image-20230505140807839"></p>
-<p>LLVM 这个项目与最初的名字含义已经完全不同了，可以将 LLVM 理解为全称。目前 LLVM 是开发新的编译器的<strong>基础</strong>。</p>
-<p><img data-src="image-20230505141735207.png" alt="image-20230505141735207"></p>
-<p>前端经过语法分析，词法分析，生成 IR</p>
-<p><strong>“IR 设计的优秀与否决定着整个编译器的好坏”</strong></p>
-<p><img data-src="image-20230505141928962.png" alt="image-20230505141928962"></p>
-<p>一个.c 文件对应生成一个.ll 文件。Module 实际上就是一个文件 file, Module 里有多个函数，一个函数具有多个<strong>基本块 (Basic Block)</strong>, 每一个基本块都由多个指令构成。</p>
-<p>使用 clang <strong>-S -emit-llvm</strong> factorial0.c -o f0-opt0.ll 表示用 clang 生成到 llvm 中间代码阶段停止。</p>
-<p>中间代码示例：<br>
-<img data-src="image-20230505143323681.png" alt="image-20230505143323681"></p>
-<p>像 %3 %4 这样的是分配一个虚拟寄存器， alloca 表示内存分配， align 表示内存对齐</p>
-<p><code>store i32 0, i32* %3</code>  表示把 0 存到 %3 寄存器中</p>
-<p>call 一行表示函数调用</p>
-<p>下一行表示结果与 7 相乘， nsw 表示 no signed wrap</p>
-<p>zext: zero - extension 将一 bit 的 %8 扩展为 32 位</p>
-<p>%2 哪去了？ 被分配为 entry 基本块的名称</p>
-<p>限制：任何一个变量都只能一次赋值， 好处是使用变量时明确知道在什么时候定义过的。</p>
-<h2 id="控制流图"><a class="anchor" href="#控制流图">#</a> 控制流图</h2>
-<p><img data-src="image-20230505150416543.png" alt="image-20230505150416543"></p>
-<p>控制流图的定义：<br>
-<img data-src="image-20230505150719324.png" alt="image-20230505150719324"></p>
-<p>例子：<br>
-<img data-src="image-20230505151157414.png" alt="image-20230505151157414"></p>
-<p>中间代码的数据流图：</p>
-<p><img data-src="image-20230505151318630.png" alt="image-20230505151318630"></p>
-<p>问题：%6 和 %7 基本块中要约定好把想 ret 的结果放在某一个寄存器中</p>
-<p>开了 o1 优化后：</p>
-<p><img data-src="image-20230505152003795.png" alt="image-20230505152003795"></p>
-<p>o1 优化会去掉所有的内存分配，store load 指令。</p>
-<p>phi 指令 根据从哪个块跳转出来决定赋值给 %8 寄存器的值</p>
-<p>然而 phi 指令只是为了简化中间代码的大小产生的，是一个虚拟指令，实际上仍然可能会使用基本方案。</p>
-<h2 id="llvm-java-api"><a class="anchor" href="#llvm-java-api">#</a> LLVM JAVA API</h2>
-<p><img data-src="image-20230506141752865.png" alt="image-20230506141752865"></p>
-<p>在配置文件中加依赖</p>
-<p><img data-src="image-20230506142227366.png" alt="image-20230506142227366"></p>
-<p>可以参照 LLVM 官方的教程，c++ 语言如何翻译为中间代码。</p>
-<h2 id="中间代码翻译"><a class="anchor" href="#中间代码翻译">#</a> 中间代码翻译</h2>
-<p><img data-src="image-20230506143047512.png" alt="image-20230506143047512"></p>
-<p>这里的 || 符号是 then 的意思，不是或者。</p>
-<p><img data-src="image-20230506144459580.png" alt="image-20230506144459580"></p>
-<p><img data-src="image-20230506144737646.png" alt="image-20230506144737646"></p>
-<p><img data-src="image-20230506145121379.png" alt="image-20230506145121379"></p>
-<p>例子： int a [2] [3]; c + a [i] [j];</p>
-<p><img data-src="image-20230506150834033.png" alt="image-20230506150834033"></p>
-<p>在 llvm IR 中：会用 getelementptr（GEP）指令处理数组引用</p>
-<p><img data-src="image-20230506151202417.png" alt="image-20230506151202417"></p>
-<p>GEP 指令有四个参数，其中第四个参数不限个数，可以有多个 index。</p>
-<p>第一个 index 比较特殊，表示 base-type 的一个元素的大小，用于 a++ 这样的操作，后面的 index 才用于进入数组获取元素，即没多一个 index 脱掉一层中括号。</p>
-<p><img data-src="image-20230506151901102.png" alt="image-20230506151901102"></p>
-<p>GEP provides a way to access arrays and manipulate pointers.</p>
-<p>GEP abstract away details like size of types.</p>
-<p>有了 GEP 指令后就不用像上面那样递归的计算偏移量了。</p>
-<p><img data-src="image-20230506154154393.png" alt="image-20230506154154393"></p>
-<h3 id="控制流语句的翻译"><a class="anchor" href="#控制流语句的翻译">#</a> 控制流语句的翻译</h3>
-<p>简单的思路会带来冗余的代码</p>
-<p>要生成简短高效的代码，就需要<strong>创造困难</strong></p>
-<p><strong>简单 mode：</strong></p>
-<p><img data-src="image-20230510141125754.png" alt="image-20230510141125754"></p>
-<p>将 B 的值保存到临时变量 t1 中，翻译 if 语句时用 br 语句测试 t1 的值并根据情况跳转到两个基本块中。</p>
-<p>以 Control 语言为例：</p>
-<p><img data-src="image-20230510142838861.png" alt="image-20230510142838861"></p>
-<p>选择实现方式的范围： Listeners, Visitors, Attributed Grammar</p>
-<p>前两种方法能做到的 属性方法都能做到，但是属性文法本身比较困难，所以在前两种中方法中选择。</p>
-<p>Listener 模式有一个问题： 比如 B -&gt; B1 || B2 的翻译：</p>
-<p>要在 exitB () 方法拼接 B1.code 和 B2.code 。但是考虑出现了短路求值的问题时，由于在 exitB 的时候 B1 和 B2 的代码都生成好了，因此要在拼接 B1.code 和 B2.code 中间插入判断短路求值的代码，不能及时输出生成的中间代码，不能避免频繁的字符串拼接操作。简要来说，访问完 B1，将中间代码保存下来，才能进行接下来的操作，不能在访问 B1 和访问 B2 中间插入一些操作，这是 Listener 模式的缺陷。</p>
-<p>具体代码见代码仓库<em> 2023-compilers-coding-0/src/main/java/codegen/CodeGenVisitor.java</em></p>
-<p>true 和 false 的翻译：</p>
-<p><img data-src="image-20230510144428568.png" alt="image-20230510144428568"></p>
-<p>AND 语句：</p>
-<p>有一个小错误 String temp = getNewTemp () 要放在 emitLabel (trueLabel) 之上。</p>
-<p><img data-src="image-20230510151933288.png" alt="image-20230510151933288"></p>
-<p>if 语句：</p>
-<p><img data-src="image-20230510151955477.png" alt="image-20230510151955477"></p>
-<p>while 语句：</p>
-<p><img data-src="image-20230510152502018.png" alt="image-20230510152502018"></p>
-<p>一个问题：break 语句怎么翻译，多层嵌套的循环语句怎么办</p>
-<p>解决方法：使用一个栈，保存 break 语句要跳转到的地方。，参照 while 语句中的压栈出栈语句。</p>
-<p>短路求值问题： 参照 And 中的实现</p>
-<p><strong>复杂 mode</strong>：</p>
-<p><img data-src="image-20230510154721641.png" alt="image-20230510154721641"></p>
-<p>为什么让事情变得更复杂：</p>
-<p>eg：</p>
-<p><img data-src="image-20230517140632912.png" alt="image-20230517140632912"></p>
-<p>如果使用简单方案，将会生成 12 行中间代码，然而实际上这是一个死循环</p>
-<p>解决方案：利用继承属性让布尔表达式知道要跳转到哪</p>
-<p><img data-src="image-20230517141735294.png" alt="image-20230517141735294"></p>
-<h3 id="需要的继承属性"><a class="anchor" href="#需要的继承属性">#</a> 需要的继承属性</h3>
-<p><img data-src="image-20230517142425226.png" alt="image-20230517142425226"></p>
-<h3 id="if语句"><a class="anchor" href="#if语句">#</a> if 语句</h3>
-<p><img data-src="image-20230517142712190.png" alt="image-20230517142712190"></p>
-<p>S.next 是之前准备好的</p>
-<p><img data-src="image-20230517143447956.png" alt="image-20230517143447956"></p>
-<p>bool 表达式直接翻译成 goto 语句</p>
-<h3 id="if-else-语句"><a class="anchor" href="#if-else-语句">#</a> if else 语句</h3>
-<p><img data-src="image-20230517144609460.png" alt="image-20230517144609460"></p>
-<p>eg：<img data-src="image-20230517144946527.png" alt="image-20230517144946527"></p>
-<h3 id="while语句"><a class="anchor" href="#while语句">#</a> while 语句</h3>
-<p><img data-src="image-20230517150821390.png" alt="image-20230517150821390"></p>
-<h3 id="顺序语句"><a class="anchor" href="#顺序语句">#</a> 顺序语句：</h3>
-<p><img data-src="image-20230517152329272.png" alt="image-20230517152329272"></p>
-<h3 id="短路求值"><a class="anchor" href="#短路求值">#</a> 短路求值</h3>
-<p><img data-src="image-20230517153441075.png" alt="image-20230517153441075"></p>
-<p><img data-src="image-20230517153732513.png" alt="image-20230517153732513"></p>
-<h2 id="地址回填技术"><a class="anchor" href="#地址回填技术">#</a> 地址回填技术</h2>
-<p><img data-src="image-20230519140559966.png" alt="image-20230519140559966"></p>
-<p>java 字节码中不使用符号化的标签作为跳转目标，而采用直接的地址值作为跳转目标。</p>
-<p>问题：往回跳简单，往前跳不知道跳转的地址，如何一趟扫描中就知道跳转目标的真实地址？</p>
-<p><img data-src="image-20230519141028791.png" alt="image-20230519141028791"></p>
-<p><img data-src="image-20230519141358466.png" alt="image-20230519141358466"></p>
-<p>解决方案： B 在 goto 语句后面空着，交给父节点 S 来回填。</p>
-<p><img data-src="image-20230519141905148.png" alt="image-20230519141905148"></p>
-<p>从底向上看怎么使用地址回填技术：(每幅图的下半部分是之前的翻译方案)</p>
-<p><img data-src="image-20230519143110842.png" alt="image-20230519143110842"></p>
-<p><img data-src="image-20230519143543907.png" alt="image-20230519143543907"></p>
-<p><img data-src="image-20230519143840206.png" alt="image-20230519143840206"></p>
-<p>到这里已经可以确定一些跳转的地址了：</p>
-<p>M 是一个辅助的符号，用来确定 B2 第一个指令的地址的值是多少</p>
-<p><img data-src="image-20230519144434026.png" alt="image-20230519144434026"></p>
-<p><img data-src="image-20230519150121225.png" alt="image-20230519150121225"></p>
-<p>布尔表达式结束 到达更高层：</p>
-<p><img data-src="/image-20230519151840965.png" alt="image-20230519151840965"></p>
-<p><img data-src="image-20230519152628678.png" alt="image-20230519152628678"></p>
-<p><img data-src="image-20230519153118656.png" alt="image-20230519153118656"></p>
-<p>顺序语句：</p>
-<p><img data-src="image-20230519153706714.png" alt="image-20230519153706714"></p>
-<p>总结：</p>
-<p><img data-src="image-20230519154323985.png" alt="image-20230519154323985"></p>
-]]></content>
-      <categories>
-        <category>编译原理</category>
-      </categories>
-      <tags>
-        <tag>编译原理</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>编译原理03-语义分析</title>
-    <url>/2023/04/12/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8603-%E8%AF%AD%E4%B9%89%E5%88%86%E6%9E%90/</url>
-    <content><![CDATA[<h1 id="语义分析"><a class="anchor" href="#语义分析">#</a> 语义分析</h1>
-<h2 id="符号表"><a class="anchor" href="#符号表">#</a> 符号表</h2>
-<p><img data-src="image-20230412154717575.png" alt="image-20230412154717575"></p>
-<p>用符号表保存我们已经定义了的变量或者函数以及其相关信息，在遍历语法分析树时，如果发现当前新出现的某些单元与符号表中的信息有冲突，我们就可以发现语义错误。</p>
-<h3 id="实现符号表"><a class="anchor" href="#实现符号表">#</a> 实现符号表</h3>
-<p>首先构建作用域树：</p>
-<p><img data-src="image-20230419140503102.png" alt="image-20230419140503102"></p>
-<p><strong>我们在这里犯了一个小错误</strong>，即把函数参数的作用域单独独立出来了，以便于我们编码，实际上函数参数作用域和函数作用域应该是要合并的。</p>
-<p>作用域的指针指向父作用域，在查找某个变量是在哪个作用域时要循环从当前作用域到父作用域遍历。</p>
-<p>之后可以通过递归遍历等方式进行语义相关的检查。</p>
-<p>某个利用 antlr4 实现符号表的类图：</p>
-<p>scope 是作用域（持有一个 Map (name, symbol) 的符号表数据类型），symbol 是符号 (持有 name 和 type，是符号表的基本单元)，type 是符号所持有的类型（比如基本类型，array), 通过遍历时</p>
-<p><img data-src="image-20230419141503552.png" alt="image-20230419141503552"></p>
-<p>浅绿框起来的是接口。</p>
-<h2 id="属性文法"><a class="anchor" href="#属性文法">#</a> 属性文法</h2>
-<h3 id="为什么要引入属性文法"><a class="anchor" href="#为什么要引入属性文法">#</a> 为什么要引入属性文法</h3>
-<p>之前引入上下文无关文法的时候，是因为正则表达式无法表达 a<sup>nb</sup>n 这样的表达式，但是上下文无关文法也有局限，<strong>无法帮助我们进行语义相关的检查</strong>。于是引入 Knuth 发明的属性文法。</p>
-<p><img data-src="image-20230421140916771.png" alt="image-20230421140916771"></p>
-<p>接下来以实现一个<strong>交互式</strong>的简易计算器为例</p>
-<p>前几节课写的简易计算器采用的是 offline 的方法：<br>
-<img data-src="image-20230421141650214.png" alt="image-20230421141650214"></p>
-<p>本次将采用 online 的方式实现，即在构建语法分析树的过程中加入我们想实现的 action。</p>
-<p><img data-src="image-20230421142018201.png" alt="image-20230421142018201"></p>
-<p>之前实现计算器的时候遇到了一个问题，listener 模式下，访问某个节点的 enterXXX 与 exitXXX 方法没有返回值，而当前节点的 value 依赖于子节点 value 的值，当时采用了标注语法树的方法。</p>
-<p>antlr4 的另一个解决方案：</p>
-<p><img data-src="image-20230421143635663.png" alt="image-20230421143635663"></p>
-<p>在.g4 文件的 expr 定义后 加上 returns [int val] 后，在 antlr4 生成的 expr 对应的节点类中会附带一个 val 属性。</p>
-<p>每一行后大括号裹起来的黑体字是会在语法分析时我们加入的 java 代码，具体可在生成的 parser 类中查看。之后在 @package 中加入需要的头文件并在 @members 中加入 eval，memory 等的 java 实现。(实际上可在 @parser::members 中加入，这样在 lexer 中就不会生成这些无用的代码)</p>
-<p>像 expr 这种从子节点的 expr 值计算得到的属性，叫做综合属性。</p>
-<p>至于 “交互式” 的实现，主要是 main 函数的实现方式，参照代码仓库。</p>
-<p>第二个例子：类型声明文法：</p>
-<p><img data-src="image-20230421145230801.png" alt="image-20230421145230801"></p>
-<p>第一条语义规则的问题：将 L 的类型赋值为 T 的类型，可是在递归调用的时候，L 并不知道 T 返回了一个类型是 float 还是 int。</p>
-<p>解决方法，给 L 一个 inh (inherit) 属性值，这种从左兄弟或者父节点继承来的值，叫做继承属性。</p>
-<p><img data-src="image-20230421151150679.png" alt="image-20230421151150679"></p>
-<p>antlr4 实现的语法：<br>
-<img data-src="image-20230421151912395.png" alt="image-20230421151912395"></p>
-<p>vars [String typeStr] 代表 vars 节点将携带一个属性 TypeStr。</p>
-<h3 id="语法制导定义"><a class="anchor" href="#语法制导定义">#</a> 语法制导定义</h3>
-<p><img data-src="image-20230421152800113.png" alt="image-20230421152800113"></p>
-<p>像上面的 g4 语法定义都属于 SDD，每个节点可以有多个属性</p>
-<p><img data-src="image-20230421153313913.png" alt="image-20230421153313913"></p>
-<p><img data-src="image-20230421153702902.png" alt="image-20230421153702902"></p>
-<p>继承属性用于在表达式中从左向右传递中间计算结果</p>
-<p>比如：累乘的右递归文法</p>
-<p><img data-src="image-20230421154158430.png" alt="image-20230421154158430"></p>
-<p><img data-src="image-20230421154959302.png" alt="image-20230421154959302"></p>
-<p>信息流向：先从左到右利用继承属性传递信息，再利用综合属性从下到上传递信息。</p>
-<p>属性文法的本质：信息的有序流动</p>
-<h3 id="l属性定义"><a class="anchor" href="#l属性定义">#</a> L 属性定义</h3>
-<p><img data-src="image-20230426140830620.png" alt="image-20230426140830620"></p>
-<p>例子 1：</p>
-<p>用属性文法实现得到表达式的后缀表示形式</p>
-<p><img data-src="image-20230426141239902.png" alt="image-20230426141239902"></p>
-<p><img data-src="image-20230426141906728.png" alt="image-20230426141906728"></p>
-<p>例子 2：得到数组的类型表达式</p>
-<p><strong>比如 int [2] [3] -&gt; (2,(3,int))</strong></p>
-<p><img data-src="image-20230504101715454.png" alt="image-20230504101715454"></p>
-<p><img data-src="image-20230426142516412.png" alt="image-20230426142516412"></p>
-<p>antlr4 实现文法：<br>
-<img data-src="image-20230426143619377.png" alt="image-20230426143619377"></p>
-<p>例子 3：判断赋值号左右类型是否相等</p>
-<p><img data-src="image-20230426151226852.png" alt="image-20230426151226852"></p>
-<p>数组声明相关文法已经在例子 2 中完成了。</p>
-<p><img data-src="image-20230504121851839.png" alt="image-20230504121851839"></p>
-<p>具体代码可在 github 代码仓库中查找。</p>
-<p>属性文法缺点：要在 antlr 中编写 java 代码，而且要完成编译器的话会需要很多代码，这些代码与 antlr 的文法混合在一起。</p>
-<h2 id="总结"><a class="anchor" href="#总结">#</a> 总结</h2>
-<p><img data-src="image-20230426152847006.png" alt="image-20230426152847006"></p>
-<p>两种语义分析方法，各有优势。Offline 简单，Online 性能更高。</p>
-]]></content>
-      <categories>
-        <category>编译原理</category>
-      </categories>
-      <tags>
-        <tag>编译原理</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>编译原理05-目标代码生成</title>
     <url>/2023/06/02/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8605-%E7%9B%AE%E6%A0%87%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/</url>
     <content><![CDATA[<h1 id="编译原理05-目标代码生成"><a class="anchor" href="#编译原理05-目标代码生成">#</a> 编译原理 05 - 目标代码生成</h1>
@@ -1829,118 +1981,6 @@ public class SimpleExprTest &#123;
       </categories>
       <tags>
         <tag>编译原理</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>从数理逻辑本身到哥德尔不完备定理的一种证明方法</title>
-    <url>/2023/11/17/%E4%BB%8E%E6%95%B0%E7%90%86%E9%80%BB%E8%BE%91%E6%9C%AC%E8%BA%AB%E5%88%B0%E5%93%A5%E5%BE%B7%E5%B0%94%E4%B8%8D%E5%AE%8C%E5%A4%87%E5%AE%9A%E7%90%86%E7%9A%84%E4%B8%80%E7%A7%8D%E8%AF%81%E6%98%8E%E6%96%B9%E6%B3%95/</url>
-    <content><![CDATA[<blockquote>
-<p>音乐能激发或抚慰情怀，绘画使人赏心悦目，诗歌能动人心弦，哲学使人获得智慧，科学可以改善物质生活，但数学能给予以上的一切。</p>
-<p>​																																				-- 克莱因</p>
-</blockquote>
-<h2 id="对于数学和数理逻辑的思考"><a class="anchor" href="#对于数学和数理逻辑的思考">#</a> 对于数学和数理逻辑的思考</h2>
-<p>谈到数学，我不禁想到一个经典的问题：数学是被人发现的，还是被人发明的？这好像已经迈入了哲学的范畴， 我有一个苹果，然后再有了一个苹果，于是共有 1+1=2 个苹果，这好像是想当然的，因为像苹果这类区限分明的自然事物是可以数的，人们发现自然物可以被计数，于是就有了数学中的加法。人们定义了 1 和 2，同时定义了加法的规则，于是有了 1+1=2，这样做是合理的，符合人类直觉的，并且与许多人们公认的规则结合在在一起建立了数学大厦，并且在几千年的人类文明进化史中没有出什么差错。我们今天坐在高楼大厦里，用着精密的手机，电脑，坐着高铁，飞机穿梭于世界各地。我们靠它们生存，但是我们如何保证高楼不会坍塌，坐的飞机不会坠落呢，因为我们有强大的 “武器” 依靠，即数学的证明。这些东西无一不是在图纸上被确定性的定义了材料和尺寸等规则，并经过了数学的验证，设计师拍着胸脯保证，在数学上已经验证过了，才最终被制造出来。高效运转的人类社会离不开数学，而数学大厦又建造在这些所谓的 “公理” 之上，而这些公理的正确性，如果靠的仅仅是我们人类的直觉，这不免让我有些发怵。** 直觉是靠的住的吗？** 在几何上，两个点可以唯一确定一条直线，二维平面内的两条直线不是平行就必定相交，所有的直角都相等。。。 这些都是不证自明的定理，很少有人会怀疑。但是我们知道，有些时候直觉是靠不住的，比如哥伦布环绕了地球一圈并返回到了起点，我们就理所应当的认为地球是圆的，因为排除了地球边缘是深不见底的深渊或者天圆地方等盛行的理论，但是我们很少想过，地球会不会是一个甜甜圈，会不会是一个莫比乌斯环？</p>
-<p>但对于这些貌似是不证自明的定理，如果他们是不对的，那人类社会不可能高度发达，所以我倾向于认为数学是被人发现的，但我们常用的自然数，符号等属于我们发明的 “符号体系”，这些符号体系体现了自然界中某些本质，某些永远正确，客观存在的东西，这些东西就是数学。 有一点我们必须确定，不能对每一个数学结论都凭借直觉来确认，我们可以根据直觉判断自行车的轮子应当是圆的，但对于更复杂的东西好像就不行了，否则很可能会踩雷，导致某天某样东西突然崩塌，造成不可预计的后果，我们需要一些从正确的结论推导出新结论的东西，并且保证这个 “过程” 和这个 “过程” 的出发点是正确的，我觉得这就是数理逻辑研究的领域，数理逻辑研究的是数学本身，即 “数学的数学”。当然数理逻辑也有出发点，一些不需要证明就能被认为正确的东西，否则就会出现 “数学的数学的数学”，无限递归下去，这是很可笑的，但我们需要保障这些出发点尽可能少（减少出错的机会），并且不容置疑的正确。</p>
-<h2 id="哥德尔不完备定理的出现"><a class="anchor" href="#哥德尔不完备定理的出现">#</a> 哥德尔不完备定理的出现</h2>
-<p>在数理逻辑这个领域发展之初，数学家们为数学寻求坚实的基础：一系列基本的数学事实，或者说公理。它们既是一致的，即不会导致矛盾，同时也是完备的，以作为所有数学真理的基础。但是哥德尔发表的不完备定理彻底粉碎了这一梦想，这一定理简短又振聋发聩，大概意思是</p>
-<p>——<strong> 每个无矛盾的数学系统都存在一些语句无法被证明（不完备的）。</strong></p>
-<p>这意味着不存在一个对万事万物皆适用的数学理论，可证明性和正确性也无法统一。数学家可以证明的内容取决于他们的初始假设，而非所有结论所依据的基本事实（这个自然界本身）。这个定理引起了轩然大波，也产生了许多有趣的问题，对于这些问题的讨论，许多又进入到了哲学的领域，比如<strong>不完备定理依赖算术又说算术是不完备的，这不是循环论证吗？物理学需要数学，哥德尔不完备定理是不是意味着我们永远无法理解宇宙等</strong>。</p>
-<h2 id="一个有趣的证明"><a class="anchor" href="#一个有趣的证明">#</a> 一个有趣的证明</h2>
-<p>这个证明是在<span class="exturl" data-url="aHR0cHM6Ly93d3cuemhpaHUuY29tL3F1ZXN0aW9uLzI3NTI4Nzk2"> (如何简单清晰地解释哥德尔不完备定理？ - 知乎 (zhihu.com)</span> 看到的</p>
-<p>哥德尔的主要策略是把<strong>关于</strong>某个公理系统的语句映射到一个特定的系统<strong>内</strong>的语句，即映射到一个关于数字的语句。这个映射使公理系统能够有效地谈论自身。</p>
-<p>这个过程的第一步是将任何可能的数学语句或一系列语句映射到一个被称为哥德尔数的唯一数字。</p>
-<p>这个对哥德尔的方案略微修改后的版本是由欧内斯特・内格尔（Ernest Nagel）和詹姆士・纽曼（James Newman）在他们 1958 年出版的《<span class="exturl" data-url="aHR0cHM6Ly93d3cuemhpaHUuY29tL3NlYXJjaD9xPSVFNSU5MyVBNSVFNSVCRSVCNyVFNSVCMCU5NCVFNyU5QSU4NCVFOCVBRiU4MSVFNiU5OCU4RSZhbXA7c2VhcmNoX3NvdXJjZT1FbnRpdHkmYW1wO2h5YnJpZF9zZWFyY2hfc291cmNlPUVudGl0eSZhbXA7aHlicmlkX3NlYXJjaF9leHRyYT0lN0IlMjJzb3VyY2VUeXBlJTIyJTNBJTIyYW5zd2VyJTIyJTJDJTIyc291cmNlSWQlMjIlM0ExMzQ2MDk3MjQ5JTdE">哥德尔的证明</span>》（《Gödel's Proof》）的书中提出的，始于用 12 个基本符号作为词汇来表达一系列基本公理。例如，用符号 ∃表示存在，用符号 + 表示加法。重要的是，符号 s 表示 “后继”，给出了表示特定数字的方法。例如， ss0 指的是 2 。</p>
-<p>这 12 个符号被分配到了从 1 至 12 的哥德尔数。</p>
-<p><img data-src="picture1.png" alt></p>
-<p>下一步，用字母表示变量，从 xyz 开始，映射到大于 12 的素数（即 13,17,19 ）。</p>
-<p>接下来，这些符号和变量的任意组合，即任何可以被构造的算术公式或公式序列，都将有自己的哥德尔数。</p>
-<p>比如，考虑 0=0 。这个公式的三个符号对应的哥德尔数是 6,5,6 。哥德尔需要将这三个数字的序列改为一个唯一的数字，也就是其他符号序列不会生成的数字。 为此，他采用前三个质数（2,3,5 ），将每个符号的哥德尔数作为这个序列相同位置的指数，并将它们相乘。因此 0=0 变为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>6</mn></msup><mo>×</mo><msup><mn>3</mn><mn>5</mn></msup><mo>×</mo><msup><mn>5</mn><mn>6</mn></msup></mrow><annotation encoding="application/x-tex">2^{6} \times 3^{5} \times 5^{6}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">5</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">5</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span></span></span></span></span>，即 243000000 。</p>
-<p>该映射之所以有效，是因为没有两个公式会有相同的哥德尔数。 哥德尔数是整数，而整数仅以一种方式分解为质数。因此，243000000 的唯一质数分解是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>6</mn></msup><mo>×</mo><msup><mn>3</mn><mn>5</mn></msup><mo>×</mo><msup><mn>5</mn><mn>6</mn></msup></mrow><annotation encoding="application/x-tex">2^{6} \times 3^{5} \times 5^{6}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">5</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">5</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span></span></span></span></span> ，这意味着只有一种可能的方法可以解码这个哥德尔数：公式 0=0。</p>
-<p>哥德尔之后更进一步。数学证明是由一系列的公式组成的。因此，哥德尔也为每个公式序列赋予了唯一的哥德尔编号。在这种情况下，正如前面一样，他从质数列表开始，即 2,3,5 依此类推。 然后，他将公式的哥德尔数作为对应位置素数序列的指数（例如，若先出现 0=0 ，则为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>243000000</mn></msup><mo>×</mo><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">2^{243000000} \times ...</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span><span class="mord mtight">4</span><span class="mord mtight">3</span><span class="mord mtight">0</span><span class="mord mtight">0</span><span class="mord mtight">0</span><span class="mord mtight">0</span><span class="mord mtight">0</span><span class="mord mtight">0</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.10556em;vertical-align:0em;"></span><span class="mord">.</span><span class="mord">.</span><span class="mord">.</span></span></span></span>），然后将所有数相乘。</p>
-<p><strong>算数元数学</strong></p>
-<p>这么做真正的好处是，即使是<strong>关于</strong>算术公式的语句，也被称为元数学语句，也可以转换为以它们自身的哥德尔数所产生的公式。</p>
-<p>首先考虑公式 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∼</mo><mo stretchy="false">(</mo><mn>0</mn><mo>=</mo><mn>0</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\sim (0=0)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">∼</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">0</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">0</span><span class="mclose">)</span></span></span></span>，意思是 “零不等于零”。这个公式显然的错误的。不过它依然有哥德尔数：2 的 1 次幂（符号 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∼</mo></mrow><annotation encoding="application/x-tex">\sim</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">∼</span></span></span></span> 的哥德尔数是 1），乘以 3 的 8 次幂（“左括号” 的哥德尔数是 8），依次类推，得到 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>1</mn></msup><mo>×</mo><msup><mn>3</mn><mn>8</mn></msup><mo>×</mo><msup><mn>5</mn><mn>6</mn></msup><mo>×</mo><msup><mn>7</mn><mn>5</mn></msup><mo>×</mo><mn>1</mn><msup><mn>1</mn><mn>6</mn></msup><mo>×</mo><mn>1</mn><msup><mn>3</mn><mn>9</mn></msup></mrow><annotation encoding="application/x-tex">2^1\times 3^8\times5^6\times7^5\times11^6\times 13^9</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">8</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">5</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">7</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">5</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mord"><span class="mord">1</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">9</span></span></span></span></span></span></span></span></span></span></span> 。</p>
-<p>因为我们可以为所有公式甚至错误的公式生成哥德尔数，所以我们可以通过谈论它们的哥德尔数来明智地谈论这些公式。</p>
-<p>考虑以下语句：“公式<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∼</mo><mo stretchy="false">(</mo><mn>0</mn><mo>=</mo><mn>0</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\sim(0=0)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">∼</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">0</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">0</span><span class="mclose">)</span></span></span></span> 的第一个符号是波浪号”。这个关于 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∼</mo><mo stretchy="false">(</mo><mn>0</mn><mo>=</mo><mn>0</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\sim(0=0)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">∼</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">0</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">0</span><span class="mclose">)</span></span></span></span>) 的正确的元数学语句转化为关于公式的哥德尔数的语句，即其第一个指数为 1，即波浪号的哥德尔数。 换句话说，我们的语句为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>1</mn></msup><mo>×</mo><msup><mn>3</mn><mn>8</mn></msup><mo>×</mo><msup><mn>5</mn><mn>6</mn></msup><mo>×</mo><msup><mn>7</mn><mn>5</mn></msup><mo>×</mo><mn>1</mn><msup><mn>1</mn><mn>6</mn></msup><mo>×</mo><mn>1</mn><msup><mn>3</mn><mn>9</mn></msup></mrow><annotation encoding="application/x-tex">2^1\times 3^8\times5^6\times7^5\times11^6\times 13^9</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">8</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">5</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">7</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">5</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mord"><span class="mord">1</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">9</span></span></span></span></span></span></span></span></span></span></span> 只有一个 2 因子。如果<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∼</mo><mo stretchy="false">(</mo><mn>0</mn><mo>=</mo><mn>0</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\sim(0=0)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">∼</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">0</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">0</span><span class="mclose">)</span></span></span></span> 以除波浪号以外的任何符号开头，那么其哥德尔数至少应该有两个 2 因子。因此，更准确地说， 2 是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>1</mn></msup><mo>×</mo><msup><mn>3</mn><mn>8</mn></msup><mo>×</mo><msup><mn>5</mn><mn>6</mn></msup><mo>×</mo><msup><mn>7</mn><mn>5</mn></msup><mo>×</mo><mn>1</mn><msup><mn>1</mn><mn>6</mn></msup><mo>×</mo><mn>1</mn><msup><mn>3</mn><mn>9</mn></msup></mrow><annotation encoding="application/x-tex">2^1\times 3^8\times5^6\times7^5\times11^6\times 13^9</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">8</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">5</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">7</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">5</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mord"><span class="mord">1</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">9</span></span></span></span></span></span></span></span></span></span></span> 的因子，但 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">2^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span> 不是因子。</p>
-<p>我们可以将最后一个语句转换为精确的算术公式，即我们可以使用基本符号写下。这个公式当然有一个哥德尔数，我们可以通过将其符号映射到素数的幂上来进行计算。</p>
-<blockquote>
-<p>对于好奇的读者，这个语句可以读作 “存在一个整数 x 使得 x 乘以 2 等于<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>1</mn></msup><mo>×</mo><msup><mn>3</mn><mn>8</mn></msup><mo>×</mo><msup><mn>5</mn><mn>6</mn></msup><mo>×</mo><msup><mn>7</mn><mn>5</mn></msup><mo>×</mo><mn>1</mn><msup><mn>1</mn><mn>6</mn></msup><mo>×</mo><mn>1</mn><msup><mn>3</mn><mn>9</mn></msup></mrow><annotation encoding="application/x-tex">2^1\times 3^8\times5^6\times7^5\times11^6\times 13^9</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">8</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">5</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">7</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">5</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mord"><span class="mord">1</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">9</span></span></span></span></span></span></span></span></span></span></span>，且不存在一个整数 x 使得 xx 乘以 4 等于<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>1</mn></msup><mo>×</mo><msup><mn>3</mn><mn>8</mn></msup><mo>×</mo><msup><mn>5</mn><mn>6</mn></msup><mo>×</mo><msup><mn>7</mn><mn>5</mn></msup><mo>×</mo><mn>1</mn><msup><mn>1</mn><mn>6</mn></msup><mo>×</mo><mn>1</mn><msup><mn>3</mn><mn>9</mn></msup></mrow><annotation encoding="application/x-tex">2^1\times 3^8\times5^6\times7^5\times11^6\times 13^9</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">8</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">5</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">7</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">5</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mord"><span class="mord">1</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">9</span></span></span></span></span></span></span></span></span></span></span>。对应的公式为</p>
-<p><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi mathvariant="normal">∃</mi><mi>x</mi><mo stretchy="false">)</mo><mo stretchy="false">(</mo><mi>x</mi><mo>×</mo><mi>s</mi><mi>s</mi><mn>0</mn><mo>=</mo><mi>s</mi><mi>s</mi><mi>s</mi><mo>…</mo><mi>s</mi><mi>s</mi><mi>s</mi><mn>0</mn><mo stretchy="false">)</mo><mo>⋅</mo><mo>∼</mo><mo stretchy="false">(</mo><mi mathvariant="normal">∃</mi><mi>x</mi><mo stretchy="false">)</mo><mo stretchy="false">(</mo><mi>x</mi><mo>×</mo><mi>s</mi><mi>s</mi><mi>s</mi><mi>s</mi><mn>0</mn><mo>=</mo><mi>s</mi><mi>s</mi><mi>s</mi><mo>…</mo><mi>s</mi><mi>s</mi><mi>s</mi><mn>0</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(\exists x)(x \times s s 0=s s s \ldots s s s 0) \cdot \sim(\exists x)(x \times s s s s 0=s s s \ldots s s s 0)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">∃</span><span class="mord mathnormal">x</span><span class="mclose">)</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord">0</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="minner">…</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord">0</span><span class="mclose">)</span><span class="mord">⋅</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">∼</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">∃</span><span class="mord mathnormal">x</span><span class="mclose">)</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord">0</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="minner">…</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord">0</span><span class="mclose">)</span></span></span></span></p>
-<p>其中<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mi>s</mi><mi>s</mi><mo>…</mo><mi>s</mi><mi>s</mi><mi>s</mi><mn>0</mn></mrow><annotation encoding="application/x-tex">s s s \ldots s s s 0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="minner">…</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord">0</span></span></span></span> 表示有 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>1</mn></msup><mo>×</mo><msup><mn>3</mn><mn>8</mn></msup><mo>×</mo><msup><mn>5</mn><mn>6</mn></msup><mo>×</mo><msup><mn>7</mn><mn>5</mn></msup><mo>×</mo><mn>1</mn><msup><mn>1</mn><mn>6</mn></msup><mo>×</mo><mn>1</mn><msup><mn>3</mn><mn>9</mn></msup></mrow><annotation encoding="application/x-tex">2^1\times 3^8\times5^6\times7^5\times11^6\times 13^9</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">8</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">5</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">7</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">5</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mord"><span class="mord">1</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">9</span></span></span></span></span></span></span></span></span></span></span> 个后继符号 s 。符号<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>⋅</mo></mrow><annotation encoding="application/x-tex">\cdot</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.44445em;vertical-align:0em;"></span><span class="mord">⋅</span></span></span></span> 意思是 “且”，是基本词汇中较长表达的简写： <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>⋅</mo><mi>q</mi></mrow><annotation encoding="application/x-tex">p\cdot q</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.63889em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">q</span></span></span></span> 可以用 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∼</mo><mo stretchy="false">(</mo><mo>∼</mo><mi>p</mi><mo>∨</mo><mo>∼</mo><mi>q</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\sim(\sim p\vee \sim q)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">∼</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mrel">∼</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.75em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">p</span><span class="mord">∨</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">∼</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">q</span><span class="mclose">)</span></span></span></span> 代替。</p>
-</blockquote>
-<p>对于这个例子，内格尔和纽曼写道 “这说明了一个非常普遍且深刻的见解，它位于哥德尔发现的核心：长链符号的印刷性质可以间接但完全准确地 被对大整数因式分解性质的讨论替代。</p>
-<p>对于元数学语句，转换为符号依然是可能的：“存在某个哥德尔数为 x 的公式序列，可以证明哥德尔数为 k 的公式”，或者简言之，“哥德尔数为 k 的公式可以被证明”。将此类语句 “算术化” 的能力为解决这个难题奠定了基础。</p>
-<p><strong>G 自身</strong></p>
-<p>哥德尔的独到见解是，他可以用公式本身的哥德尔数代入到公式中，从而导致无穷无尽的麻烦。</p>
-<p>为了看出这个代入是如何起效的，考虑公式 (∃x)(x=sy) （它读作 “存在一个变量 x 使得它是 y 的后继”，或者简言之，“ y 有一个后继”）。像所有公式一样，它有哥德尔数，即某个大整数，我们就叫它 m 。</p>
-<p>现在让我们在公式中用 m 代替符号 y 。 这形成一个新公式 (∃x)(x=sm) ，表示 “ m 有一个后继”。 我们怎么记这个公式的哥德尔数呢？我们需要传达三点信息：我们从哥德尔数为 m 的公式开始。 在其中，我们用 m 代替了符号 y 。根据前面介绍的映射方案，符号 y 的哥德尔数为 17。因此，让我们指定新公式的哥德尔数为 sub (m,m,17) 。</p>
-<blockquote>
-<p>译者注：这段是理解的难点，我们更仔细的再叙述一遍。在这段中，我们定义了一个函数 sub ，这个函数一共有 3 个输入，他们都是正整数，我们记为 sub (a,b,c)) 。其中，第一个参数 a 是一个公式的哥德尔数，我们接收到 a 之后要把它解码成此哥德尔数所对应的公式。最后一个参数 c 指的是一个符号的哥德尔数，我们要找到 a 对应公式的所有哥德尔数为 c 的符号所对应的位置。最后，我们把刚才找到的位置全部替换成数字 b 。现在，我们计算这个修改后的公式的哥德尔数，这个数字就是 sub (a,b,c)。</p>
-</blockquote>
-<p>替换构成了哥德尔证明的关键。</p>
-<p>他考虑下面一个元数学语句 “无法证明哥德尔数为 sub (y,y,17) 的公式”。回想一下我们刚刚学到的符号，哥德尔数为 sub (y,y,17) 的公式是通过取哥德尔数为 y （某个未知量）的公式并将该变量 y 替换掉哥德尔数为 17 的符号（也是任何一个 y 的位置）。</p>
-<p>事情变得令人迷惑，但是不管怎么说，我们的元数学语句 “无法证明哥德尔数为 sub (y,y,17) 的公式” 肯定能转化为某个特定哥德尔数所对应的公式。 我们把这个数称为 n 。</p>
-<p>现在进行最后一轮替换：哥德尔通过将数字 n 替换先前公式中 y 的位置来创建一个新公式。他的新公式声称：“无法证明哥德尔数为 sub (n,n,17) 的公式”。我们将此新公式称为 G 。</p>
-<p>自然， G 也有一个哥德尔数。那么它的值是什么呢？哇哦，它肯定是 sub (n,n,17) ！根据定义， sub (n,n,17) 是下面公式的哥德尔数，它是通过将哥德尔数为 n 的公式中对应哥德尔数为 17 的符号用 n 替代所得到的。而 G 正是这个公式！ 由于素数分解的唯一性，我们现在看到 G 所讨论的公式就是 G 本身。</p>
-<blockquote>
-<p>译者注：这又是一个难点。我们更仔细的叙述如何计算 sub (n,n,17)。回忆我们前面的注，我们的第一步就是要解码 n 所对应的公式。根据前文，我们知道这对应了语句 “无法证明哥德尔数为 sub (y,y,17) 的公式”。第二步，我们要找到 17 所对应的符号，也就是 y 的所有位置，我们将找到的位置加个框：“无法证明哥德尔数为 \mathrm{sub}(\bbox[#EEF, 5px, border: 2px solid red]{y},\bbox[#EEF, 5px, border: 2px solid red]{y},17) 的公式 “。第三步，我们要把框的位置替换成 n ，也就是 “无法证明哥德尔数为 sub (n,n,17) 的公式 “，而这正是公式 G 。</p>
-</blockquote>
-<p>G 断言自己无法被证明。</p>
-<p>但是 G 能被证明吗？如果是的话，则意味着存在某个公式序列，可以证明哥德尔数为 sub (n,n,17) 的公式。但这恰好与 G 相反，即 G 断言不存在这样的证明。相反的语句 G 和 ∼G 在一致的公理体系中不可能同时为真。因此， G 的正确与否必然无法被判定。</p>
-<p>然而，尽管 G 是无法被判定，它显然是对的。 G 意思是 “无法证明哥德尔数为 sub (n,n,17) 的公式”，而这正是我们所发现的事实。既然 G 是正确的，还是在此公理体系内构造的一个无法被判定的语句，说明了这个系统是不完备的。</p>
-<p>你可能认为你可以提出一些额外的公理，使用它们证明 G 并解决悖论。但是你不能。哥德尔说明了对于增强的公理系统将允许构建新的正确的公式 G （根据与之前的方法类似），而该公式无法在新的增强系统中得到证明。在努力建立完备的数学系统时，你永远无法摆脱困境。</p>
-<p><strong>没有一致性的证明</strong></p>
-<p>我们学到了如果公理集是一致的，则它是不完备的。这是哥德尔第一不完备定理。第二定理，即没有一套公理可以证明其自身的一致性，由此易得。</p>
-<p>如果公理集可以证明它永远不会产生矛盾，那意味着什么？这意味着存在根据这些公理构建的一系列公式，证明了这个含义为 “这组公理是一致的” 的元数学公式。由第一定理，这个公理集必然是不完备的。</p>
-<p>但是，“公理集是不完备的” 与 “有一个无法被证明的正确的公式” 含义相同。这个语句等价于我们的公式 G 。我们知道公理不能证明 G 。</p>
-<p>因此，哥德尔创造了一个矛盾的证明：如果公理集可以证明其自身的一致性，那么我们将能够证明 G 。但是我们不能。因此，没有一组公理可以证明其自身的一致性。</p>
-<p>哥德尔的证明扼杀了对一个一致和完备的数学系统的追求。内格尔和纽曼在 1958 年写道，不完备性的含义 “还没有被完全理解”。直到今天仍然如此。</p>
-]]></content>
-      <categories>
-        <category>数理逻辑</category>
-      </categories>
-      <tags>
-        <tag>数理逻辑</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>分布式一致性算法</title>
-    <url>/2024/07/09/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95/</url>
-    <content><![CDATA[<h2 id="2pctwo-phase-commit"><a class="anchor" href="#2pctwo-phase-commit">#</a> 2PC(two-phase commit)</h2>
-<p><strong>2PC 是强一致，中心化的原子提交协议</strong></p>
-<p>两个阶段：准备阶段、提交阶段</p>
-<p>两个角色：协调者 (coordinator), 参与者 (Participant)</p>
-<p>深度理解：<span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xlbmd4aWFvMTk5My9hcnRpY2xlL2RldGFpbHMvODgyOTA1MTQ=">正确理解二阶段提交（Two-Phase Commit）_2 阶段提交 - CSDN 博客</span></p>
-<h3 id="第一阶段"><a class="anchor" href="#第一阶段">#</a> 第一阶段</h3>
-<p><img data-src="phase-1.png" alt="image-20240709230522019"></p>
-<p>第三点记录的日志有 redo log 和 undo log</p>
-<p>只有所有的 Participant 都返回 yes 才会进入第二阶段。否则 coordinator 发送 global roolback, 各节点根据记录的 undo log 全局回滚，向 client 返回错误。</p>
-<h3 id="第二阶段"><a class="anchor" href="#第二阶段">#</a> 第二阶段</h3>
-<p><img data-src="phase-2.png" alt="image-20240709235508995"></p>
-<p>根据第一阶段的 redo log 提交事务</p>
-<h3 id="问题"><a class="anchor" href="#问题">#</a> 问题</h3>
-<ol>
-<li>同步阻塞：
-<ul>
-<li>协调者需要等待所有参与者的响应</li>
-<li>每个参与者第二阶段的开始需要等待 coordinator 的 global commit 或 global roolback</li>
-</ul>
-</li>
-<li>数据不一致
-<ul>
-<li>只有一部分参与者回滚成功</li>
-<li>只有一部分参与者提交成功</li>
-</ul>
-</li>
-<li>单点问题：太依赖协调者，一旦协调者出故障会很麻烦</li>
-<li>太保守，为了保证强一致性牺牲性能。</li>
-</ol>
-]]></content>
-      <categories>
-        <category>分布式</category>
-      </categories>
-      <tags>
-        <tag>分布式</tag>
       </tags>
   </entry>
 </search>
