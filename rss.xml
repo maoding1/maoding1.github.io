@@ -7,20 +7,20 @@
         <language>zh-CN</language>
         <pubDate>Sun, 28 Jul 2024 17:38:31 +0800</pubDate>
         <lastBuildDate>Sun, 28 Jul 2024 17:38:31 +0800</lastBuildDate>
-        <category>C++ 读书笔记</category>
         <category>C++</category>
         <category>git</category>
+        <category>C++ 读书笔记</category>
         <category>Maven</category>
         <category>Linux</category>
         <category>STL C++</category>
-        <category>go语言</category>
         <category>python 爬虫 计算机网络</category>
         <category>python 爬虫</category>
+        <category>go语言</category>
         <category>python</category>
         <category>爬虫</category>
-        <category>docker</category>
         <category>分布式</category>
         <category>数理逻辑</category>
+        <category>docker</category>
         <category>TVM 深度学习 机器学习 编译</category>
         <category>编译原理</category>
         <item>
@@ -112,10 +112,100 @@
 &lt;/ul&gt;
 &lt;p&gt;对于第二点，一个常见例子是使用各种 db 的连接池的场景，通常用户需要使用 db.close () 显式释放资源，对于拥有 RAII 机制的 C++ 来说，为什么还需要这样做呢。因为通过 db.close () 这样的普通成员函数，用户可以通过 try catch 语句自行对这个异常做出回应。在析构函数中，同样可以继续使用 RAII 机制，记录用户有无手动释放，没有则自行调用 db.close ()&lt;/p&gt;
 &lt;h3 id=&#34;item9-避免在构造函数或者析构函数中调用虚函数&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#item9-避免在构造函数或者析构函数中调用虚函数&#34;&gt;#&lt;/a&gt; item9 避免在构造函数或者析构函数中调用虚函数&lt;/h3&gt;
-&lt;p&gt;简单来说，在构造和析构的时候，对象的类型是不确定的，因此想要调用的虚函数可能不会如你所愿。&lt;/p&gt;
+&lt;p&gt;简单来说，在构造和析构的时候，对象的类型是不确定的，因此想要调用的虚函数可能不会如你所愿。可以这样理解，再析构和构造函数中虚函数表的构造和析构的时机是不确定的，因此调用虚函数会存在问题。&lt;/p&gt;
 &lt;p&gt;这点看似简单，却十分容易踩坑，考虑以下场景，为了避免重复代码，我们可能将不同的变量初始化放到一个 init () 函数之中，即使这个函数不是虚函数，但如果其中调用了虚函数，还是违背了这一原则，并且以难以察觉的方式。&lt;/p&gt;
 &lt;h3 id=&#34;item10-在赋值运算符中返回一个reference-to-this&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#item10-在赋值运算符中返回一个reference-to-this&#34;&gt;#&lt;/a&gt; item10 在赋值运算符中返回一个 reference to *this&lt;/h3&gt;
 &lt;p&gt;简单来说 这样做是为了支持链式赋值并让自己的接口和内置类型的接口尽可能相似。因此，请将赋值操作符的返回类型设为 ObjectClass&amp;amp; 并返回 * this。&lt;/p&gt;
+&lt;h3 id=&#34;item11-在赋值运算符中处理自赋值&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#item11-在赋值运算符中处理自赋值&#34;&gt;#&lt;/a&gt; item11 在赋值运算符中处理自赋值&lt;/h3&gt;
+&lt;p&gt;当给一个对象赋值时，一般来说，这个对象需要释放现有资源，然后通过赋值获取新资源，这个逻辑在处理自我赋值的时候会失效，因为释放的资源可能永远找不到了。&lt;/p&gt;
+&lt;p&gt;解决这个问题的一个方案是，通过特判处理自赋值情况，很简单也常见的一种思路如下：&lt;/p&gt;
+&lt;figure class=&#34;highlight cpp&#34;&gt;&lt;figcaption data-lang=&#34;C++&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;SomeClass&lt;span class=&#34;token operator&#34;&gt;&amp;amp;&lt;/span&gt; SomeClass&lt;span class=&#34;token double-colon punctuation&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;token keyword&#34;&gt;operator&lt;/span&gt;&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token keyword&#34;&gt;const&lt;/span&gt; SomeClass&lt;span class=&#34;token operator&#34;&gt;&amp;amp;&lt;/span&gt; rhs&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;&amp;#123;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token keyword&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token keyword&#34;&gt;this&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;&amp;amp;&lt;/span&gt;rhs&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;token keyword&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;token keyword&#34;&gt;this&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token keyword&#34;&gt;delete&lt;/span&gt; ptr&lt;span class=&#34;token punctuation&#34;&gt;;&lt;/span&gt;	&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  ptr &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token keyword&#34;&gt;new&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;DataBlock&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token operator&#34;&gt;*&lt;/span&gt;rhs&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;ptr&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;;&lt;/span&gt;	&lt;span class=&#34;token comment&#34;&gt;// 如果此处抛出异常，ptr 将指向一块已经被删除的内存。&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token keyword&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;token keyword&#34;&gt;this&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;6&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;#125;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;首先这种方案的一个问题是：当释放已有资源后，获取新资源的过程可能发生异常，此时指针会指向被释放的资源，导致后续程序出错。&lt;/p&gt;
+&lt;p&gt;解决的思路也很简单，即先获取新的资源，然后再释放原有的资源：&lt;/p&gt;
+&lt;figure class=&#34;highlight cpp&#34;&gt;&lt;figcaption data-lang=&#34;C++&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;SomeClass&lt;span class=&#34;token operator&#34;&gt;&amp;amp;&lt;/span&gt; SomeClass&lt;span class=&#34;token double-colon punctuation&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;token keyword&#34;&gt;operator&lt;/span&gt;&lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token keyword&#34;&gt;const&lt;/span&gt; SomeClass&lt;span class=&#34;token operator&#34;&gt;&amp;amp;&lt;/span&gt; rhs&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;token punctuation&#34;&gt;&amp;#123;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  DataBlock&lt;span class=&#34;token operator&#34;&gt;*&lt;/span&gt; pOrg &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; ptr&lt;span class=&#34;token punctuation&#34;&gt;;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  ptr &lt;span class=&#34;token operator&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;token keyword&#34;&gt;new&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;DataBlock&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token operator&#34;&gt;*&lt;/span&gt;rhs&lt;span class=&#34;token punctuation&#34;&gt;.&lt;/span&gt;ptr&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;;&lt;/span&gt;	&lt;span class=&#34;token comment&#34;&gt;// 如果此处抛出异常，ptr 仍然指向之前的内存。&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token keyword&#34;&gt;delete&lt;/span&gt; pOrg&lt;span class=&#34;token punctuation&#34;&gt;;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;  &lt;span class=&#34;token keyword&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;token operator&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;token keyword&#34;&gt;this&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;6&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token punctuation&#34;&gt;&amp;#125;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;同样，这种方案也不用特判是否是自赋值语句了，还有一点好处是，通过减少 if 语句，可能会对指令流水线的工作有益。&lt;/p&gt;
+&lt;p&gt;还有一种方案是使用 copy-and-swap 方法，不过本人感觉性能可能会稍低，因此不作讨论。&lt;/p&gt;
+&lt;h3 id=&#34;item12-拷贝一个对象的所有组成成分&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#item12-拷贝一个对象的所有组成成分&#34;&gt;#&lt;/a&gt; item12 拷贝一个对象的所有组成成分&lt;/h3&gt;
+&lt;p&gt;即时刻注意以下三点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;为类增加成员时，别忘了更改拷贝相关的函数中的逻辑&lt;/li&gt;
+&lt;li&gt;在继承的场景下，子类需要并且必须通过调用父类的拷贝构造或拷贝赋值来进行父类成员的拷贝。&lt;/li&gt;
+&lt;li&gt;拷贝构造和拷贝赋值不能互相调用，如果想减少代码重复，就将通用功能放入一个第三方的函数中。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;资源管理&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#资源管理&#34;&gt;#&lt;/a&gt; 资源管理&lt;/h2&gt;
+&lt;h3 id=&#34;item13-使用对象管理资源&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#item13-使用对象管理资源&#34;&gt;#&lt;/a&gt; item13 使用对象管理资源&lt;/h3&gt;
+&lt;p&gt;经典的 RAII 思想，即利用析构函数退出作用域自动调用的特点处理资源的释放。&lt;/p&gt;
+&lt;p&gt;C++11 后有了智能指针，因此 RAII 的实践已经很简单了。没想到那时候的智能指针已经存在于 tr1 库里了😄&lt;/p&gt;
+&lt;h3 id=&#34;item14-谨慎考虑资源管理类的拷贝行为&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#item14-谨慎考虑资源管理类的拷贝行为&#34;&gt;#&lt;/a&gt; item14 谨慎考虑资源管理类的拷贝行为&lt;/h3&gt;
+&lt;p&gt;即需要考虑在不同情况下是否要禁止或以其他方式控制对资源的拷贝。&lt;/p&gt;
+&lt;p&gt;C++11 后有了 shared_ptr 和 unique_ptr 后，应该能应付各种场景了。&lt;/p&gt;
+&lt;h3 id=&#34;item15-在资源管理类中准备访问裸资源raw-resources&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#item15-在资源管理类中准备访问裸资源raw-resources&#34;&gt;#&lt;/a&gt; item15 在资源管理类中准备访问裸资源（raw resources）&lt;/h3&gt;
+&lt;p&gt;在智能指针中，可以发现，它们提供了 get () 方法获取保管的资源。为什么？&lt;/p&gt;
+&lt;p&gt;因为很多 API 的参数中，是和资源本身打交道的，因此一个 RAII 资源管理类需要提供访问裸资源的接口。&lt;/p&gt;
+&lt;p&gt;一个疑问是，这样是否违反了封装性？答案是不会，因为 RAII 只是为了保证资源释放这个行为的发生，封装不是其存在的目的。同时，如果你提供隐式转换，可能会导致一些预期之外的错误，因此资源管理类仅提供显示转换是最合理的。&lt;/p&gt;
+&lt;h3 id=&#34;item16-使用相同形式的new和delete&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#item16-使用相同形式的new和delete&#34;&gt;#&lt;/a&gt; item16 使用相同形式的 new 和 delete&lt;/h3&gt;
+&lt;p&gt;即 new 和 delete，new [] 和 delete [] 搭配使用&lt;/p&gt;
+&lt;h3 id=&#34;item17-在一个独立的语句中将new出来的对象存入智能指针&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#item17-在一个独立的语句中将new出来的对象存入智能指针&#34;&gt;#&lt;/a&gt; item17 在一个独立的语句中将 new 出来的对象存入智能指针&lt;/h3&gt;
+&lt;p&gt;此条是为了防止非常微妙的内存泄漏，这种 bug 发生概率很小，但一旦出现很难被解决。&lt;/p&gt;
+&lt;p&gt;对于这样的两个函数：&lt;/p&gt;
+&lt;figure class=&#34;highlight cpp&#34;&gt;&lt;figcaption data-lang=&#34;C++&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;priority&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token keyword&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;processWidget&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;share_ptr&lt;span class=&#34;token operator&#34;&gt;&amp;lt;&lt;/span&gt;Widget&lt;span class=&#34;token operator&#34;&gt;&gt;&lt;/span&gt; sp&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token keyword&#34;&gt;int&lt;/span&gt; priority&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;一个简洁的调用方法是：&lt;/p&gt;
+&lt;figure class=&#34;highlight cpp&#34;&gt;&lt;figcaption data-lang=&#34;C++&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;processWidget&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token generic-function&#34;&gt;&lt;span class=&#34;token function&#34;&gt;share_ptr&lt;/span&gt;&lt;span class=&#34;token generic class-name&#34;&gt;&lt;span class=&#34;token operator&#34;&gt;&amp;lt;&lt;/span&gt;widget&lt;span class=&#34;token operator&#34;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token keyword&#34;&gt;new&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;Widget&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;priority&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;;&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;但这个语句的一大特点是，可能变为这样的执行顺序：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;执行 &amp;quot;new Widget&amp;quot;。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;调用 priority。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;调用 shared_ptr 的构造函数。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;当在第二点中发生了异常，第一点的 new Widget () 构造的类可能就会发生内存泄漏。&lt;/p&gt;
+&lt;p&gt;避免类似问题的方法很简单：用一个单独的语句创建 Widget 并将它存入一个智能指针，然后将这个智能指针传递给 processWidget&lt;/p&gt;
+&lt;figure class=&#34;highlight cpp&#34;&gt;&lt;figcaption data-lang=&#34;C++&#34;&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td data-num=&#34;1&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;shared_ptr&lt;span class=&#34;token operator&#34;&gt;&amp;lt;&lt;/span&gt;Widget&lt;span class=&#34;token operator&#34;&gt;&gt;&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;pw&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token keyword&#34;&gt;new&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;Widget&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;;&lt;/span&gt;  &lt;span class=&#34;token comment&#34;&gt;// store newed object&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;2&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;                                      &lt;span class=&#34;token comment&#34;&gt;// in a smart pointer in a&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;3&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;									  &lt;span class=&#34;token comment&#34;&gt;// standalone statement&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;4&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td data-num=&#34;5&#34;&gt;&lt;/td&gt;&lt;td&gt;&lt;pre&gt;&lt;span class=&#34;token function&#34;&gt;processWidget&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;pw&lt;span class=&#34;token punctuation&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;token function&#34;&gt;priority&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;token punctuation&#34;&gt;;&lt;/span&gt;        &lt;span class=&#34;token comment&#34;&gt;// this call won&#39;t leak&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;p&gt;这样做是因为编译器在不同的语句之间重新安排操作顺序的活动余地比在一个语句之内要小得多&lt;/p&gt;
+&lt;h2 id=&#34;设计与声明&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#设计与声明&#34;&gt;#&lt;/a&gt; 设计与声明&lt;/h2&gt;
+&lt;h3 id=&#34;item18-让接口容易被正确使用&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#item18-让接口容易被正确使用&#34;&gt;#&lt;/a&gt; item18 让接口容易被正确使用&lt;/h3&gt;
+&lt;p&gt;本条款讨论如何&lt;strong&gt;帮助你的客户在使用你的接口时避免他们犯错误&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;在设计接口时，我们常常会错误地假设，接口的调用者&lt;strong&gt;拥有某些必要的知识来规避一些常识性的错误&lt;/strong&gt;。但事实上，接口的调用者并不总是像正在设计接口的我们一样 “聪明” 或者知道接口实现的” 内幕信息 “，结果就是，我们错误的假设使接口表现得不稳定。这些不稳定因素可能是由于调用者缺乏某些先验知识，也有可能仅仅是代码上的粗心错误。接口的调用者可能是别人，也可能是未来的你。所以一个合理的接口，应该尽可能的从&lt;strong&gt;语法层面&lt;/strong&gt;并在&lt;strong&gt;编译之时运行之前&lt;/strong&gt;，帮助接口的调用者规避可能的风险。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;使用&lt;strong&gt;外覆类型（wrapper）&lt;strong&gt;提醒调用者传参错误检查，将参数的附加条件限制在&lt;/strong&gt;类型本身&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;当调用者试图传入数字 “13” 来表达一个 “月份” 的时候，你可以在函数内部做运行期的检查，然后提出报警或一个异常，但这样的做法更像是一种责任转嫁 —— 调用者只有在尝试过后才发现自己手残把 “12” 写成了 “13”。如果在设计参数类型时就把 “月份” 这一类型抽象出来，比如使用 enum class（强枚举类型），就能帮助客户在编译时期就发现问题，把参数的附加条件限制在类型本身，可以让接口更易用。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;从&lt;strong&gt;语法层面&lt;/strong&gt;限制调用者&lt;strong&gt;不能做的事&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;接口的调用者往往无意甚至没有意识到自己犯了个错误，所以接口的设计者必须在语法层面做出限制。一个比较常见的限制是加上 &lt;code&gt;const&lt;/code&gt; ，比如在 &lt;code&gt;operate*&lt;/code&gt;  的返回类型上加上 &lt;code&gt;const&lt;/code&gt;  修饰，可以防止无意错误的赋值 &lt;code&gt;if (a * b = c)&lt;/code&gt; 。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;接口应表现出与内置类型的一致性&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;让自己的类型和内置类型的一致性，比如自定义容器的接口在命名上和 STL 应具备一致性，可以有效防止调用者犯错误。或者你有两个对象相乘的需求，那么你最好重载 &lt;code&gt;operator*&lt;/code&gt;  而并非设计名为”multiply” 的成员函数。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;从语法层面限制调用者&lt;strong&gt;必须做的事&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;别让接口的调用者总是记得做某些事情&lt;/strong&gt;，接口的设计者应在假定他们&lt;strong&gt;总是忘记&lt;/strong&gt;这些条条框框的前提下设计接口。比如用智能指针代替原生指针就是为调用者着想的好例子。如果一个核心方法需要在使用前后设置和恢复环境（比如获取锁和归还锁），更好的做法是将设置和恢复环境设置成纯虚函数并要求调用者继承该抽象类，强制他们去实现。在核心方法前后对设置和恢复环境的调用，则应由接口设计者操心。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;当方法的调用者（我们的客户）责任越少，他们可能犯的错误也就越少。&lt;/strong&gt;&lt;/p&gt;
+&lt;h3 id=&#34;item19-将class的设计当成设计一个type&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#item19-将class的设计当成设计一个type&#34;&gt;#&lt;/a&gt; item19 将 class 的设计当成设计一个 type&lt;/h3&gt;
+&lt;p&gt;本条款提醒我们设计 class 需要考虑的问题：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;对象该如何创建销毁：包括构造函数、析构函数以及 new 和 delete 操作符的重构需求。&lt;/li&gt;
+&lt;li&gt;对象的初始化与赋值行为应有何区别。&lt;/li&gt;
+&lt;li&gt;对象被拷贝时应考虑的行为：拷贝构造函数。&lt;/li&gt;
+&lt;li&gt;对象的合法值是什么？在成员函数内部对参数做合法性检查。&lt;/li&gt;
+&lt;li&gt;新的类型是否应该复合某个继承体系，这就包含虚函数的覆盖问题。&lt;/li&gt;
+&lt;li&gt;新类型和已有类型之间的隐式转换问题，这意味着类型转换函数和非 explicit 函数之间的取舍。&lt;/li&gt;
+&lt;li&gt;新类型是否需要重载操作符。&lt;/li&gt;
+&lt;li&gt;什么样的接口应当暴露在外，而什么样的接口应当封装在内（public 和 private）&lt;/li&gt;
+&lt;li&gt;新类型的效率、资源获取归还、线程安全性和异常安全性如何保证。&lt;/li&gt;
+&lt;li&gt;这个类是否具备 template 的潜质，如果有的话，就应改为模板类。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;item20-尽量使用pass-by-reference-to-const替换pass-by-value&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#item20-尽量使用pass-by-reference-to-const替换pass-by-value&#34;&gt;#&lt;/a&gt; item20 尽量使用 pass-by-reference-to-const 替换 pass-by-value&lt;/h3&gt;
+&lt;p&gt;值传参的问题有：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;按值传参涉及大量参数的复制，这些副本大多是没有必要的。&lt;/li&gt;
+&lt;li&gt;如果拷贝构造函数设计的是深拷贝而非浅拷贝，那么拷贝的成本将远远大于拷贝某几个指针。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;对于多态而言，将父类设计成按值传参，如果传入的是子类对象，仅会对子类对象的父类部分进行拷贝，即部分拷贝，而所有属于子类的特性将被丢弃，造成不可预知的错误，同时虚函数也不会被调用。&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;小的类型并不意味着按值传参的成本就会小。首先，类型的大小与编译器的类型和版本有很大关系，某些类型在特定编译器上编译结果会比其他编译器大得多。小的类型也无法保证在日后代码复用和重构之后，其类型始终很小。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;尽管如此，面对内置类型和 STL 的迭代器与函数对象，我们通常还是会选择按值传参的方式设计接口。因为，对于内置类型和迭代器，它们往往很小，值传递开销低，有时甚至胜过引用。至于函数对象，值传递主要解决多线程中的同步问题。&lt;/p&gt;
  ]]></description>
         </item>
         <item>
