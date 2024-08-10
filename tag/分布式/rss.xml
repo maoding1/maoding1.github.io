@@ -9,18 +9,18 @@
         <lastBuildDate>Tue, 09 Jul 2024 22:48:54 +0800</lastBuildDate>
         <category>C++</category>
         <category>git</category>
+        <category>Linux</category>
         <category>C++ 读书笔记</category>
         <category>Maven</category>
-        <category>Linux</category>
         <category>STL C++</category>
+        <category>go语言</category>
         <category>python 爬虫 计算机网络</category>
         <category>python 爬虫</category>
-        <category>go语言</category>
         <category>python</category>
         <category>爬虫</category>
-        <category>分布式</category>
-        <category>数理逻辑</category>
         <category>docker</category>
+        <category>数理逻辑</category>
+        <category>分布式</category>
         <category>TVM 深度学习 机器学习 编译</category>
         <category>编译原理</category>
         <item>
@@ -29,7 +29,8 @@
             <link>http://example.com/2024/07/09/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95/</link>
             <category>分布式</category>
             <pubDate>Tue, 09 Jul 2024 22:48:54 +0800</pubDate>
-            <description><![CDATA[ &lt;h2 id=&#34;2pctwo-phase-commit&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#2pctwo-phase-commit&#34;&gt;#&lt;/a&gt; 2PC(two-phase commit)&lt;/h2&gt;
+            <description><![CDATA[ &lt;p&gt;此坑待填&lt;/p&gt;
+&lt;h2 id=&#34;2pctwo-phase-commit&#34;&gt;&lt;a class=&#34;anchor&#34; href=&#34;#2pctwo-phase-commit&#34;&gt;#&lt;/a&gt; 2PC(two-phase commit)&lt;/h2&gt;
 &lt;p&gt;&lt;strong&gt;2PC 是强一致，中心化的原子提交协议&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;两个阶段：准备阶段、提交阶段&lt;/p&gt;
 &lt;p&gt;两个角色：协调者 (coordinator), 参与者 (Participant)&lt;/p&gt;
