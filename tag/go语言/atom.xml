@@ -5,18 +5,18 @@
     <link href="http://example.com" />
     <updated>2023-07-21T03:30:35.000Z</updated>
     <category term="C++" />
-    <category term="git" />
-    <category term="Linux" />
     <category term="C++ 读书笔记" />
+    <category term="git" />
     <category term="Maven" />
+    <category term="Linux" />
     <category term="STL C++" />
     <category term="go语言" />
-    <category term="python 爬虫 计算机网络" />
     <category term="python 爬虫" />
-    <category term="python" />
-    <category term="爬虫" />
+    <category term="python 爬虫 计算机网络" />
     <category term="docker" />
     <category term="数理逻辑" />
+    <category term="python" />
+    <category term="爬虫" />
     <category term="分布式" />
     <category term="TVM 深度学习 机器学习 编译" />
     <category term="编译原理" />

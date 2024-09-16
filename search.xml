@@ -51,6 +51,213 @@ vector&lt;string&gt; vstr_copy2(allcaps(vstr)); //#2
       </tags>
   </entry>
   <entry>
+    <title>Efective Modern C++读书笔记</title>
+    <url>/2024/08/31/Efective-Modern-C-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</url>
+    <content><![CDATA[<p>本书主要设计 C++11/14 的新语言特性，Modern C++ 带来的各种改变是亡羊补牢，还是脱胎换骨，通过阅读本书可能会得到答案。</p>
+<p>看书是一件乐趣，写读书笔记可不是😢。但是就阅读《Efective C++》的经历而言，减慢阅读速度而留下记录是很重要的，不知本篇何时才能完成。</p>
+<p><span id="more"></span></p>
+<h2 id="chapter-1-类型推导"><a class="anchor" href="#chapter-1-类型推导">#</a> chapter 1 类型推导</h2>
+<h3 id="item1-理解模板类型推导"><a class="anchor" href="#item1-理解模板类型推导">#</a> item1 理解模板类型推导</h3>
+<p>模板类型推导，是 C++ 一个广泛应用的特性，并且可以被称为一个良好的设计，因为很多程序员都在完全不了解其底层运行机制的情况下，获得了满意的结果。C++ 11 带来了 <code>auto</code> ，模板类型推导也是其运行的基础，一个坏消息是有些时候它的应用并不符合直觉，因此了解模板类型推导的一些细节就有些重要了。</p>
+<p>考虑如下一个函数模板：</p>
+<pre><code class="language-c++">template&lt;typename T&gt;
+void f(ParamType param)
+</code></pre>
+<p>这里的 ParamType 是与 T 有关的一个类型，比如 <code>const T</code>  , <code>T &amp;</code>  等</p>
+<p>对于某一次调用 <code>f(expr)</code>  , T 的推导结果会是什么呢，答案是，<strong>既与 expr 的类型有关也和 ParamType 有关</strong>，具体要分为三种情况讨论。</p>
+<h4 id="情况1-paramtype是一个指针或引用但不是一个万能引用"><a class="anchor" href="#情况1-paramtype是一个指针或引用但不是一个万能引用">#</a> 情况 1： ParamType 是一个指针或引用，但不是一个万能引用</h4>
+<p>这种情况下，类型推导会这样运作：</p>
+<ol>
+<li>若 expr 具有引用类型，先将引用部分忽略</li>
+<li>然后，对 <code>expr</code>  的类型和 <code>ParamType</code>  的类型执行模式匹配，来决定 T 的类型。</li>
+</ol>
+<p>for example:</p>
+<pre><code class="language-c++">// 对与如下模式
+template&lt;typename T&gt;
+void f(T&amp; param) // param 是一个引用
+
+int x = 27;
+const int cx = x;
+const int&amp; rx = x;
+
+f(x);                           //T是int，param的类型是int&amp;
+f(cx);                          //T是const int，param的类型是const int&amp;
+f(rx);                          //T是const int，param的类型是const int&amp;
+
+</code></pre>
+<p>这些例子只展示了左值引用，但是类型推导会如左值引用一样对待右值引用。</p>
+<h4 id="情况2-paramtype-是一个万能引用"><a class="anchor" href="#情况2-paramtype-是一个万能引用">#</a> 情况 2： ParamType 是一个万能引用</h4>
+<p>对于使用万能引用形参的模板而言，规则就没那么显明了：</p>
+<ol>
+<li>如果 expr 是左值， <code>T</code>  和 ParamType 都会被推导为左值引用。这个结果又两点比较奇怪：首先，这是在模板类型推导中，T 被推导为引用类型的唯一情形。其次，尽管在声明时使用的是右值引用语法，它的类型推导结果却是左值引用。</li>
+<li>如果 expr 是一个右值，则应用情况 1 中的规则</li>
+</ol>
+<p>例如：</p>
+<pre><code class="language-c++">template&lt;typename T&gt;
+void f(T&amp;&amp; param);              //param现在是一个通用引用类型
+        
+int x=27;                       //如之前一样
+const int cx=x;                 //如之前一样
+const int &amp; rx=cx;              //如之前一样
+
+f(x);                           //x是左值，所以T是int&amp;，
+                                //param类型也是int&amp;
+
+f(cx);                          //cx是左值，所以T是const int&amp;，
+                                //param类型也是const int&amp;
+
+f(rx);                          //rx是左值，所以T是const int&amp;，
+                                //param类型也是const int&amp;
+
+f(27);                          //27是右值，所以T是int，
+                                //param类型就是int&amp;&amp;
+</code></pre>
+<p>item24 详细解释了为什么这些例子是像这样发生的。这里关键在于通用引用的类型推导规则是不同于普通的左值或者右值引用的。尤其是，当通用引用被使用时，类型推导会区分左值实参和右值实参，但是对非通用引用时不会区分。</p>
+<h3 id="情况3-paramtype既非指针也非引用"><a class="anchor" href="#情况3-paramtype既非指针也非引用">#</a> 情况 3： ParamType 既非指针，也非引用</h3>
+<p>当 <code>ParamType</code>  既非引用也非指针时，我们面对的就是所谓的按值传递了，这意味着无论传入的是什么，param 都会是它的一个副本，即一个全新的对象。具体来说：</p>
+<ol>
+<li>和之前一样，如果 <code>expr</code>  的类型是一个引用，忽略这个引用部分</li>
+<li>如果忽略 <code>expr</code>  的引用性之后，如果 <code>expr</code>  具有 <code>const</code>  或 <code>volatile</code>  属性，都会被忽略。</li>
+</ol>
+<p>例如：</p>
+<pre><code class="language-c++">int x=27;                       //如之前一样
+const int cx=x;                 //如之前一样
+const int &amp; rx=cx;              //如之前一样
+
+f(x);                           //T和param的类型都是int
+f(cx);                          //T和param的类型都是int
+f(rx);                          //T和param的类型都是int
+
+</code></pre>
+<p>这是因为根据按值传递的思想， <code>expr</code>  是 const 或者 volatile 不意为着它的拷贝也不能被修改。</p>
+<p>认识到只有在传值给形参时才会忽略 <code>const</code> （和 <code>volatile</code> ）这一点很重要，正如我们看到的，对于 reference-to- <code>const</code>  和 pointer-to- <code>const</code>  形参来说， <code>expr</code>  的常量性在推导时会被保留。但是考虑这样的情况， <code>expr</code>  是一个 <code>const</code>  指针，指向 <code>const</code>  对象， <code>expr</code>  通过传值传递给 <code>param</code> ：</p>
+<figure class="highlight cpp"><figcaption data-lang="C++"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">template</span><span class="token operator">&lt;</span><span class="token keyword">typename</span> <span class="token class-name">T</span><span class="token operator">></span></pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token keyword">void</span> <span class="token function">f</span><span class="token punctuation">(</span>T param<span class="token punctuation">)</span><span class="token punctuation">;</span>                <span class="token comment">// 仍然以传值的方式处理 param</span></pre></td></tr><tr><td data-num="3"></td><td><pre></pre></td></tr><tr><td data-num="4"></td><td><pre><span class="token keyword">const</span> <span class="token keyword">char</span><span class="token operator">*</span> <span class="token keyword">const</span> ptr <span class="token operator">=</span>         <span class="token comment">//ptr 是一个常量指针，指向常量对象 </span></pre></td></tr><tr><td data-num="5"></td><td><pre>    <span class="token string">"Fun with pointers"</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="6"></td><td><pre></pre></td></tr><tr><td data-num="7"></td><td><pre><span class="token function">f</span><span class="token punctuation">(</span>ptr<span class="token punctuation">)</span><span class="token punctuation">;</span>                         <span class="token comment">// 传递 const char * const 类型的实参</span></pre></td></tr></table></figure><p>在这里，解引用符号（*）的右边的 <code>const</code>  表示 <code>ptr</code>  本身是一个 <code>const</code> ： <code>ptr</code>  不能被修改为指向其它地址，也不能被设置为 null（解引用符号左边的 <code>const</code>  表示 <code>ptr</code>  指向一个字符串，这个字符串是 <code>const</code> ，因此字符串不能被修改）。当 <code>ptr</code>  作为实参传给 <code>f</code> ，组成这个指针的每一比特都被拷贝进 <code>param</code> 。像这种情况， <code>ptr</code> <strong> 自身的值会被传给形参</strong>，根据类型推导的第三条规则， <code>ptr</code>  自身的常量性将会被省略，所以 <code>param</code>  是 <code>const char*</code> ，也就是一个可变指针指向 <code>const</code>  字符串。在类型推导中，这个指针指向的数据的常量性将会被保留，但是当拷贝 <code>ptr</code>  来创造一个新指针 <code>param</code>  时， <code>ptr</code>  自身的常量性将会被忽略。</p>
+<h4 id="数组实参与函数实参"><a class="anchor" href="#数组实参与函数实参">#</a> 数组实参与函数实参</h4>
+<p>在模板类型推导过程中，数组或函数类型的实参会退化成对应的指针，除非它们被用来初始化引用</p>
+<h3 id="item2-理解auto类型推导"><a class="anchor" href="#item2-理解auto类型推导">#</a> item2 理解 auto 类型推导</h3>
+<p>继续使用上一节的这个例子来解释 auto 类型推导是如何和模板类型推导联系在一起的：</p>
+<figure class="highlight cpp"><figcaption data-lang="C++"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">template</span><span class="token operator">&lt;</span><span class="token keyword">typename</span> <span class="token class-name">T</span><span class="token operator">></span></pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token keyword">void</span> <span class="token function">f</span><span class="token punctuation">(</span>ParmaType param<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="3"></td><td><pre></pre></td></tr><tr><td data-num="4"></td><td><pre><span class="token function">f</span><span class="token punctuation">(</span>expr<span class="token punctuation">)</span><span class="token punctuation">;</span>                        <span class="token comment">// 使用一些表达式调用 f</span></pre></td></tr></table></figure><p>当变量采用 auto 来声明时，auto 扮演了模板中 T 的角色，变量的类型饰词扮演了 ParamType 的角色。</p>
+<p>比如说：</p>
+<pre><code class="language-c++">auto x = 27;	//类型饰词是auto
+const auto cx = x;	//类型饰词是const auto
+const auto&amp; rx = x;	//类型饰词是const auto &amp;
+</code></pre>
+<p>在这里例子中要推导 x，cx 和 rx 的类型，编译器的行为看起来就像是认为这里每个声明都有一个模板，然后使用合适的初始化表达式进行调用：</p>
+<figure class="highlight cpp"><figcaption data-lang="C++"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">template</span><span class="token operator">&lt;</span><span class="token keyword">typename</span> <span class="token class-name">T</span><span class="token operator">></span>            <span class="token comment">// 概念化的模板用来推导 x 的类型</span></pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token keyword">void</span> <span class="token function">func_for_x</span><span class="token punctuation">(</span>T param<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="3"></td><td><pre></pre></td></tr><tr><td data-num="4"></td><td><pre><span class="token function">func_for_x</span><span class="token punctuation">(</span><span class="token number">27</span><span class="token punctuation">)</span><span class="token punctuation">;</span>                 <span class="token comment">// 概念化调用：</span></pre></td></tr><tr><td data-num="5"></td><td><pre>                                <span class="token comment">//param 的推导类型是 x 的类型</span></pre></td></tr><tr><td data-num="6"></td><td><pre></pre></td></tr><tr><td data-num="7"></td><td><pre><span class="token keyword">template</span><span class="token operator">&lt;</span><span class="token keyword">typename</span> <span class="token class-name">T</span><span class="token operator">></span>            <span class="token comment">// 概念化的模板用来推导 cx 的类型</span></pre></td></tr><tr><td data-num="8"></td><td><pre><span class="token keyword">void</span> <span class="token function">func_for_cx</span><span class="token punctuation">(</span><span class="token keyword">const</span> T param<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="9"></td><td><pre></pre></td></tr><tr><td data-num="10"></td><td><pre><span class="token function">func_for_cx</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token punctuation">;</span>                 <span class="token comment">// 概念化调用：</span></pre></td></tr><tr><td data-num="11"></td><td><pre>                                <span class="token comment">//param 的推导类型是 cx 的类型</span></pre></td></tr><tr><td data-num="12"></td><td><pre></pre></td></tr><tr><td data-num="13"></td><td><pre><span class="token keyword">template</span><span class="token operator">&lt;</span><span class="token keyword">typename</span> <span class="token class-name">T</span><span class="token operator">></span>            <span class="token comment">// 概念化的模板用来推导 rx 的类型</span></pre></td></tr><tr><td data-num="14"></td><td><pre><span class="token keyword">void</span> <span class="token function">func_for_rx</span><span class="token punctuation">(</span><span class="token keyword">const</span> T <span class="token operator">&amp;</span> param<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="15"></td><td><pre></pre></td></tr><tr><td data-num="16"></td><td><pre><span class="token function">func_for_rx</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token punctuation">;</span>                 <span class="token comment">// 概念化调用：</span></pre></td></tr><tr><td data-num="17"></td><td><pre>                                <span class="token comment">//param 的推导类型是 rx 的类型</span></pre></td></tr></table></figure><p>除了一个例外，就是使用初始化列表时。</p>
+<p>例如：</p>
+<pre><code class="language-c++">auto x = &#123; 11, 23, 9 &#125;;         //x的类型是std::initializer_list&lt;int&gt;
+
+template&lt;typename T&gt;            //带有与x的声明等价的
+void f(T param);                //形参声明的模板
+
+f(&#123; 11, 23, 9 &#125;);               //错误！不能推导出T
+
+</code></pre>
+<p>C++\14 中允许 <code>auto</code>  用户函数返回值，也允许 lambda 函数的形参声明中使用 <code>auto</code> , 但在这些情况下 <code>auto</code>  实际上使用模板类型推导那一套规则在工作，因此下面的代码不会通过编译：</p>
+<pre><code class="language-c++">auto createInitList()
+&#123;
+    return &#123; 1, 2, 3 &#125;;         //错误！不能推导&#123; 1, 2, 3 &#125;的类型
+&#125;
+
+std::vector&lt;int&gt; v;
+…
+auto resetV = 
+    [&amp;v](const auto&amp; newValue)&#123; v = newValue; &#125;;        //C++14
+…
+resetV(&#123; 1, 2, 3 &#125;);            //错误！不能推导&#123; 1, 2, 3 &#125;的类型
+
+</code></pre>
+<p>总结：</p>
+<ul>
+<li>在一般情况下，auto 类型推导和模板类型推导是一模一样的，但是 auto 类型推导会假定用大括号扩起的初始化表达式代表一个 std::initializer_list, 但模板类型推导不会。</li>
+<li>在函数返回值或 lambda 的形参中使用 auto，意思是使用模板类型推导规则而不是 auto 类型推导规则。</li>
+</ul>
+<h3 id="item3-理解decltype"><a class="anchor" href="#item3-理解decltype">#</a> item3 理解 decltype</h3>
+<p>打了一大段但是忘保存了:😢, 不过相信作者的总结已经够用了。</p>
+<blockquote>
+<p>总结：</p>
+<ul>
+<li>绝大多数情况下，decltype 会得出变量或表达式的类型而不作任何修改。</li>
+<li>对于类型为 T 的左值表达式，除非改表达式仅有一个名字，decltype 总是得出类型 T&amp;</li>
+<li>C++14 支持 decltype (auto), 和 auto 一样，它会从其初始化表达式出发来推导类型，但是它的类型推导使用的是 decltype 的规则。</li>
+</ul>
+</blockquote>
+<h3 id="item4-掌握查看类型推导结果的方法"><a class="anchor" href="#item4-掌握查看类型推导结果的方法">#</a> item4 掌握查看类型推导结果的方法</h3>
+<p>比较推荐的方法：使用 IDE 编辑器直接查看，或者使用编译器诊断信息， 而作者提到的第三种方法，使用运行时输出方法的正确性和易读性方面都有缺陷。</p>
+<p>对于使用编译器诊断信息这种方法，一个很好的方法是使用一个没有定义的类模板：</p>
+<figure class="highlight cpp"><figcaption data-lang="C++"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">template</span><span class="token operator">&lt;</span><span class="token keyword">typename</span> <span class="token class-name">T</span><span class="token operator">></span> <span class="token comment">// 只声明 TD (Type Displayer) 而不定义</span></pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token keyword">class</span> <span class="token class-name">TD</span><span class="token punctuation">;</span></pre></td></tr></table></figure><p>只要试图具现该模板，就会诱发一个错误信息，原因是找不到具现模板所需要的定义，如果想查看 x 和 y 的类型，用 x 和 y 的类型去具现 TD 即可：</p>
+<figure class="highlight cpp"><figcaption data-lang="C++"></figcaption><table><tr><td data-num="1"></td><td><pre>TD<span class="token operator">&lt;</span><span class="token keyword">decltype</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token operator">></span> xType<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="2"></td><td><pre>TD<span class="token operator">&lt;</span><span class="token keyword">decltype</span><span class="token punctuation">(</span>y<span class="token punctuation">)</span><span class="token operator">></span> yType<span class="token punctuation">;</span></pre></td></tr></table></figure><p>这样，编译器就可能会给出这样的信息：</p>
+<figure class="highlight cpp"><figcaption data-lang="C++"></figcaption><table><tr><td data-num="1"></td><td><pre>error<span class="token operator">:</span> aggregate <span class="token char">'TD&lt;int> xType'</span> has incomplete type <span class="token operator">and</span> </pre></td></tr><tr><td data-num="2"></td><td><pre>        cannot be defined</pre></td></tr><tr><td data-num="3"></td><td><pre>error<span class="token operator">:</span> aggregate <span class="token char">'TD&lt;const int *> yType'</span> has incomplete type <span class="token operator">and</span></pre></td></tr><tr><td data-num="4"></td><td><pre>        cannot be defined</pre></td></tr></table></figure><p><strong>当然，即使有一些工具，理解 C++ 的类型推导规则也是很必要的。</strong></p>
+<h2 id="chapter2-auto"><a class="anchor" href="#chapter2-auto">#</a> chapter2 auto</h2>
+<p>从概念上来说， <code>auto</code>  要多简单有多简单，但是细究起来里面却大有文章。使用 <code>auto</code>  可以少打一些字，没错，但好处不止这些：它还能阻止那些由于手动指定类型带来的潜在错误和性能问题。还有，某些 <code>auto</code>  类型推导结果尽管是按部就班地符合标准规定的推导算法，然而从程序员的视角来看却是错误的。如果是这样的情况，那就很有必要知道如何去引导 <code>auto</code>  得出正确结果，因为退回手工指定类型的声明，是通常需要避免的途径。</p>
+<p>这个小小的章节讨论了有关 <code>auto</code>  的一切。</p>
+<h3 id="item5-优先选用auto而非显示类型声明"><a class="anchor" href="#item5-优先选用auto而非显示类型声明">#</a> item5 优先选用 <code>auto</code> , 而非显示类型声明</h3>
+<p>使用 <code>auto</code>  的好处有无数条，但是它几乎唯一的一个缺点却难以说服一些人使用 <code>auto</code> ，即 <code>auto</code>  为代码可维护性和可读性的坏影响。但是，相比于全篇使用或根本不用，了解作者提到的一些优点，适当地使用 <code>auto</code> , 我认为是很有必要的。</p>
+<ul>
+<li>
+<p><code>auto</code>  要求变量在定义的时候提供初始化，这能减少错误并提升性能。</p>
+</li>
+<li>
+<p>在使用 <code>auto</code>  声明迭代器类型或者 lambda 表达式这种复杂类型的时候，能减轻很多负担</p>
+</li>
+<li>
+<p>使用 <code>auto</code>  能减少一些隐式类型转换带来的问题，因为 programer 有时显式使用的类型与表达式实际类型并不完全相等。</p>
+</li>
+</ul>
+<p>前两点易于理解，对于第三点，考虑下面这段代码：</p>
+<figure class="highlight cpp"><figcaption data-lang="C++"></figcaption><table><tr><td data-num="1"></td><td><pre>std<span class="token double-colon punctuation">::</span>unordered_map<span class="token operator">&lt;</span>std<span class="token double-colon punctuation">::</span>string<span class="token punctuation">,</span> <span class="token keyword">int</span><span class="token operator">></span> m<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="2"></td><td><pre>…</pre></td></tr><tr><td data-num="3"></td><td><pre></pre></td></tr><tr><td data-num="4"></td><td><pre><span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">const</span> std<span class="token double-colon punctuation">::</span>pair<span class="token operator">&lt;</span>std<span class="token double-colon punctuation">::</span>string<span class="token punctuation">,</span> <span class="token keyword">int</span><span class="token operator">></span><span class="token operator">&amp;</span> p <span class="token operator">:</span> m<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="5"></td><td><pre><span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="6"></td><td><pre>    …                                   <span class="token comment">// 用 p 做一些事</span></pre></td></tr><tr><td data-num="7"></td><td><pre><span class="token punctuation">&#125;</span></pre></td></tr></table></figure><p>看起来合情合理，但是暗藏隐患。对于 <code>std::unordered_map</code>  来说，它的键值部分是 const，所以哈希表中的 <code>std::pair</code>  的类型并不是 <code>std::pair&lt;std::string,int&gt;</code> , 而是 std::pair&lt;const std::string,int&gt;。可是在上面的循环中，用来声明 <code>p</code>  的类型却不是这个。因此编译器就会想要使用某种方法把 <code>std::pair&lt;const std::string,int&gt;</code>  对象转换成 <code>std::pair&lt;std::string, int&gt;</code>  对象。这一步是可以成功的，方法是对 <code>m</code>  中的每个对象都做一次复制操作，形成一个 <code>p</code>  想要绑定的类型的临时对象，然后把 <code>p</code>  这个引用绑定到该临时对象。并且在循环的每次迭代结束时，该临时对象都会被析构一次，这之间带来的开销与使用 <code>const auto&amp;</code>  相比来说可太大了。</p>
+<h3 id="item6-auto推导不符合要求时使用显式类型初始化惯用法explicitly-typed-initializer-idiom"><a class="anchor" href="#item6-auto推导不符合要求时使用显式类型初始化惯用法explicitly-typed-initializer-idiom">#</a> item6 auto 推导不符合要求时，使用显式类型初始化惯用法 (explicitly typed initializer idiom)</h3>
+<p><code>auto</code>  在大多数情况下都很好用，但在遇到一些 &quot;代理&quot; 类型的时候，可能会带来意料之外的错误。</p>
+<p>一个常见的例子是遇到 <code>vector&lt;bool&gt;</code>  的时候，对其它的 vector 容器，operator [] 通常会返回一个引用类型，可是 <code>vector&lt;bool&gt;</code>  不一样，它会返回一个 <code>std::vector&lt;bool&gt;::reference</code>  类型，原因是由于 bool 类型实际上通过 1bit 就可以表示， <code>vector&lt;bool&gt;</code>  为了节省空间，会对 bool 类型压缩为 1bit 来表示。但是这和 <code>vector&lt;bool&gt;</code>  不返回一个 <code>bool&amp;</code>  有什么关系呢，原因是，C++ 禁止返回对一个比特的引用，因此 <code>vector&lt;bool&gt;</code>  的 <code>operator[]</code>  不得不返回一个 <code>std::vector&lt;bool&gt;::reference</code>  对象，然后为了让它在使用其它所有 <code>bool&amp;</code>  的地方保证它能用，让其支持向 <code>bool</code>  类型隐式类型转换（虽然实际更复杂）。</p>
+<p>嗯，但是既然 <code>std::vector&lt;bool&gt;::reference</code>  支持向 <code>bool</code>  类型的隐式转换了，那么 <code>auto</code>  将一个表达式推导为 <code>std::vector&lt;bool&gt;::reference</code>  或者 <code>bool</code>  类型又有什么关系呢？在下面的例子中，可能会引发问题：</p>
+<p>假如我有一个函数，参数为 <code>Widget</code> ，返回一个 <code>std::vector&lt;bool&gt;</code> ，这里的 <code>bool</code>  表示 <code>Widget</code>  是否提供一个独有的特性。更进一步假设第 5 个<em> bit</em> 表示 <code>Widget</code>  是否具有高优先级，我们可以写这样的代码：</p>
+<figure class="highlight cpp"><figcaption data-lang="C++"></figcaption><table><tr><td data-num="1"></td><td><pre>std<span class="token double-colon punctuation">::</span>vector<span class="token operator">&lt;</span><span class="token keyword">bool</span><span class="token operator">></span> <span class="token function">features</span><span class="token punctuation">(</span><span class="token keyword">const</span> Widget<span class="token operator">&amp;</span> w<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token keyword">auto</span> highPriority <span class="token operator">=</span> <span class="token function">features</span><span class="token punctuation">(</span>w<span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">]</span><span class="token punctuation">;</span>     <span class="token comment">//w 高优先级吗？</span></pre></td></tr><tr><td data-num="3"></td><td><pre><span class="token function">processWidget</span><span class="token punctuation">(</span>w<span class="token punctuation">,</span>highPriority<span class="token punctuation">)</span><span class="token punctuation">;</span>          <span class="token comment">// 未定义行为！</span></pre></td></tr></table></figure><p>通过上面的讲述，我们知道这里的 <code>auto</code>  会将 <code>highPriority</code>  推导为 <code>std::vector&lt;bool&gt;::reference</code>  类型，并用一个<strong>临时的</strong> <code>vector&lt;bool&gt;</code>  类型的 <code>opertor[]</code>  返回的对象来初始化它。问题是， <code>std::vector&lt;bool&gt;::reference</code>  对象中可能包含一个指针，并指向一个机器字 (word), 该机器字中含有实际上被压缩的那个 1bit 的 <code>bool</code> 。但是随着临时 <code>vector&lt;bool&gt;</code>  对象的析构，这个指针指向的地方马上就会被析构，因此 <code>highPriority</code>  中也会包含一个野指针！对它的使用自然也会包含未定义行为了。</p>
+<p>综上，程序员应该避免写出这样的代码:</p>
+<figure class="highlight cpp"><figcaption data-lang="C++"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">auto</span> someVar <span class="token operator">=</span> expression of <span class="token string">"invisible"</span> proxy <span class="token keyword">class</span> <span class="token class-name">type</span><span class="token punctuation">;</span></pre></td></tr></table></figure><p>在这里， <code>auto</code>  本身并不是一个问题，而是其没有推导出想要的类型，一个解决方案是使用<strong>显式类型初始化惯用法</strong>，在上面那个例子中，可以这样操作：</p>
+<figure class="highlight cpp"><figcaption data-lang="C++"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">auto</span> highPriority <span class="token operator">=</span> <span class="token generic-function"><span class="token function">static_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span><span class="token keyword">bool</span><span class="token operator">></span></span></span><span class="token punctuation">(</span><span class="token function">features</span><span class="token punctuation">(</span>w<span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr></table></figure><p>但是，这与下面这样的代码有何不同，况且还更简单：</p>
+<figure class="highlight cpp"><figcaption data-lang="C++"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">bool</span> highPriority <span class="token operator">=</span> <span class="token function">features</span><span class="token punctuation">(</span>w<span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">]</span><span class="token punctuation">;</span></pre></td></tr></table></figure><p>优势是，通过使用 static_cast&lt;bool&gt;，<strong>显式的指明了这里发生了一次类型转换</strong>，而让事情更加显而易见了。</p>
+<p>总结：</p>
+<ul>
+<li>不可见的代理类可能会使 <code>auto</code>  从表达式中推导出 “错误的” 类型</li>
+<li>显式类型初始化惯用法强制 <code>auto</code>  推导出你想要的结果</li>
+</ul>
+<h2 id="chapter3-转向现代c"><a class="anchor" href="#chapter3-转向现代c">#</a> chapter3 转向现代 C++</h2>
+<h3 id="item7-在创建对象时注意区分和"><a class="anchor" href="#item7-在创建对象时注意区分和">#</a> item7 在创建对象时注意区分 () 和 {}</h3>
+<p>总结：</p>
+<ul>
+<li>大括号初始化可以应用的语境最为广泛，可以阻止内建类型之间进行隐式窄化类型转换 (如 double 转 int)，还可以对最令人烦恼的解析语法免疫 (使用小括号初始化的时候要注意，C++ 会优先将表达式解释为声明，比如 <code>Widget w3();</code>  是一个函数声明)</li>
+<li>在构造函数重载匹配期间，只要有任何可能，大括号初始化就会与带有 <code>std::initializer_list</code>  类型的形参相匹配，即使其他重载版本有这更加匹配的形参表</li>
+<li>使用小括号还是大括号，会造成结果大相径庭的一个例子是：使用两个实参来创建一个 <code>std::vector</code>  对象。</li>
+<li>在模板内容进行对象创建时，到底应该使用小括号还是大括号是需要仔细考虑的。</li>
+</ul>
+<h3 id="item8-优先使用nullptr而非0或null"><a class="anchor" href="#item8-优先使用nullptr而非0或null">#</a> item8 优先使用 nullptr, 而非 0 或 NULL</h3>
+<p>优先使用 nullptr 的主要原因是，0 和 NULL 实际上是一个整型，并非指针，这在重载了支持整型和指针类型参数的函数中有时会引起问题。</p>
+<p>其次是在模板推导的时候，0 和 NULL 会被推导为 int 类型。</p>
+<h3 id="item9-优先选用别名声明而非typedef"><a class="anchor" href="#item9-优先选用别名声明而非typedef">#</a> item9 优先选用别名声明，而非 typedef</h3>
+<p>优先选用别名声明的主要优势在于别名声明可以模板化，而 <code>typedef</code>  不行。为了达到相同效果，C++98 程序员不得不使用嵌套在模板的 struct 中的 typedef。比如下面两个分别使用别名声明和 <code>typedef</code>  来达到相同效果的例子：</p>
+<figure class="highlight cpp"><figcaption data-lang="C++"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">template</span><span class="token operator">&lt;</span><span class="token keyword">typename</span> <span class="token class-name">T</span><span class="token operator">></span></pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token keyword">using</span> MyAllocList <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span>list<span class="token operator">&lt;</span>T<span class="token punctuation">,</span>MyAlloc<span class="token operator">&lt;</span>T<span class="token operator">>></span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="3"></td><td><pre></pre></td></tr><tr><td data-num="4"></td><td><pre>MyAllocList<span class="token operator">&lt;</span>Widget<span class="token operator">></span> lw<span class="token punctuation">;</span>      <span class="token comment">// client </span></pre></td></tr><tr><td data-num="5"></td><td><pre><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span></pre></td></tr><tr><td data-num="6"></td><td><pre><span class="token keyword">template</span><span class="token operator">&lt;</span><span class="token keyword">typename</span> <span class="token class-name">T</span><span class="token operator">></span></pre></td></tr><tr><td data-num="7"></td><td><pre><span class="token keyword">struct</span> <span class="token class-name">MyAllocList</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="8"></td><td><pre>	<span class="token keyword">typedef</span> std<span class="token double-colon punctuation">::</span>list<span class="token operator">&lt;</span>T<span class="token punctuation">,</span> MyAlloc<span class="token operator">&lt;</span>T<span class="token operator">>></span> type<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="9"></td><td><pre><span class="token punctuation">&#125;</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="10"></td><td><pre>MyAllocList<span class="token operator">&lt;</span>Widget<span class="token operator">></span><span class="token double-colon punctuation">::</span>type lw<span class="token punctuation">;</span> <span class="token comment">// client</span></pre></td></tr></table></figure><p>另一个优点是使用模板可以让人免写 &quot;::type&quot; 后缀，并且在模板内，对于内嵌 <code>typedef</code>  的使用经常要求加上 <code>typename</code>  前缀 (见 Effective C++ 对于依赖模板类型的说明)。</p>
+<h3 id="item10-优先选用限定作用域的枚举类型而非不限作用域的枚举类型"><a class="anchor" href="#item10-优先选用限定作用域的枚举类型而非不限作用域的枚举类型">#</a> item10 优先选用限定作用域的枚举类型，而非不限作用域的枚举类型</h3>
+<p>总结：</p>
+<ul>
+<li>C++98 风格的枚举类型，现在称为不限范围的枚举类型。</li>
+<li>限定作用域的枚举类型仅在枚举类型内可见。它们只能通过强制类型转换以转换至其他类型。</li>
+<li>限定作用域的枚举类型和不限范围的枚举类型都支持底层类型指定。限定作用域的枚举类型的默认底层类型是 <code>int</code> , 而不限范围的枚举类型没有默认底层类型。</li>
+<li>限定作用域的枚举类型总是可以进行前置声明，而不限范围的枚举类型却只有在指定了默认底层类型的前提下才可以进行前置声明。</li>
+</ul>
+<h3 id="item11-优先选用删除函数而非private未定义函数"><a class="anchor" href="#item11-优先选用删除函数而非private未定义函数">#</a> item11 优先选用删除函数，而非 <code>private</code>  未定义函数</h3>
+<ul>
+<li>优先选用删除函数，而非 <code>private</code>  未定义函数</li>
+<li>任何函数都可以删除，包括非成员函数和模板具现。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>C++</category>
+      </categories>
+      <tags>
+        <tag>C++ 读书笔记</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>git操作</title>
     <url>/2022/10/01/Git%E5%AD%A6%E4%B9%A001-%20%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/</url>
     <content><![CDATA[<h1 id="git学习01-基本操作"><a class="anchor" href="#git学习01-基本操作">#</a> Git 学习 01- 基本操作</h1>
@@ -186,38 +393,70 @@ $ git commit -m &quot;remove test.txt&quot;
       </tags>
   </entry>
   <entry>
-    <title>Linux—01-Linux安装常识</title>
-    <url>/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/</url>
-    <content><![CDATA[<h1 id="linux系统的安装"><a class="anchor" href="#linux系统的安装">#</a> Linux 系统的安装</h1>
+    <title>Maven 学习</title>
+    <url>/2022/10/23/Maven-%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<h1 id><a class="anchor" href="#">#</a> </h1>
+<h1 id="maven-学习"><a class="anchor" href="#maven-学习">#</a> Maven  学习</h1>
 <p><span id="more"></span></p>
-<p><img data-src="preview.jpg" alt="芝士辉夜"></p>
-<h2 id="交换分区"><a class="anchor" href="#交换分区">#</a> 交换分区</h2>
-<p>直接从物理内存读写数据比从硬盘读写快的多，然而物理硬盘是有限的，这样就使用到了虚拟内存。虚拟内存是为了满足物理内存的不足而提出的一种策略，他是利用磁盘空间虚拟出的一块逻辑内存，用作虚拟内存的磁盘空间被称为<strong>交换分区（swap 分区）</strong>。</p>
-<p>内核会将暂时不用的内存信息写到交换分区，使物理内存得到释放并用于其它用途，当需要原始内容时，这些信息会被重新从交换分区读入物理内存。</p>
-<p>Linux 的内存管理采用分页存取机制，为了保证物理内存能得到充分利用，内核会在适当时候将物理内存中不经常使用的数据块自动交换到虚拟内存中，而将经常使用的信息保留到物理内存。</p>
-<h2 id="分区命名"><a class="anchor" href="#分区命名">#</a> 分区命名</h2>
-<p>Linux 系统使用字母和数字的组合来指代硬盘分区，该命名方案是基于文件的，文件名的格式为 */dev/xxyN* (比如 /dev/sda1 分区)</p>
-<p>/dev: 这是 Linux 系统中所有设备文件所在的目录名。因为分区位于硬盘上，而硬盘是设备，所以这些文件代表了在 /dev 上所有可能的分区</p>
-<p>xx：分区名的前两个字母表示分区所在设备的类型，通常是 hd（IDE）硬盘或 sd（SCSI 硬盘）</p>
-<p>y: 这个字母表示分区所在的设备。例如，/dev/hda（第一个 IDE 硬盘）或 /dev/sdb (第二个 SCSI 硬盘)</p>
-<p>N：最后的数字 N 代表硬盘上的第几个分区。</p>
-<h2 id="挂载目录"><a class="anchor" href="#挂载目录">#</a> 挂载目录</h2>
-<p>Linux 系统中的每一个分区都是构成支持一组文件和目录 所必需的存储区的一部分。它是通过挂载来实现的，挂载 是将分区关联到某一目录的过程，挂载分区使起始于这个 指定目录（称为挂载目录）的存储区能够被使用。</p>
-<p>例如，如果分区 /dev/sda5 被挂载在目录 /usr 上，这意味着 所有在 /usr 下的文件和目录在物理上位于 /dev/sda5。因此 文件 /usr/bin/cal 被保存在分区 /dev/sda5 上，而文件 /etc/passwd 却不是。</p>
-<p>/usr 目录下的目录还有可能是其它分区的挂载目录。例如， 某个分区（如 /dev/sda7）可以被挂载到 /usr/local 目录下， 这意味着文件 /usr/local/man/whatis 将位于分区 /dev/sda7 上，而不是分区 /dev/sda5 上。</p>
-<h2 id="分区规划"><a class="anchor" href="#分区规划">#</a> 分区规划</h2>
-<p>合理的分区规划 ：</p>
-<p>・swap 分区：实现虚拟内存，建议大小是物理内存 的 1～2 倍；</p>
-<p>・/boot 分区：建议大小最少为 200MB；・/usr 分区：用来存放 Linux 系统中的应用程序， 其相关数据较多，建议大小最少为 8GB；</p>
-<p>・/var 分区：用来存放 Linux 系统中经常变化的数 据以及日志文件，建议大小最少为 1GB；</p>
-<p>・/ 分区：Linux 系统的根目录，所有的目录都挂在 这个目录下面，建议大小最少为 1GB；</p>
-<p>・/home 分区：存放普通用户的数据，是普通用户 的宿主目录，建议大小为剩下的空间。</p>
+<p>​																<img data-src="rebecca.jpg" alt="芝士rebecca"></p>
+<h2 id="maven简介"><a class="anchor" href="#maven简介">#</a> Maven 简介</h2>
+<p>Maven 是 Apache 组织下一个比较著名的开源项目，主要服务于基于 java 平台的项目构建，依赖管理和项目信息管理。</p>
+<p>类比做糖醋排骨，传统需要自己配置酱料，比如加入多少克糖，多少克水，多少克... 而现在只用去超市购买酱料包就好。Maven 项目省去了开发者去各大网站下载 jar 包并解决相互间复杂依赖关系的时间。除此之外，除了编写源代码，我们有相当一部分时间花在了编译，运行单元测试，生成文档，打包和部署等工作上，这就是构建。手工做这些工作的成本太高了，于是可以用软件的方法让这一系列工作完全自动化，使得繁琐的步骤能够自动完成，很快得到最终结果。</p>
+<h3 id="项目构建工具"><a class="anchor" href="#项目构建工具">#</a> 项目构建工具</h3>
+<p>Ant 构建： 2000 年左右出现的构建工具，当时是最流行的 java 构建工具，不过它的 XML 脚本编写格式让 XML 文件特别大。对工程构建过程中的过程控制特别好。</p>
+<p>Maven 构建：项目对象模型，通过其描述信息来管理项目的构建，报告和文档的软件项目管理工具，填补了 Ant 的缺点。Maven 第一次支持了从网络上下载的功能。Maven 专注的是依赖管理，使用 java 编写。</p>
+<p>Gradle：谷歌的御用 Android 管理工具</p>
+<p>Ant 比较老，目前 Maven 使用较多</p>
+<h2 id="maven的四大特性"><a class="anchor" href="#maven的四大特性">#</a> Maven 的四大特性</h2>
+<h3 id="依赖管理系统"><a class="anchor" href="#依赖管理系统">#</a> 依赖管理系统</h3>
+<p>Maven 为 java 世界引入了一个新的依赖管理系统 ——jar 包管理。jar 升级时修改配置文件即可。在 java 世界中，可以用 **<em>groupId</em> **   、<em><strong>artifactId</strong></em>   、<em><strong>version</strong></em> 组成的 Coordination（坐标）唯一标识一个依赖</p>
+<p>eg：</p>
+<figure class="highlight html"><figcaption data-lang="HTML"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="2"></td><td><pre>	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span> javax.servlet <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span> //当前Maven项目隶属的实际项目或公司名称（jar包所在仓库路径）</pre></td></tr><tr><td data-num="3"></td><td><pre>	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span> javax.servlet-api <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span> //定义实际项目中的一个Maven模块/项目名</pre></td></tr><tr><td data-num="4"></td><td><pre>	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span> 3.1.0 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span> //Maven项目当前所处的版本</pre></td></tr><tr><td data-num="5"></td><td><pre><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></pre></td></tr></table></figure><h3 id="多模块构建"><a class="anchor" href="#多模块构建">#</a> 多模块构建</h3>
+<p>可以将一个项目分解为多个模块。</p>
+<p>在 Maven 中定义一个 parent POM 作为一组 module 的聚合 POM，在该 POM 中可以使用 &lt;modules&gt; 标签来定义一组子模块。parent POM 中的 build 配置和依赖配置都会继承给子 module。</p>
+<h3 id="一致的项目结构"><a class="anchor" href="#一致的项目结构">#</a> 一致的项目结构</h3>
+<p>Maven 理念： Convension over configuration (约定大于配置)。其制定了一套项目目录结构作为标准的 java 项目结构，解决不同 IDE 带来的文件目录不一致问题。</p>
+<h3 id="一致的构建模型和插件机制"><a class="anchor" href="#一致的构建模型和插件机制">#</a> 一致的构建模型和插件机制</h3>
+<figure class="highlight html"><figcaption data-lang="HTML"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>plugin</span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="2"></td><td><pre>	......</pre></td></tr><tr><td data-num="3"></td><td><pre><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>plugin</span><span class="token punctuation">></span></span></pre></td></tr></table></figure><p>引入插件</p>
+<h2 id="maven项目结构"><a class="anchor" href="#maven项目结构">#</a> Maven 项目结构</h2>
+<pre><code>- src
+	- main                   ：程序功能代码
+		- Java               ：java代码
+		- resource           ：资源代码、配置代码
+	- test                   ：测试代码
+		- Java               ：单元测试java代码
+		- resource           ：资源代码、配置代码
+	- pom.xml                ：项目对象模型
+
+</code></pre>
+<p>不用 IDE 的话上述结构都需要手动创建</p>
+<p>pom 中的标签具体作用可以参考 <span class="exturl" data-url="aHR0cHM6Ly93d3cucnVub29iLmNvbS9tYXZlbi9tYXZlbi1wb20uaHRtbA==">https://www.runoob.com/maven/maven-pom.html</span></p>
+<h2 id="在idea中使用maven"><a class="anchor" href="#在idea中使用maven">#</a> 在 IDEA 中使用 Maven</h2>
+<p>IDEA 中默认捆绑了 Maven 可以在设置里更改 Maven 有关的配置</p>
+<p>创建 Maven 项目：文件 -&gt; 新建 -&gt; 项目 构建系统选 Maven（上述是常规 Maven 项目）</p>
+<p>​										可以选择生成器中的 Maven 中的 Archetype 选择模板（如 quickstart）</p>
+<h2 id="maven仓库"><a class="anchor" href="#maven仓库">#</a> Maven 仓库</h2>
+<p>对于 Maven 来说，仓库只有两类： 本地仓库和远程仓库</p>
+<p>Maven 根据坐标寻找构件的时候，它首先会查看本地仓库，如果本地仓库存在，则直接使用；如果本地没有，Maven 就回去远程仓库查找，再下载到本地仓库再使用。如果本地和远程都没有就会报错。</p>
+<p>远程仓库分为 3 种：</p>
+<ol>
+<li>
+<p>中央仓库：默认下载 jar 包的地方，在国外，包含了 2000 多个开源项目，每天接收 1 亿次以上的访问。</p>
+</li>
+<li>
+<p>私服：一种特殊的远程仓库，它是架设在局域网内的仓库服务。私服代理广域网上的远程仓库，供局域网内的 Maven 用户使用。当 Maven 需要下载构件时，它去私服当中找，如果私服没有，则从外部远程仓库下载，并缓存在私服上，再为 maven 提供。此外，一些无法从外部仓库下载的构件也能从本地上传到私服提供局域网中其他人使用。（在公司或学校内网中自己写的构件就可以上传到私服让别人使用了） 私服优点： 节省自己的外网带宽、 加速 Maven 构建、部署第三方控件、提高稳定性、降低中央仓库的负荷</p>
+</li>
+<li>
+<p>其他公共库</p>
+<p>如阿里云仓库，国内地址下载比中央仓库快。</p>
+</li>
+</ol>
 ]]></content>
       <categories>
-        <category>Linux</category>
+        <category>Maven</category>
       </categories>
       <tags>
-        <tag>Linux</tag>
+        <tag>Maven</tag>
       </tags>
   </entry>
   <entry>
@@ -811,70 +1050,38 @@ Y *p2 = new Y; //失败时调用Y::outOfMemory
       </tags>
   </entry>
   <entry>
-    <title>Maven 学习</title>
-    <url>/2022/10/23/Maven-%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[<h1 id><a class="anchor" href="#">#</a> </h1>
-<h1 id="maven-学习"><a class="anchor" href="#maven-学习">#</a> Maven  学习</h1>
+    <title>Linux—01-Linux安装常识</title>
+    <url>/2022/09/30/Linux%E2%80%9401-Linux%E5%AE%89%E8%A3%85%E5%B8%B8%E8%AF%86/</url>
+    <content><![CDATA[<h1 id="linux系统的安装"><a class="anchor" href="#linux系统的安装">#</a> Linux 系统的安装</h1>
 <p><span id="more"></span></p>
-<p>​																<img data-src="rebecca.jpg" alt="芝士rebecca"></p>
-<h2 id="maven简介"><a class="anchor" href="#maven简介">#</a> Maven 简介</h2>
-<p>Maven 是 Apache 组织下一个比较著名的开源项目，主要服务于基于 java 平台的项目构建，依赖管理和项目信息管理。</p>
-<p>类比做糖醋排骨，传统需要自己配置酱料，比如加入多少克糖，多少克水，多少克... 而现在只用去超市购买酱料包就好。Maven 项目省去了开发者去各大网站下载 jar 包并解决相互间复杂依赖关系的时间。除此之外，除了编写源代码，我们有相当一部分时间花在了编译，运行单元测试，生成文档，打包和部署等工作上，这就是构建。手工做这些工作的成本太高了，于是可以用软件的方法让这一系列工作完全自动化，使得繁琐的步骤能够自动完成，很快得到最终结果。</p>
-<h3 id="项目构建工具"><a class="anchor" href="#项目构建工具">#</a> 项目构建工具</h3>
-<p>Ant 构建： 2000 年左右出现的构建工具，当时是最流行的 java 构建工具，不过它的 XML 脚本编写格式让 XML 文件特别大。对工程构建过程中的过程控制特别好。</p>
-<p>Maven 构建：项目对象模型，通过其描述信息来管理项目的构建，报告和文档的软件项目管理工具，填补了 Ant 的缺点。Maven 第一次支持了从网络上下载的功能。Maven 专注的是依赖管理，使用 java 编写。</p>
-<p>Gradle：谷歌的御用 Android 管理工具</p>
-<p>Ant 比较老，目前 Maven 使用较多</p>
-<h2 id="maven的四大特性"><a class="anchor" href="#maven的四大特性">#</a> Maven 的四大特性</h2>
-<h3 id="依赖管理系统"><a class="anchor" href="#依赖管理系统">#</a> 依赖管理系统</h3>
-<p>Maven 为 java 世界引入了一个新的依赖管理系统 ——jar 包管理。jar 升级时修改配置文件即可。在 java 世界中，可以用 **<em>groupId</em> **   、<em><strong>artifactId</strong></em>   、<em><strong>version</strong></em> 组成的 Coordination（坐标）唯一标识一个依赖</p>
-<p>eg：</p>
-<figure class="highlight html"><figcaption data-lang="HTML"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="2"></td><td><pre>	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span> javax.servlet <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span> //当前Maven项目隶属的实际项目或公司名称（jar包所在仓库路径）</pre></td></tr><tr><td data-num="3"></td><td><pre>	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span> javax.servlet-api <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span> //定义实际项目中的一个Maven模块/项目名</pre></td></tr><tr><td data-num="4"></td><td><pre>	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span> 3.1.0 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span> //Maven项目当前所处的版本</pre></td></tr><tr><td data-num="5"></td><td><pre><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span></pre></td></tr></table></figure><h3 id="多模块构建"><a class="anchor" href="#多模块构建">#</a> 多模块构建</h3>
-<p>可以将一个项目分解为多个模块。</p>
-<p>在 Maven 中定义一个 parent POM 作为一组 module 的聚合 POM，在该 POM 中可以使用 &lt;modules&gt; 标签来定义一组子模块。parent POM 中的 build 配置和依赖配置都会继承给子 module。</p>
-<h3 id="一致的项目结构"><a class="anchor" href="#一致的项目结构">#</a> 一致的项目结构</h3>
-<p>Maven 理念： Convension over configuration (约定大于配置)。其制定了一套项目目录结构作为标准的 java 项目结构，解决不同 IDE 带来的文件目录不一致问题。</p>
-<h3 id="一致的构建模型和插件机制"><a class="anchor" href="#一致的构建模型和插件机制">#</a> 一致的构建模型和插件机制</h3>
-<figure class="highlight html"><figcaption data-lang="HTML"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>plugin</span><span class="token punctuation">></span></span></pre></td></tr><tr><td data-num="2"></td><td><pre>	......</pre></td></tr><tr><td data-num="3"></td><td><pre><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>plugin</span><span class="token punctuation">></span></span></pre></td></tr></table></figure><p>引入插件</p>
-<h2 id="maven项目结构"><a class="anchor" href="#maven项目结构">#</a> Maven 项目结构</h2>
-<pre><code>- src
-	- main                   ：程序功能代码
-		- Java               ：java代码
-		- resource           ：资源代码、配置代码
-	- test                   ：测试代码
-		- Java               ：单元测试java代码
-		- resource           ：资源代码、配置代码
-	- pom.xml                ：项目对象模型
-
-</code></pre>
-<p>不用 IDE 的话上述结构都需要手动创建</p>
-<p>pom 中的标签具体作用可以参考 <span class="exturl" data-url="aHR0cHM6Ly93d3cucnVub29iLmNvbS9tYXZlbi9tYXZlbi1wb20uaHRtbA==">https://www.runoob.com/maven/maven-pom.html</span></p>
-<h2 id="在idea中使用maven"><a class="anchor" href="#在idea中使用maven">#</a> 在 IDEA 中使用 Maven</h2>
-<p>IDEA 中默认捆绑了 Maven 可以在设置里更改 Maven 有关的配置</p>
-<p>创建 Maven 项目：文件 -&gt; 新建 -&gt; 项目 构建系统选 Maven（上述是常规 Maven 项目）</p>
-<p>​										可以选择生成器中的 Maven 中的 Archetype 选择模板（如 quickstart）</p>
-<h2 id="maven仓库"><a class="anchor" href="#maven仓库">#</a> Maven 仓库</h2>
-<p>对于 Maven 来说，仓库只有两类： 本地仓库和远程仓库</p>
-<p>Maven 根据坐标寻找构件的时候，它首先会查看本地仓库，如果本地仓库存在，则直接使用；如果本地没有，Maven 就回去远程仓库查找，再下载到本地仓库再使用。如果本地和远程都没有就会报错。</p>
-<p>远程仓库分为 3 种：</p>
-<ol>
-<li>
-<p>中央仓库：默认下载 jar 包的地方，在国外，包含了 2000 多个开源项目，每天接收 1 亿次以上的访问。</p>
-</li>
-<li>
-<p>私服：一种特殊的远程仓库，它是架设在局域网内的仓库服务。私服代理广域网上的远程仓库，供局域网内的 Maven 用户使用。当 Maven 需要下载构件时，它去私服当中找，如果私服没有，则从外部远程仓库下载，并缓存在私服上，再为 maven 提供。此外，一些无法从外部仓库下载的构件也能从本地上传到私服提供局域网中其他人使用。（在公司或学校内网中自己写的构件就可以上传到私服让别人使用了） 私服优点： 节省自己的外网带宽、 加速 Maven 构建、部署第三方控件、提高稳定性、降低中央仓库的负荷</p>
-</li>
-<li>
-<p>其他公共库</p>
-<p>如阿里云仓库，国内地址下载比中央仓库快。</p>
-</li>
-</ol>
+<p><img data-src="preview.jpg" alt="芝士辉夜"></p>
+<h2 id="交换分区"><a class="anchor" href="#交换分区">#</a> 交换分区</h2>
+<p>直接从物理内存读写数据比从硬盘读写快的多，然而物理硬盘是有限的，这样就使用到了虚拟内存。虚拟内存是为了满足物理内存的不足而提出的一种策略，他是利用磁盘空间虚拟出的一块逻辑内存，用作虚拟内存的磁盘空间被称为<strong>交换分区（swap 分区）</strong>。</p>
+<p>内核会将暂时不用的内存信息写到交换分区，使物理内存得到释放并用于其它用途，当需要原始内容时，这些信息会被重新从交换分区读入物理内存。</p>
+<p>Linux 的内存管理采用分页存取机制，为了保证物理内存能得到充分利用，内核会在适当时候将物理内存中不经常使用的数据块自动交换到虚拟内存中，而将经常使用的信息保留到物理内存。</p>
+<h2 id="分区命名"><a class="anchor" href="#分区命名">#</a> 分区命名</h2>
+<p>Linux 系统使用字母和数字的组合来指代硬盘分区，该命名方案是基于文件的，文件名的格式为 */dev/xxyN* (比如 /dev/sda1 分区)</p>
+<p>/dev: 这是 Linux 系统中所有设备文件所在的目录名。因为分区位于硬盘上，而硬盘是设备，所以这些文件代表了在 /dev 上所有可能的分区</p>
+<p>xx：分区名的前两个字母表示分区所在设备的类型，通常是 hd（IDE）硬盘或 sd（SCSI 硬盘）</p>
+<p>y: 这个字母表示分区所在的设备。例如，/dev/hda（第一个 IDE 硬盘）或 /dev/sdb (第二个 SCSI 硬盘)</p>
+<p>N：最后的数字 N 代表硬盘上的第几个分区。</p>
+<h2 id="挂载目录"><a class="anchor" href="#挂载目录">#</a> 挂载目录</h2>
+<p>Linux 系统中的每一个分区都是构成支持一组文件和目录 所必需的存储区的一部分。它是通过挂载来实现的，挂载 是将分区关联到某一目录的过程，挂载分区使起始于这个 指定目录（称为挂载目录）的存储区能够被使用。</p>
+<p>例如，如果分区 /dev/sda5 被挂载在目录 /usr 上，这意味着 所有在 /usr 下的文件和目录在物理上位于 /dev/sda5。因此 文件 /usr/bin/cal 被保存在分区 /dev/sda5 上，而文件 /etc/passwd 却不是。</p>
+<p>/usr 目录下的目录还有可能是其它分区的挂载目录。例如， 某个分区（如 /dev/sda7）可以被挂载到 /usr/local 目录下， 这意味着文件 /usr/local/man/whatis 将位于分区 /dev/sda7 上，而不是分区 /dev/sda5 上。</p>
+<h2 id="分区规划"><a class="anchor" href="#分区规划">#</a> 分区规划</h2>
+<p>合理的分区规划 ：</p>
+<p>・swap 分区：实现虚拟内存，建议大小是物理内存 的 1～2 倍；</p>
+<p>・/boot 分区：建议大小最少为 200MB；・/usr 分区：用来存放 Linux 系统中的应用程序， 其相关数据较多，建议大小最少为 8GB；</p>
+<p>・/var 分区：用来存放 Linux 系统中经常变化的数 据以及日志文件，建议大小最少为 1GB；</p>
+<p>・/ 分区：Linux 系统的根目录，所有的目录都挂在 这个目录下面，建议大小最少为 1GB；</p>
+<p>・/home 分区：存放普通用户的数据，是普通用户 的宿主目录，建议大小为剩下的空间。</p>
 ]]></content>
       <categories>
-        <category>Maven</category>
+        <category>Linux</category>
       </categories>
       <tags>
-        <tag>Maven</tag>
+        <tag>Linux</tag>
       </tags>
   </entry>
   <entry>
@@ -953,6 +1160,19 @@ Y *p2 = new Y; //失败时调用Y::outOfMemory
       </categories>
       <tags>
         <tag>go语言</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>python实现自动选课</title>
+    <url>/2023/02/15/python%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%80%89%E8%AF%BE/</url>
+    <content><![CDATA[<h1 id="python实现自动选课"><a class="anchor" href="#python实现自动选课">#</a> python 实现自动选课</h1>
+<p>主要利用 selenium 与 ddddocr 库实现了对南大选课系统已收藏课程的自动化选择， 频率约为每两秒一次。实际测试中在一天时间内抢到了三门通识与两次近代史。</p>
+<p><span id="more"></span></p>
+<p>驱动这个项目动力来自于南大选课系统的落后。在开放选课的前一分钟 mikeMao 点击了一下刷新按钮，然后当 mikeMao 看到选课界面时已经是十分钟以后了。他没有任何体育课，也没有抢到近代史（因为他上学期为了逃离黑榜退掉了近代史），并且只中了一门必中的通识课！如果只靠蹲，mikeMao 这学期的课表可能会爆炸，于是 mikeMao 吐槽能否开发一个自动选课脚本，他的室友 stonerXiao 花了两小时写了一个可以使用的抢课脚本，mikeMao 获得了源码。但是他觉得一些地方写的不是很好，于是第二天上课（两点的课，两点零一群里通知老师有事不来了），他就动手改了一遍，借鉴了 stonerXiao 的刷新思路，mikeMao 几乎重写了一份代码。并在接下来的一天内塞满了课表。</p>
+<p>源码</p>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">from</span> selenium <span class="token keyword">import</span> webdriver</pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token keyword">from</span> selenium<span class="token punctuation">.</span>webdriver<span class="token punctuation">.</span>common<span class="token punctuation">.</span>by <span class="token keyword">import</span> By</pre></td></tr><tr><td data-num="3"></td><td><pre><span class="token keyword">from</span> selenium<span class="token punctuation">.</span>webdriver<span class="token punctuation">.</span>support<span class="token punctuation">.</span>ui <span class="token keyword">import</span> WebDriverWait</pre></td></tr><tr><td data-num="4"></td><td><pre><span class="token keyword">from</span> selenium<span class="token punctuation">.</span>webdriver<span class="token punctuation">.</span>edge<span class="token punctuation">.</span>options <span class="token keyword">import</span> Options</pre></td></tr><tr><td data-num="5"></td><td><pre><span class="token keyword">import</span> time</pre></td></tr><tr><td data-num="6"></td><td><pre><span class="token keyword">import</span> ddddocr</pre></td></tr><tr><td data-num="7"></td><td><pre><span class="token keyword">import</span> traceback</pre></td></tr><tr><td data-num="8"></td><td><pre></pre></td></tr><tr><td data-num="9"></td><td><pre><span class="token comment"># 使用须知 需要安装：selenium 与 ddddorc 库 edge 浏览器及对应版本的驱动程序 并且参照注释对下面源码进行改动 将想选的课收藏</span></pre></td></tr><tr><td data-num="10"></td><td><pre><span class="token comment"># 可能不明原因退出或报错 可能是收藏被吞了（重新收藏一下） 或者网络波动（重启程序即可）</span></pre></td></tr><tr><td data-num="11"></td><td><pre>username <span class="token operator">=</span> <span class="token string">""</span>  <span class="token comment"># 添加用户名</span></pre></td></tr><tr><td data-num="12"></td><td><pre>password <span class="token operator">=</span> <span class="token string">""</span>  <span class="token comment"># 添加密码</span></pre></td></tr><tr><td data-num="13"></td><td><pre>url <span class="token operator">=</span> <span class="token string">"https://xk.nju.edu.cn/xsxkapp/sys/xsxkapp/*default/index.do"</span></pre></td></tr><tr><td data-num="14"></td><td><pre></pre></td></tr><tr><td data-num="15"></td><td><pre>login_button <span class="token operator">=</span> <span class="token string">"/html/body/div[1]/article/section/div[4]/div[1]/button"</span></pre></td></tr><tr><td data-num="16"></td><td><pre>start <span class="token operator">=</span> <span class="token string">"/html/body/div[1]/article/section/div[4]/div[2]/button"</span></pre></td></tr><tr><td data-num="17"></td><td><pre>favorite <span class="token operator">=</span> <span class="token string">"/html/body/div[1]/header/div[2]/ul/li[8]/a"</span></pre></td></tr><tr><td data-num="18"></td><td><pre>special <span class="token operator">=</span> <span class="token string">"/html/body/div[1]/header/div[2]/ul/li[1]/a"</span>  <span class="token comment"># for refresh</span></pre></td></tr><tr><td data-num="19"></td><td><pre></pre></td></tr><tr><td data-num="20"></td><td><pre>select <span class="token operator">=</span> <span class="token string">"/html/body/div[1]/article/div[2]/div[2]/table/tbody/tr[&#123;&#125;]/td[8]/a[2]"</span></pre></td></tr><tr><td data-num="21"></td><td><pre>confirm <span class="token operator">=</span> <span class="token string">"/html/body/div[3]/div[2]/div[2]/div[1]"</span></pre></td></tr><tr><td data-num="22"></td><td><pre>confirm_ <span class="token operator">=</span> <span class="token string">"/html/body/div[3]/div[2]/div[2]/div"</span></pre></td></tr><tr><td data-num="23"></td><td><pre></pre></td></tr><tr><td data-num="24"></td><td><pre>course_list <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span></pre></td></tr><tr><td data-num="25"></td><td><pre></pre></td></tr><tr><td data-num="26"></td><td><pre></pre></td></tr><tr><td data-num="27"></td><td><pre><span class="token comment"># 识别验证码</span></pre></td></tr><tr><td data-num="28"></td><td><pre><span class="token keyword">def</span> <span class="token function">Identify_verifi_code</span><span class="token punctuation">(</span>driver<span class="token punctuation">)</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="29"></td><td><pre>    img <span class="token operator">=</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> <span class="token string">'//*[@id="vcodeImg"]'</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="30"></td><td><pre>    img<span class="token punctuation">.</span>screenshot<span class="token punctuation">(</span><span class="token string">'vcode.png'</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="31"></td><td><pre>    ocr <span class="token operator">=</span> ddddocr<span class="token punctuation">.</span>DdddOcr<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="32"></td><td><pre>    <span class="token keyword">with</span> <span class="token builtin">open</span><span class="token punctuation">(</span><span class="token string">'vcode.png'</span><span class="token punctuation">,</span> <span class="token string">'rb'</span><span class="token punctuation">)</span> <span class="token keyword">as</span> f<span class="token punctuation">:</span></pre></td></tr><tr><td data-num="33"></td><td><pre>        img_bytes <span class="token operator">=</span> f<span class="token punctuation">.</span>read<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="34"></td><td><pre>    res <span class="token operator">=</span> ocr<span class="token punctuation">.</span>classification<span class="token punctuation">(</span>img_bytes<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="35"></td><td><pre>    <span class="token keyword">return</span> res</pre></td></tr><tr><td data-num="36"></td><td><pre></pre></td></tr><tr><td data-num="37"></td><td><pre></pre></td></tr><tr><td data-num="38"></td><td><pre><span class="token keyword">def</span> <span class="token function">login</span><span class="token punctuation">(</span>driver<span class="token punctuation">)</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="39"></td><td><pre>    <span class="token comment"># driver.maximize_window ()  # 将窗口最大化</span></pre></td></tr><tr><td data-num="40"></td><td><pre>    verifi_code <span class="token operator">=</span> Identify_verifi_code<span class="token punctuation">(</span>driver<span class="token punctuation">)</span>  <span class="token comment"># 识别验证码</span></pre></td></tr><tr><td data-num="41"></td><td><pre>    <span class="token comment"># 找到登录框 输入账号密码</span></pre></td></tr><tr><td data-num="42"></td><td><pre>    driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>ID<span class="token punctuation">,</span> <span class="token string">'loginName'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>send_keys<span class="token punctuation">(</span>username<span class="token punctuation">)</span>  <span class="token comment"># 输入用户名</span></pre></td></tr><tr><td data-num="43"></td><td><pre>    driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>ID<span class="token punctuation">,</span> <span class="token string">'loginPwd'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>send_keys<span class="token punctuation">(</span>password<span class="token punctuation">)</span>  <span class="token comment"># 输入密码</span></pre></td></tr><tr><td data-num="44"></td><td><pre>    driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>ID<span class="token punctuation">,</span> <span class="token string">'verifyCode'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>send_keys<span class="token punctuation">(</span>verifi_code<span class="token punctuation">)</span>  <span class="token comment"># 输入验证码</span></pre></td></tr><tr><td data-num="45"></td><td><pre></pre></td></tr><tr><td data-num="46"></td><td><pre>    wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>driver<span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span>  <span class="token comment"># 10 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。</span></pre></td></tr><tr><td data-num="47"></td><td><pre>    wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> driver<span class="token punctuation">:</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> login_button<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="48"></td><td><pre>    driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> login_button<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token comment"># 点击登录</span></pre></td></tr><tr><td data-num="49"></td><td><pre></pre></td></tr><tr><td data-num="50"></td><td><pre>    <span class="token keyword">try</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="51"></td><td><pre>        <span class="token keyword">while</span> <span class="token boolean">True</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="52"></td><td><pre>            verifi_code <span class="token operator">=</span> Identify_verifi_code<span class="token punctuation">(</span>driver<span class="token punctuation">)</span>  <span class="token comment"># 识别验证码</span></pre></td></tr><tr><td data-num="53"></td><td><pre>            driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>ID<span class="token punctuation">,</span> <span class="token string">'verifyCode'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>clear<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="54"></td><td><pre>            driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>ID<span class="token punctuation">,</span> <span class="token string">'verifyCode'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>send_keys<span class="token punctuation">(</span>verifi_code<span class="token punctuation">)</span>  <span class="token comment"># 输入验证码</span></pre></td></tr><tr><td data-num="55"></td><td><pre>            time<span class="token punctuation">.</span>sleep<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="56"></td><td><pre>            wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>driver<span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span>  <span class="token comment"># 10 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。</span></pre></td></tr><tr><td data-num="57"></td><td><pre>            wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> driver<span class="token punctuation">:</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> login_button<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="58"></td><td><pre>            driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> login_button<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token comment"># 点击登录</span></pre></td></tr><tr><td data-num="59"></td><td><pre>    <span class="token keyword">except</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="60"></td><td><pre>        <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="61"></td><td><pre></pre></td></tr><tr><td data-num="62"></td><td><pre>    wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>driver<span class="token punctuation">,</span> <span class="token number">20</span><span class="token punctuation">)</span>  <span class="token comment"># 20 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。</span></pre></td></tr><tr><td data-num="63"></td><td><pre>    wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> driver<span class="token punctuation">:</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> start<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="64"></td><td><pre>    driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> start<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="65"></td><td><pre></pre></td></tr><tr><td data-num="66"></td><td><pre></pre></td></tr><tr><td data-num="67"></td><td><pre><span class="token keyword">def</span> <span class="token function">is_Login</span><span class="token punctuation">(</span>driver<span class="token punctuation">)</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="68"></td><td><pre>    <span class="token keyword">try</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="69"></td><td><pre>        driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>ID<span class="token punctuation">,</span> <span class="token string">'loginName'</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="70"></td><td><pre>        <span class="token keyword">return</span> <span class="token boolean">False</span></pre></td></tr><tr><td data-num="71"></td><td><pre>    <span class="token keyword">except</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="72"></td><td><pre>        <span class="token keyword">return</span> <span class="token boolean">True</span></pre></td></tr><tr><td data-num="73"></td><td><pre></pre></td></tr><tr><td data-num="74"></td><td><pre></pre></td></tr><tr><td data-num="75"></td><td><pre><span class="token keyword">def</span> <span class="token function">start_select</span><span class="token punctuation">(</span>driver<span class="token punctuation">)</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="76"></td><td><pre>    <span class="token keyword">if</span> is_Login<span class="token punctuation">(</span>driver<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token boolean">False</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="77"></td><td><pre>        <span class="token keyword">return</span> <span class="token boolean">False</span></pre></td></tr><tr><td data-num="78"></td><td><pre>    time<span class="token punctuation">.</span>sleep<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="79"></td><td><pre>    wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>driver<span class="token punctuation">,</span> <span class="token number">20</span><span class="token punctuation">)</span>  <span class="token comment"># 20 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。</span></pre></td></tr><tr><td data-num="80"></td><td><pre>    wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> driver<span class="token punctuation">:</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> favorite<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="81"></td><td><pre>    driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> favorite<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="82"></td><td><pre></pre></td></tr><tr><td data-num="83"></td><td><pre>    time<span class="token punctuation">.</span>sleep<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="84"></td><td><pre>    course_board <span class="token operator">=</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>CLASS_NAME<span class="token punctuation">,</span> <span class="token string">'course-body'</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="85"></td><td><pre>    tr_list <span class="token operator">=</span> course_board<span class="token punctuation">.</span>find_elements<span class="token punctuation">(</span>By<span class="token punctuation">.</span>CLASS_NAME<span class="token punctuation">,</span> <span class="token string">'course-tr '</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="86"></td><td><pre>    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'已收藏课程：'</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="87"></td><td><pre>    <span class="token keyword">for</span> tr <span class="token keyword">in</span> tr_list<span class="token punctuation">:</span></pre></td></tr><tr><td data-num="88"></td><td><pre>        wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>tr<span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="89"></td><td><pre>        wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> tr<span class="token punctuation">:</span> tr<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> <span class="token string">'./td[2]'</span><span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="90"></td><td><pre>        course_name <span class="token operator">=</span> tr<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> <span class="token string">'./td[2]'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>text</pre></td></tr><tr><td data-num="91"></td><td><pre>        <span class="token keyword">print</span><span class="token punctuation">(</span>course_name<span class="token punctuation">,</span> end<span class="token operator">=</span><span class="token string">"\n"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="92"></td><td><pre>    count <span class="token operator">=</span> <span class="token number">0</span></pre></td></tr><tr><td data-num="93"></td><td><pre>    <span class="token keyword">while</span> <span class="token boolean">True</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="94"></td><td><pre>        count <span class="token operator">=</span> count <span class="token operator">+</span> <span class="token number">1</span></pre></td></tr><tr><td data-num="95"></td><td><pre>        <span class="token keyword">if</span> count <span class="token operator">%</span> <span class="token number">100</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="96"></td><td><pre>            <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'已尝试次数：'</span> <span class="token operator">+</span> count<span class="token punctuation">,</span> end<span class="token operator">=</span><span class="token string">" "</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="97"></td><td><pre>            <span class="token keyword">print</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>strftime<span class="token punctuation">(</span><span class="token string">'%Y-%m-%d %H:%M:%S'</span><span class="token punctuation">,</span> time<span class="token punctuation">.</span>localtime<span class="token punctuation">(</span>time<span class="token punctuation">.</span>time<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="98"></td><td><pre></pre></td></tr><tr><td data-num="99"></td><td><pre>        time<span class="token punctuation">.</span>sleep<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="100"></td><td><pre>        course_board <span class="token operator">=</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>CLASS_NAME<span class="token punctuation">,</span> <span class="token string">'course-body'</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="101"></td><td><pre>        tr_list <span class="token operator">=</span> course_board<span class="token punctuation">.</span>find_elements<span class="token punctuation">(</span>By<span class="token punctuation">.</span>CLASS_NAME<span class="token punctuation">,</span> <span class="token string">'course-tr '</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="102"></td><td><pre>        <span class="token keyword">for</span> tr <span class="token keyword">in</span> tr_list<span class="token punctuation">:</span></pre></td></tr><tr><td data-num="103"></td><td><pre>            wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>tr<span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="104"></td><td><pre>            wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> tr<span class="token punctuation">:</span> tr<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> <span class="token string">'./td[8]/a[2]'</span><span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="105"></td><td><pre></pre></td></tr><tr><td data-num="106"></td><td><pre>            course_name <span class="token operator">=</span> tr<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> <span class="token string">'./td[2]'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>text</pre></td></tr><tr><td data-num="107"></td><td><pre>            select_button <span class="token operator">=</span> tr<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> <span class="token string">'./td[8]/a[2]'</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="108"></td><td><pre>            select_button<span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="109"></td><td><pre>            <span class="token keyword">try</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="110"></td><td><pre>                driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> confirm<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="111"></td><td><pre>                <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"选课成功！"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="112"></td><td><pre>                <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"已成功选中&#123;&#125;"</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>course_name<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="113"></td><td><pre>                course_list<span class="token punctuation">.</span>append<span class="token punctuation">(</span>course_name<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="114"></td><td><pre>                <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"确认中"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="115"></td><td><pre>                wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>driver<span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span>  <span class="token comment"># 20 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。</span></pre></td></tr><tr><td data-num="116"></td><td><pre>                wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> driver<span class="token punctuation">:</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> confirm_<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="117"></td><td><pre>                driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> confirm_<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="118"></td><td><pre>                <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"确认成功!"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="119"></td><td><pre>            <span class="token keyword">except</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="120"></td><td><pre>                <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="121"></td><td><pre></pre></td></tr><tr><td data-num="122"></td><td><pre>        wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>driver<span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span>  <span class="token comment"># 10 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。</span></pre></td></tr><tr><td data-num="123"></td><td><pre>        wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> driver<span class="token punctuation">:</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> special<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="124"></td><td><pre>        driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> special<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="125"></td><td><pre></pre></td></tr><tr><td data-num="126"></td><td><pre>        time<span class="token punctuation">.</span>sleep<span class="token punctuation">(</span><span class="token number">0.5</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="127"></td><td><pre>        wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>driver<span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span>  <span class="token comment"># 10 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。</span></pre></td></tr><tr><td data-num="128"></td><td><pre>        wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> driver<span class="token punctuation">:</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> favorite<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="129"></td><td><pre>        driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> favorite<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="130"></td><td><pre></pre></td></tr><tr><td data-num="131"></td><td><pre></pre></td></tr><tr><td data-num="132"></td><td><pre><span class="token keyword">def</span> <span class="token function">working</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="133"></td><td><pre>    options <span class="token operator">=</span> Options<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="134"></td><td><pre>    <span class="token comment"># 关闭沙盒启动 把下面两行注释掉 会出现浏览器界面 建议注释掉看看能不能运行 可以再取消注释</span></pre></td></tr><tr><td data-num="135"></td><td><pre>    <span class="token comment">#options.add_argument('--no-sandbox')</span></pre></td></tr><tr><td data-num="136"></td><td><pre>    <span class="token comment">#options.add_argument("--headless")</span></pre></td></tr><tr><td data-num="137"></td><td><pre></pre></td></tr><tr><td data-num="138"></td><td><pre>    driver <span class="token operator">=</span> webdriver<span class="token punctuation">.</span>Edge<span class="token punctuation">(</span>executable_path<span class="token operator">=</span><span class="token string">"msedgedriver.exe"</span><span class="token punctuation">,</span> options<span class="token operator">=</span>options<span class="token punctuation">)</span>  <span class="token comment"># executable_path 改成下载的 edge 驱动程序路径</span></pre></td></tr><tr><td data-num="139"></td><td><pre>    driver<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="140"></td><td><pre></pre></td></tr><tr><td data-num="141"></td><td><pre>    <span class="token comment"># 登录并查询</span></pre></td></tr><tr><td data-num="142"></td><td><pre>    <span class="token keyword">try</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="143"></td><td><pre>        login<span class="token punctuation">(</span>driver<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="144"></td><td><pre>        start_select<span class="token punctuation">(</span>driver<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="145"></td><td><pre>    <span class="token keyword">except</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="146"></td><td><pre>        traceback<span class="token punctuation">.</span>print_exc<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="147"></td><td><pre>    <span class="token keyword">finally</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="148"></td><td><pre>        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"已选到如下课程:"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="149"></td><td><pre>        <span class="token keyword">print</span><span class="token punctuation">(</span>course_list<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="150"></td><td><pre>        driver<span class="token punctuation">.</span>quit<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="151"></td><td><pre></pre></td></tr><tr><td data-num="152"></td><td><pre></pre></td></tr><tr><td data-num="153"></td><td><pre><span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">'__main__'</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="154"></td><td><pre>    working<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr></table></figure>]]></content>
+      <tags>
+        <tag>python 爬虫</tag>
       </tags>
   </entry>
   <entry>
@@ -1052,236 +1272,6 @@ Y *p2 = new Y; //失败时调用Y::outOfMemory
       </categories>
       <tags>
         <tag>python 爬虫 计算机网络</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>python实现自动选课</title>
-    <url>/2023/02/15/python%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%8A%A8%E9%80%89%E8%AF%BE/</url>
-    <content><![CDATA[<h1 id="python实现自动选课"><a class="anchor" href="#python实现自动选课">#</a> python 实现自动选课</h1>
-<p>主要利用 selenium 与 ddddocr 库实现了对南大选课系统已收藏课程的自动化选择， 频率约为每两秒一次。实际测试中在一天时间内抢到了三门通识与两次近代史。</p>
-<p><span id="more"></span></p>
-<p>驱动这个项目动力来自于南大选课系统的落后。在开放选课的前一分钟 mikeMao 点击了一下刷新按钮，然后当 mikeMao 看到选课界面时已经是十分钟以后了。他没有任何体育课，也没有抢到近代史（因为他上学期为了逃离黑榜退掉了近代史），并且只中了一门必中的通识课！如果只靠蹲，mikeMao 这学期的课表可能会爆炸，于是 mikeMao 吐槽能否开发一个自动选课脚本，他的室友 stonerXiao 花了两小时写了一个可以使用的抢课脚本，mikeMao 获得了源码。但是他觉得一些地方写的不是很好，于是第二天上课（两点的课，两点零一群里通知老师有事不来了），他就动手改了一遍，借鉴了 stonerXiao 的刷新思路，mikeMao 几乎重写了一份代码。并在接下来的一天内塞满了课表。</p>
-<p>源码</p>
-<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">from</span> selenium <span class="token keyword">import</span> webdriver</pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token keyword">from</span> selenium<span class="token punctuation">.</span>webdriver<span class="token punctuation">.</span>common<span class="token punctuation">.</span>by <span class="token keyword">import</span> By</pre></td></tr><tr><td data-num="3"></td><td><pre><span class="token keyword">from</span> selenium<span class="token punctuation">.</span>webdriver<span class="token punctuation">.</span>support<span class="token punctuation">.</span>ui <span class="token keyword">import</span> WebDriverWait</pre></td></tr><tr><td data-num="4"></td><td><pre><span class="token keyword">from</span> selenium<span class="token punctuation">.</span>webdriver<span class="token punctuation">.</span>edge<span class="token punctuation">.</span>options <span class="token keyword">import</span> Options</pre></td></tr><tr><td data-num="5"></td><td><pre><span class="token keyword">import</span> time</pre></td></tr><tr><td data-num="6"></td><td><pre><span class="token keyword">import</span> ddddocr</pre></td></tr><tr><td data-num="7"></td><td><pre><span class="token keyword">import</span> traceback</pre></td></tr><tr><td data-num="8"></td><td><pre></pre></td></tr><tr><td data-num="9"></td><td><pre><span class="token comment"># 使用须知 需要安装：selenium 与 ddddorc 库 edge 浏览器及对应版本的驱动程序 并且参照注释对下面源码进行改动 将想选的课收藏</span></pre></td></tr><tr><td data-num="10"></td><td><pre><span class="token comment"># 可能不明原因退出或报错 可能是收藏被吞了（重新收藏一下） 或者网络波动（重启程序即可）</span></pre></td></tr><tr><td data-num="11"></td><td><pre>username <span class="token operator">=</span> <span class="token string">""</span>  <span class="token comment"># 添加用户名</span></pre></td></tr><tr><td data-num="12"></td><td><pre>password <span class="token operator">=</span> <span class="token string">""</span>  <span class="token comment"># 添加密码</span></pre></td></tr><tr><td data-num="13"></td><td><pre>url <span class="token operator">=</span> <span class="token string">"https://xk.nju.edu.cn/xsxkapp/sys/xsxkapp/*default/index.do"</span></pre></td></tr><tr><td data-num="14"></td><td><pre></pre></td></tr><tr><td data-num="15"></td><td><pre>login_button <span class="token operator">=</span> <span class="token string">"/html/body/div[1]/article/section/div[4]/div[1]/button"</span></pre></td></tr><tr><td data-num="16"></td><td><pre>start <span class="token operator">=</span> <span class="token string">"/html/body/div[1]/article/section/div[4]/div[2]/button"</span></pre></td></tr><tr><td data-num="17"></td><td><pre>favorite <span class="token operator">=</span> <span class="token string">"/html/body/div[1]/header/div[2]/ul/li[8]/a"</span></pre></td></tr><tr><td data-num="18"></td><td><pre>special <span class="token operator">=</span> <span class="token string">"/html/body/div[1]/header/div[2]/ul/li[1]/a"</span>  <span class="token comment"># for refresh</span></pre></td></tr><tr><td data-num="19"></td><td><pre></pre></td></tr><tr><td data-num="20"></td><td><pre>select <span class="token operator">=</span> <span class="token string">"/html/body/div[1]/article/div[2]/div[2]/table/tbody/tr[&#123;&#125;]/td[8]/a[2]"</span></pre></td></tr><tr><td data-num="21"></td><td><pre>confirm <span class="token operator">=</span> <span class="token string">"/html/body/div[3]/div[2]/div[2]/div[1]"</span></pre></td></tr><tr><td data-num="22"></td><td><pre>confirm_ <span class="token operator">=</span> <span class="token string">"/html/body/div[3]/div[2]/div[2]/div"</span></pre></td></tr><tr><td data-num="23"></td><td><pre></pre></td></tr><tr><td data-num="24"></td><td><pre>course_list <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span></pre></td></tr><tr><td data-num="25"></td><td><pre></pre></td></tr><tr><td data-num="26"></td><td><pre></pre></td></tr><tr><td data-num="27"></td><td><pre><span class="token comment"># 识别验证码</span></pre></td></tr><tr><td data-num="28"></td><td><pre><span class="token keyword">def</span> <span class="token function">Identify_verifi_code</span><span class="token punctuation">(</span>driver<span class="token punctuation">)</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="29"></td><td><pre>    img <span class="token operator">=</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> <span class="token string">'//*[@id="vcodeImg"]'</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="30"></td><td><pre>    img<span class="token punctuation">.</span>screenshot<span class="token punctuation">(</span><span class="token string">'vcode.png'</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="31"></td><td><pre>    ocr <span class="token operator">=</span> ddddocr<span class="token punctuation">.</span>DdddOcr<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="32"></td><td><pre>    <span class="token keyword">with</span> <span class="token builtin">open</span><span class="token punctuation">(</span><span class="token string">'vcode.png'</span><span class="token punctuation">,</span> <span class="token string">'rb'</span><span class="token punctuation">)</span> <span class="token keyword">as</span> f<span class="token punctuation">:</span></pre></td></tr><tr><td data-num="33"></td><td><pre>        img_bytes <span class="token operator">=</span> f<span class="token punctuation">.</span>read<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="34"></td><td><pre>    res <span class="token operator">=</span> ocr<span class="token punctuation">.</span>classification<span class="token punctuation">(</span>img_bytes<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="35"></td><td><pre>    <span class="token keyword">return</span> res</pre></td></tr><tr><td data-num="36"></td><td><pre></pre></td></tr><tr><td data-num="37"></td><td><pre></pre></td></tr><tr><td data-num="38"></td><td><pre><span class="token keyword">def</span> <span class="token function">login</span><span class="token punctuation">(</span>driver<span class="token punctuation">)</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="39"></td><td><pre>    <span class="token comment"># driver.maximize_window ()  # 将窗口最大化</span></pre></td></tr><tr><td data-num="40"></td><td><pre>    verifi_code <span class="token operator">=</span> Identify_verifi_code<span class="token punctuation">(</span>driver<span class="token punctuation">)</span>  <span class="token comment"># 识别验证码</span></pre></td></tr><tr><td data-num="41"></td><td><pre>    <span class="token comment"># 找到登录框 输入账号密码</span></pre></td></tr><tr><td data-num="42"></td><td><pre>    driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>ID<span class="token punctuation">,</span> <span class="token string">'loginName'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>send_keys<span class="token punctuation">(</span>username<span class="token punctuation">)</span>  <span class="token comment"># 输入用户名</span></pre></td></tr><tr><td data-num="43"></td><td><pre>    driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>ID<span class="token punctuation">,</span> <span class="token string">'loginPwd'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>send_keys<span class="token punctuation">(</span>password<span class="token punctuation">)</span>  <span class="token comment"># 输入密码</span></pre></td></tr><tr><td data-num="44"></td><td><pre>    driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>ID<span class="token punctuation">,</span> <span class="token string">'verifyCode'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>send_keys<span class="token punctuation">(</span>verifi_code<span class="token punctuation">)</span>  <span class="token comment"># 输入验证码</span></pre></td></tr><tr><td data-num="45"></td><td><pre></pre></td></tr><tr><td data-num="46"></td><td><pre>    wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>driver<span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span>  <span class="token comment"># 10 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。</span></pre></td></tr><tr><td data-num="47"></td><td><pre>    wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> driver<span class="token punctuation">:</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> login_button<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="48"></td><td><pre>    driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> login_button<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token comment"># 点击登录</span></pre></td></tr><tr><td data-num="49"></td><td><pre></pre></td></tr><tr><td data-num="50"></td><td><pre>    <span class="token keyword">try</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="51"></td><td><pre>        <span class="token keyword">while</span> <span class="token boolean">True</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="52"></td><td><pre>            verifi_code <span class="token operator">=</span> Identify_verifi_code<span class="token punctuation">(</span>driver<span class="token punctuation">)</span>  <span class="token comment"># 识别验证码</span></pre></td></tr><tr><td data-num="53"></td><td><pre>            driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>ID<span class="token punctuation">,</span> <span class="token string">'verifyCode'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>clear<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="54"></td><td><pre>            driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>ID<span class="token punctuation">,</span> <span class="token string">'verifyCode'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>send_keys<span class="token punctuation">(</span>verifi_code<span class="token punctuation">)</span>  <span class="token comment"># 输入验证码</span></pre></td></tr><tr><td data-num="55"></td><td><pre>            time<span class="token punctuation">.</span>sleep<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="56"></td><td><pre>            wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>driver<span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span>  <span class="token comment"># 10 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。</span></pre></td></tr><tr><td data-num="57"></td><td><pre>            wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> driver<span class="token punctuation">:</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> login_button<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="58"></td><td><pre>            driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> login_button<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token comment"># 点击登录</span></pre></td></tr><tr><td data-num="59"></td><td><pre>    <span class="token keyword">except</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="60"></td><td><pre>        <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="61"></td><td><pre></pre></td></tr><tr><td data-num="62"></td><td><pre>    wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>driver<span class="token punctuation">,</span> <span class="token number">20</span><span class="token punctuation">)</span>  <span class="token comment"># 20 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。</span></pre></td></tr><tr><td data-num="63"></td><td><pre>    wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> driver<span class="token punctuation">:</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> start<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="64"></td><td><pre>    driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> start<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="65"></td><td><pre></pre></td></tr><tr><td data-num="66"></td><td><pre></pre></td></tr><tr><td data-num="67"></td><td><pre><span class="token keyword">def</span> <span class="token function">is_Login</span><span class="token punctuation">(</span>driver<span class="token punctuation">)</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="68"></td><td><pre>    <span class="token keyword">try</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="69"></td><td><pre>        driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>ID<span class="token punctuation">,</span> <span class="token string">'loginName'</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="70"></td><td><pre>        <span class="token keyword">return</span> <span class="token boolean">False</span></pre></td></tr><tr><td data-num="71"></td><td><pre>    <span class="token keyword">except</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="72"></td><td><pre>        <span class="token keyword">return</span> <span class="token boolean">True</span></pre></td></tr><tr><td data-num="73"></td><td><pre></pre></td></tr><tr><td data-num="74"></td><td><pre></pre></td></tr><tr><td data-num="75"></td><td><pre><span class="token keyword">def</span> <span class="token function">start_select</span><span class="token punctuation">(</span>driver<span class="token punctuation">)</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="76"></td><td><pre>    <span class="token keyword">if</span> is_Login<span class="token punctuation">(</span>driver<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token boolean">False</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="77"></td><td><pre>        <span class="token keyword">return</span> <span class="token boolean">False</span></pre></td></tr><tr><td data-num="78"></td><td><pre>    time<span class="token punctuation">.</span>sleep<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="79"></td><td><pre>    wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>driver<span class="token punctuation">,</span> <span class="token number">20</span><span class="token punctuation">)</span>  <span class="token comment"># 20 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。</span></pre></td></tr><tr><td data-num="80"></td><td><pre>    wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> driver<span class="token punctuation">:</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> favorite<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="81"></td><td><pre>    driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> favorite<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="82"></td><td><pre></pre></td></tr><tr><td data-num="83"></td><td><pre>    time<span class="token punctuation">.</span>sleep<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="84"></td><td><pre>    course_board <span class="token operator">=</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>CLASS_NAME<span class="token punctuation">,</span> <span class="token string">'course-body'</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="85"></td><td><pre>    tr_list <span class="token operator">=</span> course_board<span class="token punctuation">.</span>find_elements<span class="token punctuation">(</span>By<span class="token punctuation">.</span>CLASS_NAME<span class="token punctuation">,</span> <span class="token string">'course-tr '</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="86"></td><td><pre>    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'已收藏课程：'</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="87"></td><td><pre>    <span class="token keyword">for</span> tr <span class="token keyword">in</span> tr_list<span class="token punctuation">:</span></pre></td></tr><tr><td data-num="88"></td><td><pre>        wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>tr<span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="89"></td><td><pre>        wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> tr<span class="token punctuation">:</span> tr<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> <span class="token string">'./td[2]'</span><span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="90"></td><td><pre>        course_name <span class="token operator">=</span> tr<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> <span class="token string">'./td[2]'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>text</pre></td></tr><tr><td data-num="91"></td><td><pre>        <span class="token keyword">print</span><span class="token punctuation">(</span>course_name<span class="token punctuation">,</span> end<span class="token operator">=</span><span class="token string">"\n"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="92"></td><td><pre>    count <span class="token operator">=</span> <span class="token number">0</span></pre></td></tr><tr><td data-num="93"></td><td><pre>    <span class="token keyword">while</span> <span class="token boolean">True</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="94"></td><td><pre>        count <span class="token operator">=</span> count <span class="token operator">+</span> <span class="token number">1</span></pre></td></tr><tr><td data-num="95"></td><td><pre>        <span class="token keyword">if</span> count <span class="token operator">%</span> <span class="token number">100</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="96"></td><td><pre>            <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'已尝试次数：'</span> <span class="token operator">+</span> count<span class="token punctuation">,</span> end<span class="token operator">=</span><span class="token string">" "</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="97"></td><td><pre>            <span class="token keyword">print</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>strftime<span class="token punctuation">(</span><span class="token string">'%Y-%m-%d %H:%M:%S'</span><span class="token punctuation">,</span> time<span class="token punctuation">.</span>localtime<span class="token punctuation">(</span>time<span class="token punctuation">.</span>time<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="98"></td><td><pre></pre></td></tr><tr><td data-num="99"></td><td><pre>        time<span class="token punctuation">.</span>sleep<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="100"></td><td><pre>        course_board <span class="token operator">=</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>CLASS_NAME<span class="token punctuation">,</span> <span class="token string">'course-body'</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="101"></td><td><pre>        tr_list <span class="token operator">=</span> course_board<span class="token punctuation">.</span>find_elements<span class="token punctuation">(</span>By<span class="token punctuation">.</span>CLASS_NAME<span class="token punctuation">,</span> <span class="token string">'course-tr '</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="102"></td><td><pre>        <span class="token keyword">for</span> tr <span class="token keyword">in</span> tr_list<span class="token punctuation">:</span></pre></td></tr><tr><td data-num="103"></td><td><pre>            wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>tr<span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="104"></td><td><pre>            wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> tr<span class="token punctuation">:</span> tr<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> <span class="token string">'./td[8]/a[2]'</span><span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="105"></td><td><pre></pre></td></tr><tr><td data-num="106"></td><td><pre>            course_name <span class="token operator">=</span> tr<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> <span class="token string">'./td[2]'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>text</pre></td></tr><tr><td data-num="107"></td><td><pre>            select_button <span class="token operator">=</span> tr<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> <span class="token string">'./td[8]/a[2]'</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="108"></td><td><pre>            select_button<span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="109"></td><td><pre>            <span class="token keyword">try</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="110"></td><td><pre>                driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> confirm<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="111"></td><td><pre>                <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"选课成功！"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="112"></td><td><pre>                <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"已成功选中&#123;&#125;"</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>course_name<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="113"></td><td><pre>                course_list<span class="token punctuation">.</span>append<span class="token punctuation">(</span>course_name<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="114"></td><td><pre>                <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"确认中"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="115"></td><td><pre>                wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>driver<span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span>  <span class="token comment"># 20 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。</span></pre></td></tr><tr><td data-num="116"></td><td><pre>                wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> driver<span class="token punctuation">:</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> confirm_<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="117"></td><td><pre>                driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> confirm_<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="118"></td><td><pre>                <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"确认成功!"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="119"></td><td><pre>            <span class="token keyword">except</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="120"></td><td><pre>                <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="121"></td><td><pre></pre></td></tr><tr><td data-num="122"></td><td><pre>        wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>driver<span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span>  <span class="token comment"># 10 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。</span></pre></td></tr><tr><td data-num="123"></td><td><pre>        wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> driver<span class="token punctuation">:</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> special<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="124"></td><td><pre>        driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> special<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="125"></td><td><pre></pre></td></tr><tr><td data-num="126"></td><td><pre>        time<span class="token punctuation">.</span>sleep<span class="token punctuation">(</span><span class="token number">0.5</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="127"></td><td><pre>        wait <span class="token operator">=</span> WebDriverWait<span class="token punctuation">(</span>driver<span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span>  <span class="token comment"># 10 秒内每隔 500 毫秒扫描 1 次页面变化，当出现指定的元素后结束。</span></pre></td></tr><tr><td data-num="128"></td><td><pre>        wait<span class="token punctuation">.</span>until<span class="token punctuation">(</span><span class="token keyword">lambda</span> driver<span class="token punctuation">:</span> driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> favorite<span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="129"></td><td><pre>        driver<span class="token punctuation">.</span>find_element<span class="token punctuation">(</span>By<span class="token punctuation">.</span>XPATH<span class="token punctuation">,</span> favorite<span class="token punctuation">)</span><span class="token punctuation">.</span>click<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="130"></td><td><pre></pre></td></tr><tr><td data-num="131"></td><td><pre></pre></td></tr><tr><td data-num="132"></td><td><pre><span class="token keyword">def</span> <span class="token function">working</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="133"></td><td><pre>    options <span class="token operator">=</span> Options<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="134"></td><td><pre>    <span class="token comment"># 关闭沙盒启动 把下面两行注释掉 会出现浏览器界面 建议注释掉看看能不能运行 可以再取消注释</span></pre></td></tr><tr><td data-num="135"></td><td><pre>    <span class="token comment">#options.add_argument('--no-sandbox')</span></pre></td></tr><tr><td data-num="136"></td><td><pre>    <span class="token comment">#options.add_argument("--headless")</span></pre></td></tr><tr><td data-num="137"></td><td><pre></pre></td></tr><tr><td data-num="138"></td><td><pre>    driver <span class="token operator">=</span> webdriver<span class="token punctuation">.</span>Edge<span class="token punctuation">(</span>executable_path<span class="token operator">=</span><span class="token string">"msedgedriver.exe"</span><span class="token punctuation">,</span> options<span class="token operator">=</span>options<span class="token punctuation">)</span>  <span class="token comment"># executable_path 改成下载的 edge 驱动程序路径</span></pre></td></tr><tr><td data-num="139"></td><td><pre>    driver<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="140"></td><td><pre></pre></td></tr><tr><td data-num="141"></td><td><pre>    <span class="token comment"># 登录并查询</span></pre></td></tr><tr><td data-num="142"></td><td><pre>    <span class="token keyword">try</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="143"></td><td><pre>        login<span class="token punctuation">(</span>driver<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="144"></td><td><pre>        start_select<span class="token punctuation">(</span>driver<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="145"></td><td><pre>    <span class="token keyword">except</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="146"></td><td><pre>        traceback<span class="token punctuation">.</span>print_exc<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="147"></td><td><pre>    <span class="token keyword">finally</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="148"></td><td><pre>        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"已选到如下课程:"</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="149"></td><td><pre>        <span class="token keyword">print</span><span class="token punctuation">(</span>course_list<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="150"></td><td><pre>        driver<span class="token punctuation">.</span>quit<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="151"></td><td><pre></pre></td></tr><tr><td data-num="152"></td><td><pre></pre></td></tr><tr><td data-num="153"></td><td><pre><span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">'__main__'</span><span class="token punctuation">:</span></pre></td></tr><tr><td data-num="154"></td><td><pre>    working<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr></table></figure>]]></content>
-      <tags>
-        <tag>python 爬虫</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>python爬虫学习</title>
-    <url>/2023/01/25/python%E7%88%AC%E8%99%AB%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[<h1 id="python爬虫学习总结"><a class="anchor" href="#python爬虫学习总结">#</a> python 爬虫学习总结</h1>
-<p>学习 python 爬虫的一些笔记</p>
-<p><span id="more"></span></p>
-<h2 id="requests模块"><a class="anchor" href="#requests模块">#</a> requests 模块</h2>
-<p>requests 模块流程：</p>
-<pre><code>1. 指定url
-2. 发起请求 response = requests.get(url)
-3. 获取数据 page_source = response.text()
-4. 存储数据 文件操作/数据库操作
-</code></pre>
-<p>参数 tips：params 是用来发送查询字符串，而 data 是用来发送正文的。post 与 get 方法的特性是：这两种参数 post（）方法都可以用，get 方法只能发查询字符串，不能发送正文</p>
-<p>text 返回字符串 content 返回二进制（爬取图片可用）  json 返回对象</p>
-<p>分页爬取：</p>
-<p>​	如果是 ajax，在检查、网络、xhr 中查看</p>
-<p>​	如果是新链接，可以使用正则表达式匹配 url</p>
-<p>如果是用 ajax 的包：要注意的：</p>
-<ul>
-<li>看请求方法 是 GET 还是 POST。。。</li>
-<li>看响应头的 content-type 选择 reponse.text () 或 reponse.json ()</li>
-<li>看负载中带的参数</li>
-</ul>
-<p>中文乱码问题（文件编码格式为 utf8 json.dump 时 ensure acill 选项关闭）</p>
-<p>什么是 ajax? （根据用户行为重新渲染界面。 不修改 url 在检查 - 网络 - XHR 中查看具体信息）</p>
-<h2 id="bs4-数据解析"><a class="anchor" href="#bs4-数据解析">#</a> bs4 数据解析</h2>
-<p>bs4 数据解析的原理：</p>
-<p>1. 实例化一个 BeautifulSoup 对象 并且将页面原码数据加载到该对象中</p>
-<p>2. 通过调用 bs 对象中相关的属性或方法进行标签定位和数据提取</p>
-<p>如何实例化 beautifulsoup 对象：</p>
-<ol>
-<li>
-<p>将本地的 html 文档中的数据加载到该对象中</p>
-<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre>fp <span class="token operator">=</span> <span class="token builtin">open</span><span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="2"></td><td><pre>soup <span class="token operator">=</span> BeautifulSoup<span class="token punctuation">(</span>fp<span class="token punctuation">,</span><span class="token string">'lxml'</span><span class="token punctuation">)</span></pre></td></tr></table></figure></li>
-<li>
-<p>将互联网上获取的页面源码加载到该对象中</p>
-<pre><code>page_text = response.text
-soup = BeautifulSoup(page_text,'lxml')
-</code></pre>
-</li>
-</ol>
-<p>提供的用于数据解析的方法和属性：</p>
-<p>soup.tagname 返回 html 中第一次出现的 tagname 标签</p>
-<p>soup.find ('tagname') 等同于 soup.tagname</p>
-<p>soup.find ('tagname', class = 'classname') 定义属性位置， class 可以替换为 id attr</p>
-<p>soup.find_all ('tagname') 找到符合要求所有标签 返回列表</p>
-<p>soup.select ('.tang')  参数为某种选择器（id class 标签），返回一个列表</p>
-<p>soup.select ('.tang&gt; ul &gt; li &gt; a') 层级选择器，返回一个列表</p>
-<p>soup.selest ('.tang&gt; ul a') &gt; 号表示一个层级，空格表示多个层级</p>
-<p>怎么获取标签之间的文本数据：</p>
-<p>使用	soup.a.text/string/get_text () 方法</p>
-<pre><code>-   text/get_text(): 可以获取某一个标签中所有的文本内容（多套几层也能得到）
--   string：获取标签下直系的文本内容
-</code></pre>
-<p>怎么获取标签的属性值：</p>
-<p><code>soup.select('tang &gt; ul &gt; li &gt; a')[0]['href']</code>  直接获得 a 标签中的 herf 属性值</p>
-<h2 id="xpath解析"><a class="anchor" href="#xpath解析">#</a> xpath 解析</h2>
-<p>xpath 解析： 最常用且最便捷高效的一种解析方式。</p>
-<p>xpath 解析原理：</p>
-<pre><code>1. 实例化一个etree的对象，且需要将被解析的页面源码数据加载到该对象中。
-2. 调用etree对象中的xpath方法结合xpath表达式实现标签的定位和内容的捕获。
-</code></pre>
-<p>环境安装：</p>
-<pre><code>- pip install lxml
-</code></pre>
-<p>如何实例化 etree 对象</p>
-<p>​	from lxml import etree</p>
-<ol>
-<li>
-<p>将本地的 html 文档中的源码数据加载到 etree 对象中：</p>
-<p><code> etree.parse(filePath)</code></p>
-</li>
-<li>
-<p>可以将从互联网上获取的源码数据加载到该对象中</p>
-<p><code>etree.HTML('page_text')        -xpath('xpath表达式')</code></p>
-</li>
-</ol>
-<p>/ 表示一个层级  // 表示多个层级</p>
-<p>路径后加 [@ 属性名] 精确定位 如 <code>xx_list = tree.xpath('//div[@class='song']')</code></p>
-<p>中括号内加数字代表取第几个（索引下标从 1 开始） <code>xx_list[0]</code></p>
-<p>获取文本：定位后加 /text ()</p>
-<h2 id="中文出现乱码常见的处理方法"><a class="anchor" href="#中文出现乱码常见的处理方法">#</a> 中文出现乱码常见的处理方法</h2>
-<p>两种常见方法，一般能解决所有中文乱码问题</p>
-<ol>
-<li>
-<p>对爬下来的整个数据改变编码：</p>
-<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre>response<span class="token punctuation">.</span>encoding <span class="token operator">=</span> <span class="token string">'utf-8'</span></pre></td></tr></table></figure></li>
-<li>
-<p>对出现问题的对象单独进行编码与解码</p>
-<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre>img_name <span class="token operator">=</span> img_name<span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token string">'iso-8859-1'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>decode<span class="token punctuation">(</span><span class="token string">'gbk'</span><span class="token punctuation">)</span></pre></td></tr></table></figure></li>
-</ol>
-<h2 id="selenium模块"><a class="anchor" href="#selenium模块">#</a> selenium 模块</h2>
-<h3 id="selenium模块与爬虫之间具有怎样的关联"><a class="anchor" href="#selenium模块与爬虫之间具有怎样的关联">#</a> selenium 模块与爬虫之间具有怎样的关联？</h3>
-<ul>
-<li>便捷的获取网站中动态加载的数据</li>
-<li>便捷实现模拟登录</li>
-</ul>
-<h3 id="什么是selenium模块"><a class="anchor" href="#什么是selenium模块">#</a> 什么是 selenium 模块</h3>
-<p>基于浏览器自动化的一个模块。 （编写代码让浏览器完成自动化操作）</p>
-<h3 id="selenium使用流程"><a class="anchor" href="#selenium使用流程">#</a> selenium 使用流程：</h3>
-<ul>
-<li>环境安装：pip install selenium</li>
-<li>下载一个浏览器的驱动程序</li>
-<li>实例化一个浏览器对象</li>
-</ul>
-<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">from</span> selenium <span class="token keyword">import</span> webdriver</pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token keyword">from</span> selenium<span class="token punctuation">.</span>webdriver<span class="token punctuation">.</span>edge<span class="token punctuation">.</span>service <span class="token keyword">import</span> Service</pre></td></tr><tr><td data-num="3"></td><td><pre><span class="token comment"># 实例化一个浏览器对象 参数中的路径为浏览器驱动程序的路径（建议与程序在同一路径下）</span></pre></td></tr><tr><td data-num="4"></td><td><pre>service <span class="token operator">=</span> Service<span class="token punctuation">(</span>executable_path <span class="token operator">=</span> <span class="token string">'./edgedriver.exe'</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="5"></td><td><pre>bro <span class="token operator">=</span> webdriver<span class="token punctuation">.</span>Edge<span class="token punctuation">(</span>service <span class="token operator">=</span> service<span class="token punctuation">)</span></pre></td></tr></table></figure><ul>
-<li>编写基于浏览器的代码</li>
-</ul>
-<h3 id="selenium常用函数"><a class="anchor" href="#selenium常用函数">#</a> selenium 常用函数</h3>
-<ul>
-<li>
-<p>bro.get (url)  											让浏览器发起一个指定 url 对应请求</p>
-</li>
-<li>
-<p>page_text = bro.page_source		  获取浏览器当前页面的页面源码数据</p>
-</li>
-<li>
-<p>标签定位：使用 find_element 方法</p>
-</li>
-</ul>
-<p>​	search_input = bro.find_element(By.[attrname], &quot;[attr]'s value&quot;)</p>
-<ul>
-<li>
-<p>标签交互：</p>
-<p>​	search_input.send_keys('xxx')</p>
-</li>
-<li>
-<p>执行一组 js 代码</p>
-<p>​	bro.execute_script('code...')</p>
-</li>
-<li>
-<p>点击按钮：</p>
-<p>​	btn.click()</p>
-</li>
-<li>
-<p>后退 / 前进</p>
-<p>​	bro.back()/forward()</p>
-</li>
-</ul>
-<h3 id="selenium处理iframe"><a class="anchor" href="#selenium处理iframe">#</a> selenium 处理 iframe</h3>
-<p>bro.switch_to.frame('frame_name')</p>
-<h3 id="动作链项目暂时用不到"><a class="anchor" href="#动作链项目暂时用不到">#</a> 动作链 (项目暂时用不到)</h3>
-<p>南大相关网站的登录还不需要滑块验证</p>
-<p>碰到滑块验证的时候可能就需要用到了</p>
-<h3 id="selenium实现模拟登录"><a class="anchor" href="#selenium实现模拟登录">#</a> selenium 实现模拟登录</h3>
-<p>结合前面的基础知识 先点击账号密码登录按钮，找到账号输入框与密码输入框，</p>
-<p>输入账号密码，点击登录按钮</p>
-<h2 id="模拟登陆cookie操作"><a class="anchor" href="#模拟登陆cookie操作">#</a> 模拟登陆 cookie 操作</h2>
-<h3 id="cookie有什么作用"><a class="anchor" href="#cookie有什么作用">#</a> cookie 有什么作用</h3>
-<p>TCP/IP 协议是无状态的，因此通常的 get 请求 服务器端不知道你有没有处于登录状态</p>
-<p>携带 cookie 值的 get 请求 能使服务器端知道你已经处于登录状态</p>
-<h3 id="手动cookie不推荐"><a class="anchor" href="#手动cookie不推荐">#</a> 手动 cookie（不推荐）</h3>
-<p>登录网站后通过抓包工具手动复制 cookie 值 将 cookie 值封装到 headers 中，写死在程序里</p>
-<p>缺点：cookie 值一段时间后会过期</p>
-<h3 id="自动处理"><a class="anchor" href="#自动处理">#</a> 自动处理</h3>
-<p>cookie 值是如何产生的？既然 cookie 值能让服务器知道你已经处于登录状态，那么理所当然 cookie 值是登录时发送 post 请求后服务器端生成后发送给客户端的</p>
-<p>session 会话对象：</p>
-<p>作用：</p>
-<ol>
-<li>可以进行请求的发送</li>
-<li>如果请求过程中产生了 cookie，则该 cookie 会被自动存储 / 携带在该 session 对象中</li>
-</ol>
-<p>使用：</p>
-<ol>
-<li>
-<p>创建一个 session 对象 ：  <code>session = requests.Session()</code></p>
-</li>
-<li>
-<p>使用 session 对象进行模拟登录 post 请求的发送 (cookie 就会被存储在 session 中)</p>
-</li>
-<li>
-<p>session 对象对个人主页对应的 get 请求进行发送（携带了 cookie）</p>
-</li>
-</ol>
-<p>如果登录找不到 post 请求或遇到问题导致获得不到 cookie：</p>
-<p>​	适用 selenium 登录后 用下列方法直接取得 cookie:</p>
-<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre>c <span class="token operator">=</span> bro<span class="token punctuation">.</span>get_cookies<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="2"></td><td><pre>bro<span class="token punctuation">.</span>close<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="3"></td><td><pre>cookies <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="4"></td><td><pre><span class="token comment"># 获取 cookie 中的 name 和 value, 转化成 requests 可以使⽤的形式</span></pre></td></tr><tr><td data-num="5"></td><td><pre><span class="token keyword">for</span> cookie <span class="token keyword">in</span> c<span class="token punctuation">:</span></pre></td></tr><tr><td data-num="6"></td><td><pre>    cookies<span class="token punctuation">[</span>cookie<span class="token punctuation">[</span><span class="token string">'name'</span><span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">=</span> cookie<span class="token punctuation">[</span><span class="token string">'value'</span><span class="token punctuation">]</span></pre></td></tr></table></figure><p>然后就能用 cookies 了：</p>
-<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre>response <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url<span class="token operator">=</span>detail_url<span class="token punctuation">,</span> headers<span class="token operator">=</span>headers<span class="token punctuation">,</span> cookies<span class="token operator">=</span>cookies<span class="token punctuation">)</span></pre></td></tr></table></figure><h2 id="并行爬取异步爬虫"><a class="anchor" href="#并行爬取异步爬虫">#</a> 并行爬取（异步爬虫）</h2>
-<p>原理：利用进程池实现并行爬取</p>
-<p>使用方法：</p>
-<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">from</span> multiprocessing <span class="token keyword">import</span> Pool</pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token comment"># 创建进程池</span></pre></td></tr><tr><td data-num="3"></td><td><pre>pool <span class="token operator">=</span> Pool<span class="token punctuation">(</span>processes<span class="token operator">=</span><span class="token number">4</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="4"></td><td><pre>pool<span class="token punctuation">.</span><span class="token builtin">map</span><span class="token punctuation">(</span>function_name<span class="token punctuation">,</span> iterable<span class="token punctuation">[</span><span class="token punctuation">,</span>chunksize<span class="token punctuation">]</span><span class="token punctuation">)</span></pre></td></tr></table></figure><p><strong>processes 参数设置注意</strong>：当进程数量大于 CPU 的内核数量时，等待运行的进程会等到其他进程运行完毕让出内核为止。因此，如果 CPU 是单核，就无法进行多进程并行。在使用多进程爬虫之前，我们需要先了解计算机 CPU 的核心数量。这里用到了 multiprocessing:</p>
-<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">from</span> multiprocessing <span class="token keyword">import</span> cpu_count</pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token keyword">print</span><span class="token punctuation">(</span>cpu_count<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr></table></figure><p>运行结果为 16。</p>
-<p>使用 eg：</p>
-<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre>urls <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'https://xjh.haitou.cc/xa/after/page-&#123;&#125;'</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span> <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">21</span><span class="token punctuation">)</span><span class="token punctuation">]</span></pre></td></tr><tr><td data-num="2"></td><td><pre>pool <span class="token operator">=</span> Pool<span class="token punctuation">(</span>processes<span class="token operator">=</span><span class="token number">4</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="3"></td><td><pre><span class="token comment">#get_xuanjing 为参数是一个 url 的爬虫函数</span></pre></td></tr><tr><td data-num="4"></td><td><pre>pool<span class="token punctuation">.</span><span class="token builtin">map</span><span class="token punctuation">(</span>get_xuanjiang<span class="token punctuation">,</span>urls<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="5"></td><td><pre>pool<span class="token punctuation">.</span>close<span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token comment"># 关闭进程池，不再接受新的进程</span></pre></td></tr><tr><td data-num="6"></td><td><pre>pool<span class="token punctuation">.</span>join<span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token comment"># 主进程阻塞等待子进程的退出</span></pre></td></tr></table></figure><h2 id="有关爬虫的一些问题"><a class="anchor" href="#有关爬虫的一些问题">#</a> 有关爬虫的一些问题：</h2>
-<ul>
-<li>
-<p>爬下来的文本中带有 &amp; nbsp 在 html 中表示 no breaking space（不自动换行的空格）</p>
-<p>此时可以采用 str.replace (u'\xa0', '') 来解决 str 为待处理字符串</p>
-</li>
-<li>
-<p>requests 里.text 与 .content 方法的区别：</p>
-<p>两者区别在于，content 中间存的是字节码，而 text 中存的是 Beautifulsoup 根据猜测的编码方式将 content 内容编码成字符串。</p>
-<p>直接输出 content，会发现前面存在 b' 这样的标志，这是字节字符串的标志，而 text 是，没有前面的 b, 对于纯 ascii 码，这两个可以说一模一样，对于其他的文字，需要正确编码才能正常显示。大部分情况建议使用.text，因为显示的是汉字，但有时会显示乱码，这时需要用.content.decode ('utf-8')，中文常用 utf-8 和 GBK，GB2312 等。这样可以手工选择文字编码方式。</p>
-<p>所以简而言之，.text 是现成的字符串，.content 还要编码，但是.text 不是所有时候显示都正常，这是就需要用.content 进行手动编码</p>
-</li>
-<li>
-<p>两种常见方法，一般能解决所有中文乱码问题</p>
-<ol>
-<li>
-<p>对爬下来的整个数据改变编码：</p>
-<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre>response<span class="token punctuation">.</span>encoding <span class="token operator">=</span> <span class="token string">'utf-8'</span></pre></td></tr></table></figure></li>
-<li>
-<p>对出现问题的对象单独进行编码与解码</p>
-<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre>img_name <span class="token operator">=</span> img_name<span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token string">'iso-8859-1'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>decode<span class="token punctuation">(</span><span class="token string">'gbk'</span><span class="token punctuation">)</span></pre></td></tr></table></figure></li>
-</ol>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>python</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
-        <tag>爬虫</tag>
       </tags>
   </entry>
   <entry>
@@ -1549,6 +1539,223 @@ soup = BeautifulSoup(page_text,'lxml')
       </categories>
       <tags>
         <tag>数理逻辑</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>python爬虫学习</title>
+    <url>/2023/01/25/python%E7%88%AC%E8%99%AB%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<h1 id="python爬虫学习总结"><a class="anchor" href="#python爬虫学习总结">#</a> python 爬虫学习总结</h1>
+<p>学习 python 爬虫的一些笔记</p>
+<p><span id="more"></span></p>
+<h2 id="requests模块"><a class="anchor" href="#requests模块">#</a> requests 模块</h2>
+<p>requests 模块流程：</p>
+<pre><code>1. 指定url
+2. 发起请求 response = requests.get(url)
+3. 获取数据 page_source = response.text()
+4. 存储数据 文件操作/数据库操作
+</code></pre>
+<p>参数 tips：params 是用来发送查询字符串，而 data 是用来发送正文的。post 与 get 方法的特性是：这两种参数 post（）方法都可以用，get 方法只能发查询字符串，不能发送正文</p>
+<p>text 返回字符串 content 返回二进制（爬取图片可用）  json 返回对象</p>
+<p>分页爬取：</p>
+<p>​	如果是 ajax，在检查、网络、xhr 中查看</p>
+<p>​	如果是新链接，可以使用正则表达式匹配 url</p>
+<p>如果是用 ajax 的包：要注意的：</p>
+<ul>
+<li>看请求方法 是 GET 还是 POST。。。</li>
+<li>看响应头的 content-type 选择 reponse.text () 或 reponse.json ()</li>
+<li>看负载中带的参数</li>
+</ul>
+<p>中文乱码问题（文件编码格式为 utf8 json.dump 时 ensure acill 选项关闭）</p>
+<p>什么是 ajax? （根据用户行为重新渲染界面。 不修改 url 在检查 - 网络 - XHR 中查看具体信息）</p>
+<h2 id="bs4-数据解析"><a class="anchor" href="#bs4-数据解析">#</a> bs4 数据解析</h2>
+<p>bs4 数据解析的原理：</p>
+<p>1. 实例化一个 BeautifulSoup 对象 并且将页面原码数据加载到该对象中</p>
+<p>2. 通过调用 bs 对象中相关的属性或方法进行标签定位和数据提取</p>
+<p>如何实例化 beautifulsoup 对象：</p>
+<ol>
+<li>
+<p>将本地的 html 文档中的数据加载到该对象中</p>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre>fp <span class="token operator">=</span> <span class="token builtin">open</span><span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="2"></td><td><pre>soup <span class="token operator">=</span> BeautifulSoup<span class="token punctuation">(</span>fp<span class="token punctuation">,</span><span class="token string">'lxml'</span><span class="token punctuation">)</span></pre></td></tr></table></figure></li>
+<li>
+<p>将互联网上获取的页面源码加载到该对象中</p>
+<pre><code>page_text = response.text
+soup = BeautifulSoup(page_text,'lxml')
+</code></pre>
+</li>
+</ol>
+<p>提供的用于数据解析的方法和属性：</p>
+<p>soup.tagname 返回 html 中第一次出现的 tagname 标签</p>
+<p>soup.find ('tagname') 等同于 soup.tagname</p>
+<p>soup.find ('tagname', class = 'classname') 定义属性位置， class 可以替换为 id attr</p>
+<p>soup.find_all ('tagname') 找到符合要求所有标签 返回列表</p>
+<p>soup.select ('.tang')  参数为某种选择器（id class 标签），返回一个列表</p>
+<p>soup.select ('.tang&gt; ul &gt; li &gt; a') 层级选择器，返回一个列表</p>
+<p>soup.selest ('.tang&gt; ul a') &gt; 号表示一个层级，空格表示多个层级</p>
+<p>怎么获取标签之间的文本数据：</p>
+<p>使用	soup.a.text/string/get_text () 方法</p>
+<pre><code>-   text/get_text(): 可以获取某一个标签中所有的文本内容（多套几层也能得到）
+-   string：获取标签下直系的文本内容
+</code></pre>
+<p>怎么获取标签的属性值：</p>
+<p><code>soup.select('tang &gt; ul &gt; li &gt; a')[0]['href']</code>  直接获得 a 标签中的 herf 属性值</p>
+<h2 id="xpath解析"><a class="anchor" href="#xpath解析">#</a> xpath 解析</h2>
+<p>xpath 解析： 最常用且最便捷高效的一种解析方式。</p>
+<p>xpath 解析原理：</p>
+<pre><code>1. 实例化一个etree的对象，且需要将被解析的页面源码数据加载到该对象中。
+2. 调用etree对象中的xpath方法结合xpath表达式实现标签的定位和内容的捕获。
+</code></pre>
+<p>环境安装：</p>
+<pre><code>- pip install lxml
+</code></pre>
+<p>如何实例化 etree 对象</p>
+<p>​	from lxml import etree</p>
+<ol>
+<li>
+<p>将本地的 html 文档中的源码数据加载到 etree 对象中：</p>
+<p><code> etree.parse(filePath)</code></p>
+</li>
+<li>
+<p>可以将从互联网上获取的源码数据加载到该对象中</p>
+<p><code>etree.HTML('page_text')        -xpath('xpath表达式')</code></p>
+</li>
+</ol>
+<p>/ 表示一个层级  // 表示多个层级</p>
+<p>路径后加 [@ 属性名] 精确定位 如 <code>xx_list = tree.xpath('//div[@class='song']')</code></p>
+<p>中括号内加数字代表取第几个（索引下标从 1 开始） <code>xx_list[0]</code></p>
+<p>获取文本：定位后加 /text ()</p>
+<h2 id="中文出现乱码常见的处理方法"><a class="anchor" href="#中文出现乱码常见的处理方法">#</a> 中文出现乱码常见的处理方法</h2>
+<p>两种常见方法，一般能解决所有中文乱码问题</p>
+<ol>
+<li>
+<p>对爬下来的整个数据改变编码：</p>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre>response<span class="token punctuation">.</span>encoding <span class="token operator">=</span> <span class="token string">'utf-8'</span></pre></td></tr></table></figure></li>
+<li>
+<p>对出现问题的对象单独进行编码与解码</p>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre>img_name <span class="token operator">=</span> img_name<span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token string">'iso-8859-1'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>decode<span class="token punctuation">(</span><span class="token string">'gbk'</span><span class="token punctuation">)</span></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="selenium模块"><a class="anchor" href="#selenium模块">#</a> selenium 模块</h2>
+<h3 id="selenium模块与爬虫之间具有怎样的关联"><a class="anchor" href="#selenium模块与爬虫之间具有怎样的关联">#</a> selenium 模块与爬虫之间具有怎样的关联？</h3>
+<ul>
+<li>便捷的获取网站中动态加载的数据</li>
+<li>便捷实现模拟登录</li>
+</ul>
+<h3 id="什么是selenium模块"><a class="anchor" href="#什么是selenium模块">#</a> 什么是 selenium 模块</h3>
+<p>基于浏览器自动化的一个模块。 （编写代码让浏览器完成自动化操作）</p>
+<h3 id="selenium使用流程"><a class="anchor" href="#selenium使用流程">#</a> selenium 使用流程：</h3>
+<ul>
+<li>环境安装：pip install selenium</li>
+<li>下载一个浏览器的驱动程序</li>
+<li>实例化一个浏览器对象</li>
+</ul>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">from</span> selenium <span class="token keyword">import</span> webdriver</pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token keyword">from</span> selenium<span class="token punctuation">.</span>webdriver<span class="token punctuation">.</span>edge<span class="token punctuation">.</span>service <span class="token keyword">import</span> Service</pre></td></tr><tr><td data-num="3"></td><td><pre><span class="token comment"># 实例化一个浏览器对象 参数中的路径为浏览器驱动程序的路径（建议与程序在同一路径下）</span></pre></td></tr><tr><td data-num="4"></td><td><pre>service <span class="token operator">=</span> Service<span class="token punctuation">(</span>executable_path <span class="token operator">=</span> <span class="token string">'./edgedriver.exe'</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="5"></td><td><pre>bro <span class="token operator">=</span> webdriver<span class="token punctuation">.</span>Edge<span class="token punctuation">(</span>service <span class="token operator">=</span> service<span class="token punctuation">)</span></pre></td></tr></table></figure><ul>
+<li>编写基于浏览器的代码</li>
+</ul>
+<h3 id="selenium常用函数"><a class="anchor" href="#selenium常用函数">#</a> selenium 常用函数</h3>
+<ul>
+<li>
+<p>bro.get (url)  											让浏览器发起一个指定 url 对应请求</p>
+</li>
+<li>
+<p>page_text = bro.page_source		  获取浏览器当前页面的页面源码数据</p>
+</li>
+<li>
+<p>标签定位：使用 find_element 方法</p>
+</li>
+</ul>
+<p>​	search_input = bro.find_element(By.[attrname], &quot;[attr]'s value&quot;)</p>
+<ul>
+<li>
+<p>标签交互：</p>
+<p>​	search_input.send_keys('xxx')</p>
+</li>
+<li>
+<p>执行一组 js 代码</p>
+<p>​	bro.execute_script('code...')</p>
+</li>
+<li>
+<p>点击按钮：</p>
+<p>​	btn.click()</p>
+</li>
+<li>
+<p>后退 / 前进</p>
+<p>​	bro.back()/forward()</p>
+</li>
+</ul>
+<h3 id="selenium处理iframe"><a class="anchor" href="#selenium处理iframe">#</a> selenium 处理 iframe</h3>
+<p>bro.switch_to.frame('frame_name')</p>
+<h3 id="动作链项目暂时用不到"><a class="anchor" href="#动作链项目暂时用不到">#</a> 动作链 (项目暂时用不到)</h3>
+<p>南大相关网站的登录还不需要滑块验证</p>
+<p>碰到滑块验证的时候可能就需要用到了</p>
+<h3 id="selenium实现模拟登录"><a class="anchor" href="#selenium实现模拟登录">#</a> selenium 实现模拟登录</h3>
+<p>结合前面的基础知识 先点击账号密码登录按钮，找到账号输入框与密码输入框，</p>
+<p>输入账号密码，点击登录按钮</p>
+<h2 id="模拟登陆cookie操作"><a class="anchor" href="#模拟登陆cookie操作">#</a> 模拟登陆 cookie 操作</h2>
+<h3 id="cookie有什么作用"><a class="anchor" href="#cookie有什么作用">#</a> cookie 有什么作用</h3>
+<p>TCP/IP 协议是无状态的，因此通常的 get 请求 服务器端不知道你有没有处于登录状态</p>
+<p>携带 cookie 值的 get 请求 能使服务器端知道你已经处于登录状态</p>
+<h3 id="手动cookie不推荐"><a class="anchor" href="#手动cookie不推荐">#</a> 手动 cookie（不推荐）</h3>
+<p>登录网站后通过抓包工具手动复制 cookie 值 将 cookie 值封装到 headers 中，写死在程序里</p>
+<p>缺点：cookie 值一段时间后会过期</p>
+<h3 id="自动处理"><a class="anchor" href="#自动处理">#</a> 自动处理</h3>
+<p>cookie 值是如何产生的？既然 cookie 值能让服务器知道你已经处于登录状态，那么理所当然 cookie 值是登录时发送 post 请求后服务器端生成后发送给客户端的</p>
+<p>session 会话对象：</p>
+<p>作用：</p>
+<ol>
+<li>可以进行请求的发送</li>
+<li>如果请求过程中产生了 cookie，则该 cookie 会被自动存储 / 携带在该 session 对象中</li>
+</ol>
+<p>使用：</p>
+<ol>
+<li>
+<p>创建一个 session 对象 ：  <code>session = requests.Session()</code></p>
+</li>
+<li>
+<p>使用 session 对象进行模拟登录 post 请求的发送 (cookie 就会被存储在 session 中)</p>
+</li>
+<li>
+<p>session 对象对个人主页对应的 get 请求进行发送（携带了 cookie）</p>
+</li>
+</ol>
+<p>如果登录找不到 post 请求或遇到问题导致获得不到 cookie：</p>
+<p>​	适用 selenium 登录后 用下列方法直接取得 cookie:</p>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre>c <span class="token operator">=</span> bro<span class="token punctuation">.</span>get_cookies<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="2"></td><td><pre>bro<span class="token punctuation">.</span>close<span class="token punctuation">(</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="3"></td><td><pre>cookies <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="4"></td><td><pre><span class="token comment"># 获取 cookie 中的 name 和 value, 转化成 requests 可以使⽤的形式</span></pre></td></tr><tr><td data-num="5"></td><td><pre><span class="token keyword">for</span> cookie <span class="token keyword">in</span> c<span class="token punctuation">:</span></pre></td></tr><tr><td data-num="6"></td><td><pre>    cookies<span class="token punctuation">[</span>cookie<span class="token punctuation">[</span><span class="token string">'name'</span><span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">=</span> cookie<span class="token punctuation">[</span><span class="token string">'value'</span><span class="token punctuation">]</span></pre></td></tr></table></figure><p>然后就能用 cookies 了：</p>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre>response <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url<span class="token operator">=</span>detail_url<span class="token punctuation">,</span> headers<span class="token operator">=</span>headers<span class="token punctuation">,</span> cookies<span class="token operator">=</span>cookies<span class="token punctuation">)</span></pre></td></tr></table></figure><h2 id="并行爬取异步爬虫"><a class="anchor" href="#并行爬取异步爬虫">#</a> 并行爬取（异步爬虫）</h2>
+<p>原理：利用进程池实现并行爬取</p>
+<p>使用方法：</p>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">from</span> multiprocessing <span class="token keyword">import</span> Pool</pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token comment"># 创建进程池</span></pre></td></tr><tr><td data-num="3"></td><td><pre>pool <span class="token operator">=</span> Pool<span class="token punctuation">(</span>processes<span class="token operator">=</span><span class="token number">4</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="4"></td><td><pre>pool<span class="token punctuation">.</span><span class="token builtin">map</span><span class="token punctuation">(</span>function_name<span class="token punctuation">,</span> iterable<span class="token punctuation">[</span><span class="token punctuation">,</span>chunksize<span class="token punctuation">]</span><span class="token punctuation">)</span></pre></td></tr></table></figure><p><strong>processes 参数设置注意</strong>：当进程数量大于 CPU 的内核数量时，等待运行的进程会等到其他进程运行完毕让出内核为止。因此，如果 CPU 是单核，就无法进行多进程并行。在使用多进程爬虫之前，我们需要先了解计算机 CPU 的核心数量。这里用到了 multiprocessing:</p>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">from</span> multiprocessing <span class="token keyword">import</span> cpu_count</pre></td></tr><tr><td data-num="2"></td><td><pre><span class="token keyword">print</span><span class="token punctuation">(</span>cpu_count<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span></pre></td></tr></table></figure><p>运行结果为 16。</p>
+<p>使用 eg：</p>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre>urls <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'https://xjh.haitou.cc/xa/after/page-&#123;&#125;'</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span> <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">21</span><span class="token punctuation">)</span><span class="token punctuation">]</span></pre></td></tr><tr><td data-num="2"></td><td><pre>pool <span class="token operator">=</span> Pool<span class="token punctuation">(</span>processes<span class="token operator">=</span><span class="token number">4</span><span class="token punctuation">)</span></pre></td></tr><tr><td data-num="3"></td><td><pre><span class="token comment">#get_xuanjing 为参数是一个 url 的爬虫函数</span></pre></td></tr><tr><td data-num="4"></td><td><pre>pool<span class="token punctuation">.</span><span class="token builtin">map</span><span class="token punctuation">(</span>get_xuanjiang<span class="token punctuation">,</span>urls<span class="token punctuation">)</span></pre></td></tr><tr><td data-num="5"></td><td><pre>pool<span class="token punctuation">.</span>close<span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token comment"># 关闭进程池，不再接受新的进程</span></pre></td></tr><tr><td data-num="6"></td><td><pre>pool<span class="token punctuation">.</span>join<span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token comment"># 主进程阻塞等待子进程的退出</span></pre></td></tr></table></figure><h2 id="有关爬虫的一些问题"><a class="anchor" href="#有关爬虫的一些问题">#</a> 有关爬虫的一些问题：</h2>
+<ul>
+<li>
+<p>爬下来的文本中带有 &amp; nbsp 在 html 中表示 no breaking space（不自动换行的空格）</p>
+<p>此时可以采用 str.replace (u'\xa0', '') 来解决 str 为待处理字符串</p>
+</li>
+<li>
+<p>requests 里.text 与 .content 方法的区别：</p>
+<p>两者区别在于，content 中间存的是字节码，而 text 中存的是 Beautifulsoup 根据猜测的编码方式将 content 内容编码成字符串。</p>
+<p>直接输出 content，会发现前面存在 b' 这样的标志，这是字节字符串的标志，而 text 是，没有前面的 b, 对于纯 ascii 码，这两个可以说一模一样，对于其他的文字，需要正确编码才能正常显示。大部分情况建议使用.text，因为显示的是汉字，但有时会显示乱码，这时需要用.content.decode ('utf-8')，中文常用 utf-8 和 GBK，GB2312 等。这样可以手工选择文字编码方式。</p>
+<p>所以简而言之，.text 是现成的字符串，.content 还要编码，但是.text 不是所有时候显示都正常，这是就需要用.content 进行手动编码</p>
+</li>
+<li>
+<p>两种常见方法，一般能解决所有中文乱码问题</p>
+<ol>
+<li>
+<p>对爬下来的整个数据改变编码：</p>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre>response<span class="token punctuation">.</span>encoding <span class="token operator">=</span> <span class="token string">'utf-8'</span></pre></td></tr></table></figure></li>
+<li>
+<p>对出现问题的对象单独进行编码与解码</p>
+<figure class="highlight python"><figcaption data-lang="python"></figcaption><table><tr><td data-num="1"></td><td><pre>img_name <span class="token operator">=</span> img_name<span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token string">'iso-8859-1'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>decode<span class="token punctuation">(</span><span class="token string">'gbk'</span><span class="token punctuation">)</span></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>爬虫</tag>
       </tags>
   </entry>
   <entry>
@@ -2016,146 +2223,6 @@ public class SimpleExprTest &#123;
       </tags>
   </entry>
   <entry>
-    <title>编译原理04-中间代码生成</title>
-    <url>/2023/05/05/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8604-%E4%B8%AD%E9%97%B4%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/</url>
-    <content><![CDATA[<h1 id="编译原理04-中间代码生成"><a class="anchor" href="#编译原理04-中间代码生成">#</a> 编译原理 04 - 中间代码生成</h1>
-<h2 id="llvm-ir简介"><a class="anchor" href="#llvm-ir简介">#</a> LLVM IR 简介</h2>
-<p><img data-src="image-20230505140807839.png" alt="image-20230505140807839"></p>
-<p>LLVM 这个项目与最初的名字含义已经完全不同了，可以将 LLVM 理解为全称。目前 LLVM 是开发新的编译器的<strong>基础</strong>。</p>
-<p><img data-src="image-20230505141735207.png" alt="image-20230505141735207"></p>
-<p>前端经过语法分析，词法分析，生成 IR</p>
-<p><strong>“IR 设计的优秀与否决定着整个编译器的好坏”</strong></p>
-<p><img data-src="image-20230505141928962.png" alt="image-20230505141928962"></p>
-<p>一个.c 文件对应生成一个.ll 文件。Module 实际上就是一个文件 file, Module 里有多个函数，一个函数具有多个<strong>基本块 (Basic Block)</strong>, 每一个基本块都由多个指令构成。</p>
-<p>使用 clang <strong>-S -emit-llvm</strong> factorial0.c -o f0-opt0.ll 表示用 clang 生成到 llvm 中间代码阶段停止。</p>
-<p>中间代码示例：<br>
-<img data-src="image-20230505143323681.png" alt="image-20230505143323681"></p>
-<p>像 %3 %4 这样的是分配一个虚拟寄存器， alloca 表示内存分配， align 表示内存对齐</p>
-<p><code>store i32 0, i32* %3</code>  表示把 0 存到 %3 寄存器中</p>
-<p>call 一行表示函数调用</p>
-<p>下一行表示结果与 7 相乘， nsw 表示 no signed wrap</p>
-<p>zext: zero - extension 将一 bit 的 %8 扩展为 32 位</p>
-<p>%2 哪去了？ 被分配为 entry 基本块的名称</p>
-<p>限制：任何一个变量都只能一次赋值， 好处是使用变量时明确知道在什么时候定义过的。</p>
-<h2 id="控制流图"><a class="anchor" href="#控制流图">#</a> 控制流图</h2>
-<p><img data-src="image-20230505150416543.png" alt="image-20230505150416543"></p>
-<p>控制流图的定义：<br>
-<img data-src="image-20230505150719324.png" alt="image-20230505150719324"></p>
-<p>例子：<br>
-<img data-src="image-20230505151157414.png" alt="image-20230505151157414"></p>
-<p>中间代码的数据流图：</p>
-<p><img data-src="image-20230505151318630.png" alt="image-20230505151318630"></p>
-<p>问题：%6 和 %7 基本块中要约定好把想 ret 的结果放在某一个寄存器中</p>
-<p>开了 o1 优化后：</p>
-<p><img data-src="image-20230505152003795.png" alt="image-20230505152003795"></p>
-<p>o1 优化会去掉所有的内存分配，store load 指令。</p>
-<p>phi 指令 根据从哪个块跳转出来决定赋值给 %8 寄存器的值</p>
-<p>然而 phi 指令只是为了简化中间代码的大小产生的，是一个虚拟指令，实际上仍然可能会使用基本方案。</p>
-<h2 id="llvm-java-api"><a class="anchor" href="#llvm-java-api">#</a> LLVM JAVA API</h2>
-<p><img data-src="image-20230506141752865.png" alt="image-20230506141752865"></p>
-<p>在配置文件中加依赖</p>
-<p><img data-src="image-20230506142227366.png" alt="image-20230506142227366"></p>
-<p>可以参照 LLVM 官方的教程，c++ 语言如何翻译为中间代码。</p>
-<h2 id="中间代码翻译"><a class="anchor" href="#中间代码翻译">#</a> 中间代码翻译</h2>
-<p><img data-src="image-20230506143047512.png" alt="image-20230506143047512"></p>
-<p>这里的 || 符号是 then 的意思，不是或者。</p>
-<p><img data-src="image-20230506144459580.png" alt="image-20230506144459580"></p>
-<p><img data-src="image-20230506144737646.png" alt="image-20230506144737646"></p>
-<p><img data-src="image-20230506145121379.png" alt="image-20230506145121379"></p>
-<p>例子： int a [2] [3]; c + a [i] [j];</p>
-<p><img data-src="image-20230506150834033.png" alt="image-20230506150834033"></p>
-<p>在 llvm IR 中：会用 getelementptr（GEP）指令处理数组引用</p>
-<p><img data-src="image-20230506151202417.png" alt="image-20230506151202417"></p>
-<p>GEP 指令有四个参数，其中第四个参数不限个数，可以有多个 index。</p>
-<p>第一个 index 比较特殊，表示 base-type 的一个元素的大小，用于 a++ 这样的操作，后面的 index 才用于进入数组获取元素，即没多一个 index 脱掉一层中括号。</p>
-<p><img data-src="image-20230506151901102.png" alt="image-20230506151901102"></p>
-<p>GEP provides a way to access arrays and manipulate pointers.</p>
-<p>GEP abstract away details like size of types.</p>
-<p>有了 GEP 指令后就不用像上面那样递归的计算偏移量了。</p>
-<p><img data-src="image-20230506154154393.png" alt="image-20230506154154393"></p>
-<h3 id="控制流语句的翻译"><a class="anchor" href="#控制流语句的翻译">#</a> 控制流语句的翻译</h3>
-<p>简单的思路会带来冗余的代码</p>
-<p>要生成简短高效的代码，就需要<strong>创造困难</strong></p>
-<p><strong>简单 mode：</strong></p>
-<p><img data-src="image-20230510141125754.png" alt="image-20230510141125754"></p>
-<p>将 B 的值保存到临时变量 t1 中，翻译 if 语句时用 br 语句测试 t1 的值并根据情况跳转到两个基本块中。</p>
-<p>以 Control 语言为例：</p>
-<p><img data-src="image-20230510142838861.png" alt="image-20230510142838861"></p>
-<p>选择实现方式的范围： Listeners, Visitors, Attributed Grammar</p>
-<p>前两种方法能做到的 属性方法都能做到，但是属性文法本身比较困难，所以在前两种中方法中选择。</p>
-<p>Listener 模式有一个问题： 比如 B -&gt; B1 || B2 的翻译：</p>
-<p>要在 exitB () 方法拼接 B1.code 和 B2.code 。但是考虑出现了短路求值的问题时，由于在 exitB 的时候 B1 和 B2 的代码都生成好了，因此要在拼接 B1.code 和 B2.code 中间插入判断短路求值的代码，不能及时输出生成的中间代码，不能避免频繁的字符串拼接操作。简要来说，访问完 B1，将中间代码保存下来，才能进行接下来的操作，不能在访问 B1 和访问 B2 中间插入一些操作，这是 Listener 模式的缺陷。</p>
-<p>具体代码见代码仓库<em> 2023-compilers-coding-0/src/main/java/codegen/CodeGenVisitor.java</em></p>
-<p>true 和 false 的翻译：</p>
-<p><img data-src="image-20230510144428568.png" alt="image-20230510144428568"></p>
-<p>AND 语句：</p>
-<p>有一个小错误 String temp = getNewTemp () 要放在 emitLabel (trueLabel) 之上。</p>
-<p><img data-src="image-20230510151933288.png" alt="image-20230510151933288"></p>
-<p>if 语句：</p>
-<p><img data-src="image-20230510151955477.png" alt="image-20230510151955477"></p>
-<p>while 语句：</p>
-<p><img data-src="image-20230510152502018.png" alt="image-20230510152502018"></p>
-<p>一个问题：break 语句怎么翻译，多层嵌套的循环语句怎么办</p>
-<p>解决方法：使用一个栈，保存 break 语句要跳转到的地方。，参照 while 语句中的压栈出栈语句。</p>
-<p>短路求值问题： 参照 And 中的实现</p>
-<p><strong>复杂 mode</strong>：</p>
-<p><img data-src="image-20230510154721641.png" alt="image-20230510154721641"></p>
-<p>为什么让事情变得更复杂：</p>
-<p>eg：</p>
-<p><img data-src="image-20230517140632912.png" alt="image-20230517140632912"></p>
-<p>如果使用简单方案，将会生成 12 行中间代码，然而实际上这是一个死循环</p>
-<p>解决方案：利用继承属性让布尔表达式知道要跳转到哪</p>
-<p><img data-src="image-20230517141735294.png" alt="image-20230517141735294"></p>
-<h3 id="需要的继承属性"><a class="anchor" href="#需要的继承属性">#</a> 需要的继承属性</h3>
-<p><img data-src="image-20230517142425226.png" alt="image-20230517142425226"></p>
-<h3 id="if语句"><a class="anchor" href="#if语句">#</a> if 语句</h3>
-<p><img data-src="image-20230517142712190.png" alt="image-20230517142712190"></p>
-<p>S.next 是之前准备好的</p>
-<p><img data-src="image-20230517143447956.png" alt="image-20230517143447956"></p>
-<p>bool 表达式直接翻译成 goto 语句</p>
-<h3 id="if-else-语句"><a class="anchor" href="#if-else-语句">#</a> if else 语句</h3>
-<p><img data-src="image-20230517144609460.png" alt="image-20230517144609460"></p>
-<p>eg：<img data-src="image-20230517144946527.png" alt="image-20230517144946527"></p>
-<h3 id="while语句"><a class="anchor" href="#while语句">#</a> while 语句</h3>
-<p><img data-src="image-20230517150821390.png" alt="image-20230517150821390"></p>
-<h3 id="顺序语句"><a class="anchor" href="#顺序语句">#</a> 顺序语句：</h3>
-<p><img data-src="image-20230517152329272.png" alt="image-20230517152329272"></p>
-<h3 id="短路求值"><a class="anchor" href="#短路求值">#</a> 短路求值</h3>
-<p><img data-src="image-20230517153441075.png" alt="image-20230517153441075"></p>
-<p><img data-src="image-20230517153732513.png" alt="image-20230517153732513"></p>
-<h2 id="地址回填技术"><a class="anchor" href="#地址回填技术">#</a> 地址回填技术</h2>
-<p><img data-src="image-20230519140559966.png" alt="image-20230519140559966"></p>
-<p>java 字节码中不使用符号化的标签作为跳转目标，而采用直接的地址值作为跳转目标。</p>
-<p>问题：往回跳简单，往前跳不知道跳转的地址，如何一趟扫描中就知道跳转目标的真实地址？</p>
-<p><img data-src="image-20230519141028791.png" alt="image-20230519141028791"></p>
-<p><img data-src="image-20230519141358466.png" alt="image-20230519141358466"></p>
-<p>解决方案： B 在 goto 语句后面空着，交给父节点 S 来回填。</p>
-<p><img data-src="image-20230519141905148.png" alt="image-20230519141905148"></p>
-<p>从底向上看怎么使用地址回填技术：(每幅图的下半部分是之前的翻译方案)</p>
-<p><img data-src="image-20230519143110842.png" alt="image-20230519143110842"></p>
-<p><img data-src="image-20230519143543907.png" alt="image-20230519143543907"></p>
-<p><img data-src="image-20230519143840206.png" alt="image-20230519143840206"></p>
-<p>到这里已经可以确定一些跳转的地址了：</p>
-<p>M 是一个辅助的符号，用来确定 B2 第一个指令的地址的值是多少</p>
-<p><img data-src="image-20230519144434026.png" alt="image-20230519144434026"></p>
-<p><img data-src="image-20230519150121225.png" alt="image-20230519150121225"></p>
-<p>布尔表达式结束 到达更高层：</p>
-<p><img data-src="/image-20230519151840965.png" alt="image-20230519151840965"></p>
-<p><img data-src="image-20230519152628678.png" alt="image-20230519152628678"></p>
-<p><img data-src="image-20230519153118656.png" alt="image-20230519153118656"></p>
-<p>顺序语句：</p>
-<p><img data-src="image-20230519153706714.png" alt="image-20230519153706714"></p>
-<p>总结：</p>
-<p><img data-src="image-20230519154323985.png" alt="image-20230519154323985"></p>
-]]></content>
-      <categories>
-        <category>编译原理</category>
-      </categories>
-      <tags>
-        <tag>编译原理</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>编译原理02-语法分析</title>
     <url>/2023/03/24/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8602-%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90/</url>
     <content><![CDATA[<h1 id="编译原理02-语法分析"><a class="anchor" href="#编译原理02-语法分析">#</a> 编译原理 02 - 语法分析</h1>
@@ -2490,6 +2557,146 @@ public class SimpleExprTest &#123;
 <figure class="highlight java"><figcaption data-lang="java"></figcaption><table><tr><td data-num="1"></td><td><pre><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">class</span> <span class="token class-name">Visitor</span> <span class="token keyword">extends</span> <span class="token class-name">SysYParserBaseVisitor</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Void</span><span class="token punctuation">></span></span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="2"></td><td><pre>		<span class="token keyword">public</span> <span class="token keyword">int</span> depth <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="3"></td><td><pre></pre></td></tr><tr><td data-num="4"></td><td><pre>		<span class="token annotation punctuation">@Override</span></pre></td></tr><tr><td data-num="5"></td><td><pre>		<span class="token keyword">public</span> <span class="token class-name">Void</span> <span class="token function">visitChildren</span><span class="token punctuation">(</span><span class="token class-name">RuleNode</span> node<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="6"></td><td><pre>			<span class="token class-name">Void</span> result <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">defaultResult</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="7"></td><td><pre>			<span class="token class-name">StringBuilder</span> sb <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">StringBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="8"></td><td><pre>			sb<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span><span class="token string">"  "</span><span class="token punctuation">.</span><span class="token function">repeat</span><span class="token punctuation">(</span><span class="token class-name">Math</span><span class="token punctuation">.</span><span class="token function">max</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> depth<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="9"></td><td><pre>			<span class="token keyword">int</span> num <span class="token operator">=</span> node<span class="token punctuation">.</span><span class="token function">getRuleContext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getRuleIndex</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="10"></td><td><pre>			<span class="token class-name">String</span> ruleName <span class="token operator">=</span> <span class="token class-name">SysYParser</span><span class="token punctuation">.</span>ruleNames<span class="token punctuation">[</span>num<span class="token punctuation">]</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="11"></td><td><pre>			ruleName <span class="token operator">=</span> <span class="token class-name">Character</span><span class="token punctuation">.</span><span class="token function">toUpperCase</span><span class="token punctuation">(</span>ruleName<span class="token punctuation">.</span><span class="token function">charAt</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">+</span> ruleName<span class="token punctuation">.</span><span class="token function">substring</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="12"></td><td><pre>			sb<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span>ruleName<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="13"></td><td><pre>			<span class="token class-name">System</span><span class="token punctuation">.</span>err<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>sb<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="14"></td><td><pre>			<span class="token keyword">int</span> n <span class="token operator">=</span> node<span class="token punctuation">.</span><span class="token function">getChildCount</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="15"></td><td><pre>			<span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> n <span class="token operator">&amp;&amp;</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">shouldVisitNextChild</span><span class="token punctuation">(</span>node<span class="token punctuation">,</span> result<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="16"></td><td><pre>				depth <span class="token operator">++</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="17"></td><td><pre>				<span class="token class-name">ParseTree</span> c <span class="token operator">=</span> node<span class="token punctuation">.</span><span class="token function">getChild</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="18"></td><td><pre>				<span class="token class-name">Void</span> childResult <span class="token operator">=</span> c<span class="token punctuation">.</span><span class="token function">accept</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="19"></td><td><pre>				result <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">aggregateResult</span><span class="token punctuation">(</span>result<span class="token punctuation">,</span> childResult<span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="20"></td><td><pre>				depth <span class="token operator">--</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="21"></td><td><pre>			<span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="22"></td><td><pre>			<span class="token keyword">return</span> result<span class="token punctuation">;</span></pre></td></tr><tr><td data-num="23"></td><td><pre>		<span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="24"></td><td><pre></pre></td></tr><tr><td data-num="25"></td><td><pre>		<span class="token annotation punctuation">@Override</span></pre></td></tr><tr><td data-num="26"></td><td><pre>		<span class="token keyword">public</span> <span class="token class-name">Void</span> <span class="token function">visitTerminal</span><span class="token punctuation">(</span><span class="token class-name">TerminalNode</span> node<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="27"></td><td><pre>			<span class="token class-name">StringBuilder</span> sb <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">StringBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="28"></td><td><pre>			sb<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span><span class="token string">"  "</span><span class="token punctuation">.</span><span class="token function">repeat</span><span class="token punctuation">(</span><span class="token class-name">Math</span><span class="token punctuation">.</span><span class="token function">max</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> depth<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="29"></td><td><pre>			<span class="token keyword">int</span> num <span class="token operator">=</span> node<span class="token punctuation">.</span><span class="token function">getSymbol</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getType</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-</span><span class="token number">1</span> <span class="token punctuation">;</span></pre></td></tr><tr><td data-num="30"></td><td><pre>			<span class="token keyword">if</span> <span class="token punctuation">(</span>num <span class="token operator">>=</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>ruleNames<span class="token punctuation">[</span>num<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span><span class="token string">""</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="31"></td><td><pre>				sb<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span><span class="token function">toDemical</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span><span class="token function">getText</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span><span class="token string">" "</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="32"></td><td><pre>				sb<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span>ruleNames<span class="token punctuation">[</span>num<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="33"></td><td><pre>				<span class="token class-name">System</span><span class="token punctuation">.</span>err<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>sb<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="34"></td><td><pre>			<span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="35"></td><td><pre>			<span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="36"></td><td><pre>		<span class="token punctuation">&#125;</span></pre></td></tr><tr><td data-num="37"></td><td><pre></pre></td></tr><tr><td data-num="38"></td><td><pre>		<span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> ruleNames <span class="token operator">=</span> <span class="token punctuation">&#123;</span></pre></td></tr><tr><td data-num="39"></td><td><pre>				<span class="token string">"CONST[orange]"</span><span class="token punctuation">,</span> <span class="token string">"INT[orange]"</span><span class="token punctuation">,</span> <span class="token string">"VOID[orange]"</span><span class="token punctuation">,</span> <span class="token string">"IF[orange]"</span><span class="token punctuation">,</span> <span class="token string">"ELSE[orange]"</span><span class="token punctuation">,</span> <span class="token string">"WHILE[orange]"</span><span class="token punctuation">,</span> <span class="token string">"BREAK[orange]"</span><span class="token punctuation">,</span> <span class="token string">"CONTINUE[orange]"</span><span class="token punctuation">,</span> <span class="token string">"RETURN[orange]"</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="40"></td><td><pre>				<span class="token string">"PLUS[blue]"</span><span class="token punctuation">,</span> <span class="token string">"MINUS[blue]"</span><span class="token punctuation">,</span> <span class="token string">"MUL[blue]"</span><span class="token punctuation">,</span> <span class="token string">"DIV[blue]"</span><span class="token punctuation">,</span> <span class="token string">"MOD[blue]"</span><span class="token punctuation">,</span> <span class="token string">"ASSIGN[blue]"</span><span class="token punctuation">,</span> <span class="token string">"EQ[blue]"</span><span class="token punctuation">,</span> <span class="token string">"NEQ[blue]"</span><span class="token punctuation">,</span> <span class="token string">"LT[blue]"</span><span class="token punctuation">,</span> <span class="token string">"GT[blue]"</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="41"></td><td><pre>				<span class="token string">"LE[blue]"</span><span class="token punctuation">,</span> <span class="token string">"GE[blue]"</span><span class="token punctuation">,</span> <span class="token string">"NOT[blue]"</span><span class="token punctuation">,</span> <span class="token string">"AND[blue]"</span><span class="token punctuation">,</span> <span class="token string">"OR[blue]"</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="42"></td><td><pre>				<span class="token string">""</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">,</span> <span class="token string">"IDENT[red]"</span><span class="token punctuation">,</span> <span class="token string">"INTEGER_CONST[green]"</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="43"></td><td><pre>				<span class="token string">""</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">,</span></pre></td></tr><tr><td data-num="44"></td><td><pre>				<span class="token string">""</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">,</span> <span class="token string">""</span></pre></td></tr><tr><td data-num="45"></td><td><pre>		<span class="token punctuation">&#125;</span><span class="token punctuation">;</span></pre></td></tr><tr><td data-num="46"></td><td><pre>	<span class="token punctuation">&#125;</span></pre></td></tr></table></figure><p>visitChildren 是当 dfs 遍历每个语法节点时都会触发的方法，一开始没有想到在遍历某个节点时如何得到该节点的深度，后面通过维护一个全局变量 depth 来实现。当进入节点前 depth 会 + 1 退出时会 - 1。</p>
 <p><img data-src="image-20230328210917158.png" alt="image-20230328210917158"></p>
 <p>这里简单的把 accept 方法理解为会调用 visitor.visitChildren (currentnode) 的函数就好了。</p>
+]]></content>
+      <categories>
+        <category>编译原理</category>
+      </categories>
+      <tags>
+        <tag>编译原理</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>编译原理04-中间代码生成</title>
+    <url>/2023/05/05/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%8604-%E4%B8%AD%E9%97%B4%E4%BB%A3%E7%A0%81%E7%94%9F%E6%88%90/</url>
+    <content><![CDATA[<h1 id="编译原理04-中间代码生成"><a class="anchor" href="#编译原理04-中间代码生成">#</a> 编译原理 04 - 中间代码生成</h1>
+<h2 id="llvm-ir简介"><a class="anchor" href="#llvm-ir简介">#</a> LLVM IR 简介</h2>
+<p><img data-src="image-20230505140807839.png" alt="image-20230505140807839"></p>
+<p>LLVM 这个项目与最初的名字含义已经完全不同了，可以将 LLVM 理解为全称。目前 LLVM 是开发新的编译器的<strong>基础</strong>。</p>
+<p><img data-src="image-20230505141735207.png" alt="image-20230505141735207"></p>
+<p>前端经过语法分析，词法分析，生成 IR</p>
+<p><strong>“IR 设计的优秀与否决定着整个编译器的好坏”</strong></p>
+<p><img data-src="image-20230505141928962.png" alt="image-20230505141928962"></p>
+<p>一个.c 文件对应生成一个.ll 文件。Module 实际上就是一个文件 file, Module 里有多个函数，一个函数具有多个<strong>基本块 (Basic Block)</strong>, 每一个基本块都由多个指令构成。</p>
+<p>使用 clang <strong>-S -emit-llvm</strong> factorial0.c -o f0-opt0.ll 表示用 clang 生成到 llvm 中间代码阶段停止。</p>
+<p>中间代码示例：<br>
+<img data-src="image-20230505143323681.png" alt="image-20230505143323681"></p>
+<p>像 %3 %4 这样的是分配一个虚拟寄存器， alloca 表示内存分配， align 表示内存对齐</p>
+<p><code>store i32 0, i32* %3</code>  表示把 0 存到 %3 寄存器中</p>
+<p>call 一行表示函数调用</p>
+<p>下一行表示结果与 7 相乘， nsw 表示 no signed wrap</p>
+<p>zext: zero - extension 将一 bit 的 %8 扩展为 32 位</p>
+<p>%2 哪去了？ 被分配为 entry 基本块的名称</p>
+<p>限制：任何一个变量都只能一次赋值， 好处是使用变量时明确知道在什么时候定义过的。</p>
+<h2 id="控制流图"><a class="anchor" href="#控制流图">#</a> 控制流图</h2>
+<p><img data-src="image-20230505150416543.png" alt="image-20230505150416543"></p>
+<p>控制流图的定义：<br>
+<img data-src="image-20230505150719324.png" alt="image-20230505150719324"></p>
+<p>例子：<br>
+<img data-src="image-20230505151157414.png" alt="image-20230505151157414"></p>
+<p>中间代码的数据流图：</p>
+<p><img data-src="image-20230505151318630.png" alt="image-20230505151318630"></p>
+<p>问题：%6 和 %7 基本块中要约定好把想 ret 的结果放在某一个寄存器中</p>
+<p>开了 o1 优化后：</p>
+<p><img data-src="image-20230505152003795.png" alt="image-20230505152003795"></p>
+<p>o1 优化会去掉所有的内存分配，store load 指令。</p>
+<p>phi 指令 根据从哪个块跳转出来决定赋值给 %8 寄存器的值</p>
+<p>然而 phi 指令只是为了简化中间代码的大小产生的，是一个虚拟指令，实际上仍然可能会使用基本方案。</p>
+<h2 id="llvm-java-api"><a class="anchor" href="#llvm-java-api">#</a> LLVM JAVA API</h2>
+<p><img data-src="image-20230506141752865.png" alt="image-20230506141752865"></p>
+<p>在配置文件中加依赖</p>
+<p><img data-src="image-20230506142227366.png" alt="image-20230506142227366"></p>
+<p>可以参照 LLVM 官方的教程，c++ 语言如何翻译为中间代码。</p>
+<h2 id="中间代码翻译"><a class="anchor" href="#中间代码翻译">#</a> 中间代码翻译</h2>
+<p><img data-src="image-20230506143047512.png" alt="image-20230506143047512"></p>
+<p>这里的 || 符号是 then 的意思，不是或者。</p>
+<p><img data-src="image-20230506144459580.png" alt="image-20230506144459580"></p>
+<p><img data-src="image-20230506144737646.png" alt="image-20230506144737646"></p>
+<p><img data-src="image-20230506145121379.png" alt="image-20230506145121379"></p>
+<p>例子： int a [2] [3]; c + a [i] [j];</p>
+<p><img data-src="image-20230506150834033.png" alt="image-20230506150834033"></p>
+<p>在 llvm IR 中：会用 getelementptr（GEP）指令处理数组引用</p>
+<p><img data-src="image-20230506151202417.png" alt="image-20230506151202417"></p>
+<p>GEP 指令有四个参数，其中第四个参数不限个数，可以有多个 index。</p>
+<p>第一个 index 比较特殊，表示 base-type 的一个元素的大小，用于 a++ 这样的操作，后面的 index 才用于进入数组获取元素，即没多一个 index 脱掉一层中括号。</p>
+<p><img data-src="image-20230506151901102.png" alt="image-20230506151901102"></p>
+<p>GEP provides a way to access arrays and manipulate pointers.</p>
+<p>GEP abstract away details like size of types.</p>
+<p>有了 GEP 指令后就不用像上面那样递归的计算偏移量了。</p>
+<p><img data-src="image-20230506154154393.png" alt="image-20230506154154393"></p>
+<h3 id="控制流语句的翻译"><a class="anchor" href="#控制流语句的翻译">#</a> 控制流语句的翻译</h3>
+<p>简单的思路会带来冗余的代码</p>
+<p>要生成简短高效的代码，就需要<strong>创造困难</strong></p>
+<p><strong>简单 mode：</strong></p>
+<p><img data-src="image-20230510141125754.png" alt="image-20230510141125754"></p>
+<p>将 B 的值保存到临时变量 t1 中，翻译 if 语句时用 br 语句测试 t1 的值并根据情况跳转到两个基本块中。</p>
+<p>以 Control 语言为例：</p>
+<p><img data-src="image-20230510142838861.png" alt="image-20230510142838861"></p>
+<p>选择实现方式的范围： Listeners, Visitors, Attributed Grammar</p>
+<p>前两种方法能做到的 属性方法都能做到，但是属性文法本身比较困难，所以在前两种中方法中选择。</p>
+<p>Listener 模式有一个问题： 比如 B -&gt; B1 || B2 的翻译：</p>
+<p>要在 exitB () 方法拼接 B1.code 和 B2.code 。但是考虑出现了短路求值的问题时，由于在 exitB 的时候 B1 和 B2 的代码都生成好了，因此要在拼接 B1.code 和 B2.code 中间插入判断短路求值的代码，不能及时输出生成的中间代码，不能避免频繁的字符串拼接操作。简要来说，访问完 B1，将中间代码保存下来，才能进行接下来的操作，不能在访问 B1 和访问 B2 中间插入一些操作，这是 Listener 模式的缺陷。</p>
+<p>具体代码见代码仓库<em> 2023-compilers-coding-0/src/main/java/codegen/CodeGenVisitor.java</em></p>
+<p>true 和 false 的翻译：</p>
+<p><img data-src="image-20230510144428568.png" alt="image-20230510144428568"></p>
+<p>AND 语句：</p>
+<p>有一个小错误 String temp = getNewTemp () 要放在 emitLabel (trueLabel) 之上。</p>
+<p><img data-src="image-20230510151933288.png" alt="image-20230510151933288"></p>
+<p>if 语句：</p>
+<p><img data-src="image-20230510151955477.png" alt="image-20230510151955477"></p>
+<p>while 语句：</p>
+<p><img data-src="image-20230510152502018.png" alt="image-20230510152502018"></p>
+<p>一个问题：break 语句怎么翻译，多层嵌套的循环语句怎么办</p>
+<p>解决方法：使用一个栈，保存 break 语句要跳转到的地方。，参照 while 语句中的压栈出栈语句。</p>
+<p>短路求值问题： 参照 And 中的实现</p>
+<p><strong>复杂 mode</strong>：</p>
+<p><img data-src="image-20230510154721641.png" alt="image-20230510154721641"></p>
+<p>为什么让事情变得更复杂：</p>
+<p>eg：</p>
+<p><img data-src="image-20230517140632912.png" alt="image-20230517140632912"></p>
+<p>如果使用简单方案，将会生成 12 行中间代码，然而实际上这是一个死循环</p>
+<p>解决方案：利用继承属性让布尔表达式知道要跳转到哪</p>
+<p><img data-src="image-20230517141735294.png" alt="image-20230517141735294"></p>
+<h3 id="需要的继承属性"><a class="anchor" href="#需要的继承属性">#</a> 需要的继承属性</h3>
+<p><img data-src="image-20230517142425226.png" alt="image-20230517142425226"></p>
+<h3 id="if语句"><a class="anchor" href="#if语句">#</a> if 语句</h3>
+<p><img data-src="image-20230517142712190.png" alt="image-20230517142712190"></p>
+<p>S.next 是之前准备好的</p>
+<p><img data-src="image-20230517143447956.png" alt="image-20230517143447956"></p>
+<p>bool 表达式直接翻译成 goto 语句</p>
+<h3 id="if-else-语句"><a class="anchor" href="#if-else-语句">#</a> if else 语句</h3>
+<p><img data-src="image-20230517144609460.png" alt="image-20230517144609460"></p>
+<p>eg：<img data-src="image-20230517144946527.png" alt="image-20230517144946527"></p>
+<h3 id="while语句"><a class="anchor" href="#while语句">#</a> while 语句</h3>
+<p><img data-src="image-20230517150821390.png" alt="image-20230517150821390"></p>
+<h3 id="顺序语句"><a class="anchor" href="#顺序语句">#</a> 顺序语句：</h3>
+<p><img data-src="image-20230517152329272.png" alt="image-20230517152329272"></p>
+<h3 id="短路求值"><a class="anchor" href="#短路求值">#</a> 短路求值</h3>
+<p><img data-src="image-20230517153441075.png" alt="image-20230517153441075"></p>
+<p><img data-src="image-20230517153732513.png" alt="image-20230517153732513"></p>
+<h2 id="地址回填技术"><a class="anchor" href="#地址回填技术">#</a> 地址回填技术</h2>
+<p><img data-src="image-20230519140559966.png" alt="image-20230519140559966"></p>
+<p>java 字节码中不使用符号化的标签作为跳转目标，而采用直接的地址值作为跳转目标。</p>
+<p>问题：往回跳简单，往前跳不知道跳转的地址，如何一趟扫描中就知道跳转目标的真实地址？</p>
+<p><img data-src="image-20230519141028791.png" alt="image-20230519141028791"></p>
+<p><img data-src="image-20230519141358466.png" alt="image-20230519141358466"></p>
+<p>解决方案： B 在 goto 语句后面空着，交给父节点 S 来回填。</p>
+<p><img data-src="image-20230519141905148.png" alt="image-20230519141905148"></p>
+<p>从底向上看怎么使用地址回填技术：(每幅图的下半部分是之前的翻译方案)</p>
+<p><img data-src="image-20230519143110842.png" alt="image-20230519143110842"></p>
+<p><img data-src="image-20230519143543907.png" alt="image-20230519143543907"></p>
+<p><img data-src="image-20230519143840206.png" alt="image-20230519143840206"></p>
+<p>到这里已经可以确定一些跳转的地址了：</p>
+<p>M 是一个辅助的符号，用来确定 B2 第一个指令的地址的值是多少</p>
+<p><img data-src="image-20230519144434026.png" alt="image-20230519144434026"></p>
+<p><img data-src="image-20230519150121225.png" alt="image-20230519150121225"></p>
+<p>布尔表达式结束 到达更高层：</p>
+<p><img data-src="/image-20230519151840965.png" alt="image-20230519151840965"></p>
+<p><img data-src="image-20230519152628678.png" alt="image-20230519152628678"></p>
+<p><img data-src="image-20230519153118656.png" alt="image-20230519153118656"></p>
+<p>顺序语句：</p>
+<p><img data-src="image-20230519153706714.png" alt="image-20230519153706714"></p>
+<p>总结：</p>
+<p><img data-src="image-20230519154323985.png" alt="image-20230519154323985"></p>
 ]]></content>
       <categories>
         <category>编译原理</category>
